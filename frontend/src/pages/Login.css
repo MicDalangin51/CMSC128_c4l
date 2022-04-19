@@ -20,6 +20,11 @@ body{
     height: 100;
 }
 
+h2{
+    text-align: center;
+    color: maroon;
+}
+
 .input-label{
     color: maroon;
     width: 100%;
