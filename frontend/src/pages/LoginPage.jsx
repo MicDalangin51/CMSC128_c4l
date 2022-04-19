@@ -1,5 +1,6 @@
 import React from 'react';
 import './LoginPage.css';
+import logo from '../images/cas-logo.png';
 import {Button, Container, Form} from "react-bootstrap";
 
 const LoginPage = () => {
@@ -7,6 +8,7 @@ const LoginPage = () => {
     <div className="leftHalf"></div>
     <div className="rightHalf">
         <Container className="mt-5 p-5">
+            <img src={logo} width="150" height="150" className="logo"/>
                 <Form className="login-form">
                     <Form.Group controlId="formUsername" className="w-50">
                         <Form.Label className="input-label">Username</Form.Label>
