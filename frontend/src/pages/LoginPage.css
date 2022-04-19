@@ -1,0 +1,10 @@
+.leftHalf {
+    background: url(../images/kk-tower.jpg);
+    width: 50%;
+    position: absolute;
+    left: 0px;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
