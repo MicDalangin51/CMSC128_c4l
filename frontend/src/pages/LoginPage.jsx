@@ -9,6 +9,8 @@ const LoginPage = () => {
     <div className="rightHalf">
         <Container className="mt-5 p-5">
             <img src={logo} width="150" height="150" className="logo"/>
+            <h2>GWA Verifier</h2>
+            <br/>
                 <Form className="login-form">
                     <Form.Group controlId="formUsername" className="w-50">
                         <Form.Label className="input-label">Username</Form.Label>
