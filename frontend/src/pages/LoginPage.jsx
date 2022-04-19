@@ -12,9 +12,9 @@ const LoginPage = () => {
             <h2>GWA Verifier</h2>
             <br/>
                 <Form className="login-form">
-                    <Form.Group controlId="formUsername" className="w-50">
-                        <Form.Label className="input-label">Username</Form.Label>
-                        <Form.Control title="Enter username"/>
+                    <Form.Group controlId="formEmail" className="w-50">
+                        <Form.Label className="input-label">Email</Form.Label>
+                        <Form.Control type="email" title="Enter email"/>
                     </Form.Group>
                     <br/>
                     <Form.Group controlId="formPassword" className="w-50">
