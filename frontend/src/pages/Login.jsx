@@ -6,9 +6,20 @@ import {Row, Col, Container, Form, Button} from "react-bootstrap";
 const Login = () => {
     return <>
     <Row className="mt-5">
-        <Col lg={5} md={6} sm={12} className="p-5 m-5">
-            <Container className="p-5 m-5 shadow-sm rounded-lg bg-white text-dark bg-opacity-50">
+        <Col lg={1}></Col>
+        <Col lg={5} md={6} sm={12} className="p-5 m-auto">
+            <Container className="p-5 mt-5 shadow-sm rounded-lg bg-white text-dark bg-opacity-50">
                 <h4>Privacy Notice</h4>
+                <p>privacy notice details will be placed here<br/>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                Nulla quis est metus. Vestibulum a libero vitae est eleifend convallis vel ut justo. 
+                Pellentesque in augue molestie, sollicitudin elit accumsan, luctus purus. Donec ut fringilla nisl. 
+                Praesent vitae tincidunt justo. Cras ullamcorper, 
+                erat quis bibendum euismod, nisl velit tincidunt arcu, accumsan efficitur ipsum quam eu lectus. 
+                Sed id dignissim enim. Praesent dolor sapien, bibendum eget auctor vitae, placerat id elit. 
+                Etiam ultrices ultrices sapien, a iaculis dui sagittis nec. Phasellus mi est, accumsan vel euismod at, semper quis sapien. 
+                Nulla arcu nisi, rhoncus at commodo in, porttitor nec arcu. Donec nisl sapien, tempus at dapibus sed, hendrerit eget turpis. 
+                Ut lobortis semper elementum. Nulla facilisi.</p>
             </Container>
         </Col>
 
