@@ -1,9 +1,10 @@
 import React from "react";
-import Login from "./pages/Login";
-
+// import Login from "./pages/Login";
+import LoginPage from "./pages/LoginPage";
 const App = () => {
   return <div>
-    <Login/>
+    <LoginPage/>
+    {/* <Login/> */}
   </div>;
 };
 
