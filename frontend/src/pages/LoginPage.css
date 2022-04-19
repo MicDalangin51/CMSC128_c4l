@@ -28,6 +28,12 @@ html, body {
     height: 100;
 }
 
+h2{
+    text-align: center;
+    color: maroon;
+    margin: 10px;
+}
+
 .login-form{
     display: grid;
     place-items: center;
