@@ -8,3 +8,10 @@
     background-repeat: no-repeat;
     background-position: center center;
 }
+
+.rightHalf {
+    width: 50%;
+    position: absolute;
+    right: 0px;
+    height: 100%;
+}
