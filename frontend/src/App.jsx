@@ -1,11 +1,11 @@
 import React from "react";
-// import Login from "./pages/Login";
 import LoginPage from "./pages/LoginPage";
+import StudentDirectoryPage from "./pages/StudentDirectoryPage"
+
 const App = () => {
-  return <div>
-    <LoginPage/>
-    {/* <Login/> */}
-  </div>;
+  return <>
+  <StudentDirectoryPage/>
+  </>;
 };
 
 export default App;
