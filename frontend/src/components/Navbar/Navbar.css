@@ -1,0 +1,40 @@
+.navbar {
+  height: 100vh;
+  z-index: 100;
+  top: 0;
+  position: sticky;
+  left: 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.navbar-item {
+  border-radius: 4px;
+  color: black;
+}
+
+.navbar-item:hover {
+  background-color: #7b1113;
+  color: rgb(229, 166, 166);
+  font-weight: 500;
+}
+
+.logo-small {
+  width: 48px;
+  height: 48px;
+}
+
+h4 {
+  height: 50px;
+  text-align: center;
+  padding-top: 9px;
+}
+
+.drop-up {
+  padding-left: auto;
+  padding-right: 50px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
