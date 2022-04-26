@@ -25,7 +25,7 @@ const SideBar = () => {
   ];
 
   return (
-    <Stack className="flex-grow-0 p-3">
+    <Stack className="flex-grow-0 p-3 vh-100 sticky-top">
       <Stack direction="horizontal" gap="2" className="align-items-center">
         <Image src={casLogo} width="32" height="32" />
         <span className="fs-4">GWA Verifier</span>
