@@ -3,7 +3,7 @@ import { FaCog, FaHistory, FaUsers } from "react-icons/fa";
 
 import casLogo from "/src/images/cas-logo.png";
 
-const NavBar = () => {
+const SideBar = () => {
   const username = "Abbott Young";
 
   const navItems = [
@@ -57,4 +57,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default SideBar;
