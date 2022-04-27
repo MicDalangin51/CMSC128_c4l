@@ -1,1 +1,12 @@
 @import "custom";
+
+.table-fixed-head {
+  thead {
+    box-shadow: inset 0 -2px currentColor;
+    @extend .bg-white;
+  }
+
+  & > :not(:first-child) {
+    @extend .border-top-0;
+  }
+}
