@@ -2,12 +2,12 @@ import { Stack } from "react-bootstrap";
 
 import { SideBar } from "/src/components";
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children, fixedContent = "" }) => {
   return (
     <Stack direction="horizontal">
       <SideBar />
       <div className="vr"></div>
-      <div className="min-vh-100 flex-fill p-4">{children}</div>
+      <Stack className={`flex-fill p-4 ${fixedContent && "overflow-hidden vh-100"}`}>{children}</Stack>
     </Stack>
   );
 };

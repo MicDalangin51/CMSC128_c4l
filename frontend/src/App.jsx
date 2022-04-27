@@ -1,11 +1,11 @@
-import React from "react";
-import LoginPage from "./pages/LoginPage";
-import StudentDirectoryPage from "./pages/StudentDirectoryPage"
+import { StudentDirectory } from "/src/pages";
 
 const App = () => {
-  return <>
-  <StudentDirectoryPage/>
-  </>;
+  return (
+    <>
+      <StudentDirectory></StudentDirectory>
+    </>
+  );
 };
 
 export default App;
