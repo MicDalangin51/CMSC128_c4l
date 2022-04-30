@@ -11,14 +11,15 @@ Do the following steps:
 ```bash
 # Run the Flask server on development mode
 cd backend
-. venv/Scripts/activate
-pip install -r requirements.txt
-export FLASK_ENV=development
+python -m venv venv               # If venv folder is not yet created
+. venv/Scripts/activate           # If virtual environment is not yet activated
+pip install -r requirements.txt   # If dependencies in requirements.txt are not yet installed in virtual environment
+export FLASK_ENV=development      # If FLASK_ENV is not yet set in the current terminal session
 flask run
 
 # Start the React application
 cd ../frontend
-npm install
+npm install                       # If dependencies in package.json are not yet installed
 npm run dev
 ```
 
@@ -31,13 +32,14 @@ Do the following steps:
 ```bash
 # Run the Flask server
 cd backend
-. venv/Scripts/activate
-pip install -r requirements.txt
+python -m venv venv               # If venv folder is not yet created
+. venv/Scripts/activate           # If virtual environment is not yet activated
+pip install -r requirements.txt   # If dependencies in requirements.txt are not yet installed in virtual environment
 flask run
 
-# Build the React application
+# Build the React application (if changes are not yet built or the dist folder is not yet created) 
 cd ../frontend
-npm install
+npm install                       # If dependencies in package.json are not yet installed
 npm run build
 ```
 
