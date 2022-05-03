@@ -1,11 +1,12 @@
 import { Dropdown, Image, Nav, Stack } from "react-bootstrap";
 import { FaCog, FaHistory, FaUsers } from "react-icons/fa";
-
 import casLogo from "/src/images/cas-logo.png";
+import React, { useState, useEffect } from "react";
 
 const SideBar = () => {
   const username = "Abbott Young";
 
+  
   const navItems = [
     {
       icon: FaUsers,
@@ -24,6 +25,7 @@ const SideBar = () => {
     },
   ];
 
+
   return (
     <Stack className="flex-grow-0 p-3 vh-100 sticky-top">
       <Stack direction="horizontal" gap="2" className="align-items-center">
@@ -31,9 +33,9 @@ const SideBar = () => {
         <span className="fs-4">GWA Verifier</span>
       </Stack>
       <hr />
-      <Nav variant="pills" className="flex-column mb-auto" activeKey="/">
+      <Nav variant="pills" className="flex-column mb-auto">
         {navItems.map(({ icon: Icon, label, href }, index) => (
-          <Nav.Item key={index}>
+          <Nav.Item key={index} >
             <Nav.Link className="link-dark" href={href}>
               <Stack direction="horizontal" gap="2" className="align-items-center">
                 <Icon />
