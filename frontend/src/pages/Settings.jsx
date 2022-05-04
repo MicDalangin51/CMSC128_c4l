@@ -32,13 +32,33 @@ const Settings = () => {
                 </Tab>
                 <Tab eventKey="shac" title="SHAC Accounts">
                     <Container>
-                        <Row>
+                        <Row className="pt-3">
                             <Col className="align-items-center">
-                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="50" height="50" className="me-2 img-fluid rounded-circle" />
-                                Jemuel Juatco
+                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="45" height="45" className="me-2 img-fluid rounded-circle" />
+                                Juan Dela Cruz
                             </Col>
-                            <Col>2</Col>
-                            <Col>3</Col>
+                            <Col className="align-items-center">
+                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="45" height="45" className="me-2 img-fluid rounded-circle" />
+                                Juan Dela Cruz
+                            </Col>
+                            <Col className="align-items-center">
+                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="45" height="45" className="me-2 img-fluid rounded-circle" />
+                                Juan Dela Cruz
+                            </Col>
+                        </Row>
+                        <Row className="pt-3">
+                            <Col className="align-items-center">
+                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="45" height="45" className="me-2 img-fluid rounded-circle" />
+                                Juan Dela Cruz
+                            </Col>
+                            <Col className="align-items-center">
+                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="45" height="45" className="me-2 img-fluid rounded-circle" />
+                                Juan Dela Cruz
+                            </Col>
+                            <Col className="align-items-center">
+                                <Image src={"https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"} width="45" height="45" className="me-2 img-fluid rounded-circle" />
+                                Juan Dela Cruz
+                            </Col>
                         </Row>
                     </Container>
                 </Tab>
