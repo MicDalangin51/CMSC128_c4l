@@ -1,7 +1,16 @@
 import { useState } from "react";
-import { Badge, Button, Col, Form, FormControl, InputGroup, Row, Stack, Table } from "react-bootstrap";
+import {
+  Badge,
+  Button,
+  Col,
+  Form,
+  FormControl,
+  InputGroup,
+  Row,
+  Stack,
+  Table,
+} from "react-bootstrap";
 import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
-
 import { DashboardLayout } from "/src/components";
 
 const StudentDirectory = () => {
@@ -51,9 +60,14 @@ const StudentDirectory = () => {
             </InputGroup>
           </Col>
           <Col>
-            <Stack direction="horizontal" gap="2" className="justify-content-end align-items-center">
+            <Stack
+              direction="horizontal"
+              gap="2"
+              className="justify-content-end align-items-center"
+            >
               <small>
-                {lowerStudentRange} – {upperStudentRange} of {studentCount} students
+                {lowerStudentRange} – {upperStudentRange} of {studentCount}
+                students
               </small>
               <Button variant="outline-primary">
                 <FaAngleLeft />
@@ -88,7 +102,9 @@ const StudentDirectory = () => {
               {students.map(({ name, email, status }, index) => {
                 return (
                   <tr key={index}>
-                    <td>{name}</td>
+                    <td>
+                      <a href="/student-record">{name}</a>
+                    </td>
                     <td>{email}</td>
                     <td>
                       {status == "Verified" && (
