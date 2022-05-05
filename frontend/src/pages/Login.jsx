@@ -44,7 +44,12 @@ const Login = () => {
           <Form onSubmit={login} className="login-form">
             <Form.Group controlId="formEmail" className="w-50">
               <Form.Label className="input-label">Email</Form.Label>
-              <Form.Control type="email" title="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Form.Control
+                type="email"
+                title="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </Form.Group>
             <br />
             <Form.Group controlId="formPassword" className="w-50">
@@ -58,7 +63,11 @@ const Login = () => {
             </Form.Group>
 
             <br />
-            <Button variant="outline-light w-50" type="submit" className="login-button">
+            <Button
+              variant="outline-light w-50"
+              type="submit"
+              className="login-button"
+            >
               Login
             </Button>
           </Form>

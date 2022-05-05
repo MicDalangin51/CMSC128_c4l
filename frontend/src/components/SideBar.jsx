@@ -6,7 +6,6 @@ import React, { useState, useEffect } from "react";
 const SideBar = () => {
   const username = "Abbott Young";
 
-  
   const navItems = [
     {
       icon: FaUsers,
@@ -25,7 +24,6 @@ const SideBar = () => {
     },
   ];
 
-
   return (
     <Stack className="flex-grow-0 p-3 vh-100 sticky-top">
       <Stack direction="horizontal" gap="2" className="align-items-center">
@@ -35,9 +33,13 @@ const SideBar = () => {
       <hr />
       <Nav variant="pills" className="flex-column mb-auto">
         {navItems.map(({ icon: Icon, label, href }, index) => (
-          <Nav.Item key={index} >
+          <Nav.Item key={index}>
             <Nav.Link className="link-dark" href={href}>
-              <Stack direction="horizontal" gap="2" className="align-items-center">
+              <Stack
+                direction="horizontal"
+                gap="2"
+                className="align-items-center"
+              >
                 <Icon />
                 {label}
               </Stack>
@@ -47,7 +49,10 @@ const SideBar = () => {
       </Nav>
       <hr />
       <Dropdown drop="up">
-        <Dropdown.Toggle variant="white" className="d-flex align-items-center shadow-none">
+        <Dropdown.Toggle
+          variant="white"
+          className="d-flex align-items-center shadow-none"
+        >
           <Image src={""} width="32" height="32" className="me-2" />
           <span className="me-2">{username}</span>
         </Dropdown.Toggle>
