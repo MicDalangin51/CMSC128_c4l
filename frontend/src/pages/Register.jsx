@@ -7,13 +7,8 @@ const Register = () => {
       <div fluid className="background">
         <div className="leftSide"></div>
         <div className="rightSide">
-          <Container
-            className="m-5 p-5 rounded mb-0"
-            fluid="xs"
-            style={{
-              backgroundColor: "#01573F",
-            }}
-          >
+          <h1 className="text-center">Add Account</h1>
+          <Container className="contain" fluid="xs">
             <Form>
               <FloatingLabel label="Full Name" className="mb-3 text-black">
                 <Form.Control />
@@ -34,7 +29,7 @@ const Register = () => {
                 <Form.Control type="password" />
               </FloatingLabel>
 
-              <Button className="">Add Account</Button>
+              <Button className="">Save</Button>
 
               <a href="/settings">
                 <Button className="mx-3">Cancel</Button>

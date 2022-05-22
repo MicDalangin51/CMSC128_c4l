@@ -13,5 +13,13 @@
   position: absolute;
   right: 0px;
   height: 100%;
-  padding-top: 150px;
+  padding-top: 100px;
+}
+
+.contain {
+  background-color: #01573f;
+  padding: 5%;
+  margin-left: 10%;
+  margin-right: 10%;
+  border-radius: 12px;
 }
