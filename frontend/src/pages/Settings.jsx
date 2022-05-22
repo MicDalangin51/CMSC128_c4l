@@ -16,31 +16,32 @@ import { DashboardLayout } from "/src/components";
 
 const Settings = () => {
   // Temporary variables
-  var student = {
-    name: "Juan dela Cruz",
-    email: "jdelacruz@up.edu.ph",
+  var currentStaff = {
+    name: "Garth Lapitan",
+    department: "ICS",
+    access: 1,
   };
 
-  let students = [
+  let staffAccounts = [
     {
       name: "Garth Lapitan",
-      email: "glapitan@up.edu.ph",
-      status: "Verified",
+      department: "ICS",
+      access: 1,
     },
     {
       name: "Jemuel Juatco",
-      email: "jjuatco@up.edu.ph",
-      status: "Unverified",
+      department: "ICS",
+      access: 0,
     },
     {
       name: "Nathan Muncal",
-      email: "nmuncal@up.edu.ph",
-      status: "Verified",
+      department: "ICS",
+      access: 0,
     },
     {
       name: "Ronn Jiongco",
-      email: "rjiongco@up.edu.ph",
-      status: "Unverified",
+      department: "ICS",
+      access: 0,
     },
   ];
 
@@ -73,19 +74,24 @@ const Settings = () => {
                 {/* <FaEdit className="mr-1" />
                                 <span> Edit </span> */}
 
-                <Button variant="outline-primary">
+                {/* <Button variant="outline-primary">
                   <FaEdit className="m-1" />
                   <span className="m-1">Edit</span>
-                </Button>
+                </Button> */}
               </Col>
             </Row>
           </Container>
           <Stack className="px-5">
             <h6>Name</h6>
-            <span className="text-black">{student.name} </span>
+            <span className="text-black">{currentStaff.name} </span>
             <br></br>
             <h6>Email</h6>
-            <span className="text-black">{student.email} </span>
+            <span className="text-black">{currentStaff.department} </span>
+            <br></br>
+            <h6>Access Level</h6>
+            <span className="text-black">
+              {currentStaff.access ? "Admin" : "Staff"}
+            </span>
           </Stack>
         </Tab>
         <Tab eventKey="shac" title="SHAC Accounts">
@@ -100,11 +106,18 @@ const Settings = () => {
             </Col>
             <div className="flex-fill overflow-auto">
               <Table hover>
+                <thead>
+                  <tr className="text-secondary">
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Access Level</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  {students.map(({ name }, index) => {
+                  {staffAccounts.map(({ name, department, access }, index) => {
                     return (
                       <tr key={index}>
-                        <td>
+                        {/* <td>
                           {" "}
                           <Image
                             src={
@@ -114,9 +127,11 @@ const Settings = () => {
                             height="45"
                             className="me-2 img-fluid rounded-circle"
                           />
-                          {name}
-                          {/* <FaMinus className="m-1" /> */}
-                        </td>
+                          <FaMinus className="m-1" />
+                        </td> */}
+                        <td>{name}</td>
+                        <td>{department}</td>
+                        <td>{access ? "Admin" : "Staff"}</td>
                       </tr>
                     );
                   })}
