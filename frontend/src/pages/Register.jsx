@@ -34,25 +34,11 @@ const Register = () => {
                 <Form.Control type="password" />
               </FloatingLabel>
 
-              <a href="/settings">
-                <Button
-                  className="my-3 float-end"
-                  style={{
-                    backgroundColor: "maroon",
-                  }}
-                >
-                  Cancel
-                </Button>
-              </a>
+              <Button className="">Add Account</Button>
 
-              <Button
-                className="m-3 float-end"
-                style={{
-                  backgroundColor: "maroon",
-                }}
-              >
-                Add Account
-              </Button>
+              <a href="/settings">
+                <Button className="mx-3">Cancel</Button>
+              </a>
             </Form>
           </Container>
         </div>
