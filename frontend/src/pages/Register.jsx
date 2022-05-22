@@ -1,17 +1,12 @@
-import { Button, Container, Form, Col, FloatingLabel } from "react-bootstrap";
-import casBulding from "../images/cas-building.png";
+import { Button, Container, Form, FloatingLabel } from "react-bootstrap";
+import "./Register.css";
 
 const Register = () => {
   return (
     <>
-      <div
-        className="vh-100 p-5"
-        style={{
-          backgroundImage: `url(${casBulding}`,
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <Col className="p-5 mx-5">
+      <div fluid className="background">
+        <div className="leftSide"></div>
+        <div className="rightSide">
           <Container
             className="m-5 p-5 rounded mb-0"
             fluid="xs"
@@ -60,7 +55,7 @@ const Register = () => {
               </Button>
             </Form>
           </Container>
-        </Col>
+        </div>
       </div>
     </>
   );
