@@ -1,0 +1,17 @@
+.background {
+  width: 100%;
+  background: url(../images/freedom-park.jpg);
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: absolute;
+}
+
+.rightSide {
+  width: 50%;
+  position: absolute;
+  right: 0px;
+  height: 100%;
+  padding-top: 150px;
+}
