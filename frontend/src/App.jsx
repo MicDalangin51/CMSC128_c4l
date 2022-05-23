@@ -3,6 +3,7 @@ import { Changelog } from "/src/pages";
 import { Settings } from "/src/pages";
 import { StudentRecord } from "/src/pages";
 import { Login } from "/src/pages";
+import { Register } from "/src/pages";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 const App = () => {
@@ -16,7 +17,11 @@ const App = () => {
             <Route path="/" element={<StudentDirectory />}></Route>
             <Route path="/change-log" element={<Changelog />}></Route>
             <Route path="/settings" element={<Settings />}></Route>
-            <Route path="/student-record" element={<StudentRecord />}></Route>
+            <Route
+              path="/student/:studentNumber"
+              element={<StudentRecord />}
+            ></Route>
+            <Route path="/add-account" element={<Register />}></Route>
           </Routes>
         </div>
       </Router>
