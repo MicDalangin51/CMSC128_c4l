@@ -17,7 +17,10 @@ const App = () => {
             <Route path="/" element={<StudentDirectory />}></Route>
             <Route path="/change-log" element={<Changelog />}></Route>
             <Route path="/settings" element={<Settings />}></Route>
-            <Route path="/student-record" element={<StudentRecord />}></Route>
+            <Route
+              path="/student/:studentNumber"
+              element={<StudentRecord />}
+            ></Route>
             <Route path="/add-account" element={<Register />}></Route>
           </Routes>
         </div>
