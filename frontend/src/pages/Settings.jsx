@@ -11,7 +11,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import { FaEdit, FaPlus, FaMinus } from "react-icons/fa";
-
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "/src/components";
 
 const Settings = () => {
@@ -44,6 +44,14 @@ const Settings = () => {
       access: 0,
     },
   ];
+
+  const [staff, setStaff] = useState([]);
+
+  useEffect(async () => {
+    const response = await fetch("/api/staff");
+    const data = await response.json();
+    setStudents(data.staff);
+  }, []);
 
   // for (let i = 0; i < 3; i++) students = [...students, ...students];
 
