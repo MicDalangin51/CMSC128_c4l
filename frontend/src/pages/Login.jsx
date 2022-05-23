@@ -1,11 +1,20 @@
 import { useState } from "react";
+import { Button, Container, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+
 import "./Login.css";
 import logo from "../images/cas-logo.png";
-import { Button, Container, Form } from "react-bootstrap";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const navigateTo = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) navigateTo("/");
+  }, [isAuthenticated]);
 
   function login(e) {
     e.preventDefault();
@@ -15,7 +24,7 @@ const Login = () => {
       password: password,
     };
 
-    fetch("/login", {
+    fetch("api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,11 +33,12 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((body) => {
-        if (!body.success) {
-          alert("Failed to log in");
+        console.log(body);
+
+        if (body.success) {
+          setIsAuthenticated(true);
         } else {
-          alert("Successfully logged in");
-          console.log(credentials);
+          alert("Failed to log in");
         }
       });
   }
