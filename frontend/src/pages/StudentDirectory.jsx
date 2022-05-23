@@ -10,13 +10,7 @@ import {
   Stack,
   Table,
 } from "react-bootstrap";
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaSearch,
-  FaPlus,
-  FaMinus,
-} from "react-icons/fa";
+import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
 import { DashboardLayout } from "/src/components";
 
 const StudentDirectory = () => {
@@ -82,7 +76,6 @@ const StudentDirectory = () => {
           <Table hover className="table-fixed-head">
             <thead className="sticky-top">
               <tr>
-                <th></th>
                 <th>Name</th>
                 <th>Course</th>
                 <th>Status</th>
@@ -93,19 +86,7 @@ const StudentDirectory = () => {
                 return (
                   <tr key={index}>
                     <td>
-<<<<<<< HEAD
                       <a href={`/student/${student_number}`}>{name}</a>
-=======
-                      <Button variant="outline-primary" size="sm">
-                        <FaPlus />
-                      </Button>
-                      <Button variant="outline-primary" size="sm">
-                        <FaMinus />
-                      </Button>
-                    </td>
-                    <td>
-                      <a href="/student-record">{name}</a>
->>>>>>> 0a76701976e8c883860dc7ade27a78331ee6be00
                     </td>
                     <td>{course_name}</td>
                     <td>
