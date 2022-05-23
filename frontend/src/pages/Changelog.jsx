@@ -1,5 +1,15 @@
-import { useState } from "react";
-import { Badge, Button, Col, Form, FormControl, InputGroup, Row, Stack, Table } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import {
+  Badge,
+  Button,
+  Col,
+  Form,
+  FormControl,
+  InputGroup,
+  Row,
+  Stack,
+  Table,
+} from "react-bootstrap";
 import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
 
 import { DashboardLayout } from "/src/components";
@@ -29,6 +39,13 @@ const Changelog = () => {
     },
   ];
 
+  const [changelog, setChangelog] = useState([]);
+
+  useEffect(async () => {
+    const response = await fetch("/api/changelog");
+    const data = await response.json();
+    setChangelog(data.changelog);
+  }, []);
 
   return (
     <DashboardLayout fixedContent>
@@ -43,9 +60,12 @@ const Changelog = () => {
             </InputGroup>
           </Col>
           <Col>
-            <Stack direction="horizontal" gap="2" className="justify-content-end align-items-center">
-              <small>
-              </small>
+            <Stack
+              direction="horizontal"
+              gap="2"
+              className="justify-content-end align-items-center"
+            >
+              <small></small>
               <Button variant="outline-primary" disabled>
                 <FaAngleLeft />
               </Button>
@@ -81,9 +101,7 @@ const Changelog = () => {
                   <tr key={index}>
                     <td>{date}</td>
                     <td>{user}</td>
-                    <td>       
-                     {change}
-                    </td>
+                    <td>{change}</td>
                   </tr>
                 );
               })}
