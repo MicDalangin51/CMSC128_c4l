@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Badge,
   Button,
@@ -14,31 +14,14 @@ import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
 import { DashboardLayout } from "/src/components";
 
 const StudentDirectory = () => {
-  // Temporary variables
-  let students = [
-    {
-      name: "Garth Lapitan",
-      email: "glapitan@up.edu.ph",
-      status: "Verified",
-    },
-    {
-      name: "Jemuel Juatco",
-      email: "jjuatco@up.edu.ph",
-      status: "Unverified",
-    },
-    {
-      name: "Nathan Muncal",
-      email: "nmuncal@up.edu.ph",
-      status: "Verified",
-    },
-    {
-      name: "Ronn Jiongco",
-      email: "rjiongco@up.edu.ph",
-      status: "Unverified",
-    },
-  ];
 
-  for (let i = 0; i < 3; i++) students = [...students, ...students];
+  const [students, setStudents] = useState([])
+
+  useEffect(async ()=> {
+    const response = await fetch("/api/students/1");
+    const data = await response.json();
+    setStudents(data.students);
+  }, [])
 
   const lowerStudentRange = 1;
   const upperStudentRange = 50;
@@ -94,20 +77,20 @@ const StudentDirectory = () => {
             <thead className="sticky-top">
               <tr>
                 <th>Name</th>
-                <th>Email</th>
+                <th>Course</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {students.map(({ name, email, status }, index) => {
+              {students.map(({ name, course_name, status, student_number }, index) => {
                 return (
                   <tr key={index}>
                     <td>
-                      <a href="/student-record">{name}</a>
+                      <a href={`/student/${student_number}`}>{name}</a>
                     </td>
-                    <td>{email}</td>
+                    <td>{course_name}</td>
                     <td>
-                      {status == "Verified" && (
+                      {status == "verified" && (
                         <Badge pill bg="success">
                           {status}
                         </Badge>
