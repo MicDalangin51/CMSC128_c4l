@@ -57,18 +57,13 @@ const StudentRecord = () => {
 
             <Row>
               <Accordion defaultActiveKey={["1"]} alwaysOpen>
-                {entries.summary.map((entry, index) => (
+                {entries.summary?.map((entry, index) => (
                   <Accordion.Item eventKey={"" + index + ""}>
                     <Accordion.Header>{entry.semester}</Accordion.Header>
                     <Accordion.Body>
                       <Table hover responsive>
                         <thead>
                           <tr className="text-secondary">
-                            <th>
-                              <Button variant="outline-none" size="sm">
-                                <FaPlus />
-                              </Button>
-                            </th>
                             <th>Course Number</th>
                             <th>Grade</th>
                             <th>Units</th>
@@ -90,9 +85,6 @@ const StudentRecord = () => {
                             ) => {
                               return (
                                 <tr key={index}>
-                                  <Button variant="outline-none" size="sm">
-                                    <FaMinus />
-                                  </Button>
                                   <td>{course_number}</td>
                                   <td>{grade}</td>
                                   <td>{units}</td>
