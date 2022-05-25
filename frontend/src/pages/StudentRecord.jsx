@@ -354,10 +354,7 @@ const StudentRecord = () => {
               <Card>
                 <Card.Body>
                   <Card.Text>
-                    <h6>Courses not taken</h6>
-                    {/* {entries.courses_not_taken.map((entry) => {
-                      return <div className="text-black"> {entry} </div>;
-                    })} */}
+                    <h6>General Errors</h6>
                   </Card.Text>
                 </Card.Body>
               </Card>
