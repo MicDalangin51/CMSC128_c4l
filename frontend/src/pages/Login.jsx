@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form, InputGroup } from "react-bootstrap";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 import "./Login.css";
 import logo from "../images/cas-logo.png";
@@ -9,6 +10,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
 
   const navigateTo = useNavigate();
 
@@ -57,6 +62,7 @@ const Login = () => {
               <Form.Control
                 type="email"
                 title="Enter email"
+                placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -64,12 +70,22 @@ const Login = () => {
             <br />
             <Form.Group controlId="formPassword" className="w-50">
               <Form.Label className="input-label">Password</Form.Label>
-              <Form.Control
-                type="password"
-                title="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <InputGroup className="mb-3">
+                <Form.Control
+                  type={passwordShown ? "text" : "password"}
+                  title="Enter password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                  onClick={togglePassword}
+                  variant="outline-secondary"
+                  id="button-addon2"
+                >
+                  {passwordShown ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
+                </Button>
+              </InputGroup>
             </Form.Group>
 
             <br />
