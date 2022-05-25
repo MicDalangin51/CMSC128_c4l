@@ -1,45 +1,55 @@
-/* html{
-    color: maroon;
-    background-image: url(../images/cas-building.png);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    width: 100%;
-    height: 100%;
-} */
-
-body{
-    background-color: transparent;
+html,
+body {
+  color: maroon;
 }
 
-.logo{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100;
-    height: 100;
+.leftHalf {
+  background: url(../images/main-lib.jpg);
+  width: 50%;
+  position: absolute;
+  left: 0px;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
-h2{
-    text-align: center;
-    color: maroon;
+.rightHalf {
+  width: 50%;
+  position: absolute;
+  right: 0px;
+  height: 100%;
 }
 
-.input-label{
-    color: maroon;
-    width: 100%;
+.logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100;
+  height: 100;
 }
 
-.login-form{
-    display: grid;
-    place-items: center;
+h2 {
+  text-align: center;
+  color: maroon;
+  margin: 10px;
+}
+
+.login-form {
+  display: grid;
+  place-items: center;
 }
 
 .form-control:focus {
-    border-color: maroon;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
+  border-color: maroon;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
 }
 
-.login-button{
-    background-color:maroon;
+.input-label {
+  color: maroon;
+  width: 100%;
+}
+
+.login-button {
+  background-color: maroon;
 }
