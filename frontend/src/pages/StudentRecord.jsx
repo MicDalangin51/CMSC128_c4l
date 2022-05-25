@@ -15,14 +15,14 @@ import {
   Modal,
   Form,
   FloatingLabel,
+  Dropdown,
 } from "react-bootstrap";
 import casBuilding from "/src/images/cas-building.png";
 
 const StudentRecord = () => {
   const { studentNumber } = useParams();
-  const [entries, setEntries] = useState([]);
 
-  //for editing row
+  //for editing student-data row
   const [show, setShow] = useState(false);
   const [edit_course, setCourseEdit] = useState("");
   const [edit_grade, setGradeEdit] = useState("");
@@ -70,7 +70,7 @@ const StudentRecord = () => {
       });
   };
 
-  //for adding Row
+  //for adding student-data row
   const [showAdd, setShowAdd] = useState(false);
   const handleShowAdd = () => {
     setShowAdd(true);
@@ -106,12 +106,15 @@ const StudentRecord = () => {
       });
   };
 
+  //gets the student's data
+  const [entries, setEntries] = useState([]);
   useEffect(async () => {
     const response = await fetch(`/api/student/${studentNumber}`);
     const data = await response.json();
     setEntries(data.student_data);
   }, []);
 
+  //deletes a row of student-data
   function deleteRow(studentNumber, course_number, semester) {
     const row = {
       studentNumber: studentNumber,
@@ -134,6 +137,46 @@ const StudentRecord = () => {
           alert("Successfully deleted!");
         } else {
           alert("Failed to delete!");
+        }
+      });
+  }
+
+  //get student
+  const [student, setStudent] = useState([]);
+  useEffect(async () => {
+    const response = await fetch(`/api/students/${studentNumber}`);
+    const data = await response.json();
+    setStudent(data.student);
+  }, []);
+
+  //changing the status of the student to verified and unverified
+  const [showStatus, setShowStatus] = useState(false);
+
+  const handleShowStatus = () => setShowStatus(true);
+  const handleCloseStatus = () => setShowStatus(false);
+
+  function changeStatus() {
+    if (student.status == "verified") {
+      student.status = "unverified";
+    } else {
+      student.status = "verified";
+    }
+
+    fetch("api/change", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(student),
+    })
+      .then((response) => response.json())
+      .then((body) => {
+        console.log(body);
+
+        if (body.success) {
+          alert("Successfully changed!");
+        } else {
+          alert("Failed to change!");
         }
       });
   }
@@ -214,6 +257,18 @@ const StudentRecord = () => {
         </Modal.Footer>
       </Modal>
 
+      <Modal size="lg" show={showStatus} centered>
+        <Modal.Body>Change verification?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={changeStatus}>
+            Yes
+          </Button>
+          <Button variant="secondary" onClick={handleCloseStatus}>
+            No
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div className="overflow-auto">
         <Row xs="auto" className="m-3">
           <Col>
@@ -238,6 +293,20 @@ const StudentRecord = () => {
                 <h1>{entries.name}</h1>
                 <div className="text-black">{entries.student_number}</div>
                 <div className="text-black">{entries.course}</div>
+              </Col>
+              <Col className="my-auto">
+                <Button onClick={handleShowStatus}>
+                  {student.status == "verified" && (
+                    <Badge pill bg="success">
+                      {student.status}
+                    </Badge>
+                  )}
+                  {student.status == "unverified" && (
+                    <Badge pill bg="secondary">
+                      {student.status}
+                    </Badge>
+                  )}
+                </Button>
               </Col>
             </Row>
             <Row></Row>
