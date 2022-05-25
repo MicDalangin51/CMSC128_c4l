@@ -42,7 +42,7 @@ const StudentRecord = () => {
   const handleClose = () => {
     setShow(false);
     const row = {
-      student_number: entries.studentNumber,
+      student_number: studentNumber,
       course_number: edit_course,
       grade: edit_grade,
       units: edit_units,
@@ -50,9 +50,8 @@ const StudentRecord = () => {
       cumulative: edit_cumulative,
     };
 
-    fetch("api/edit", {
-      // not sure
-      method: "POST",
+    fetch(`api/students/${studentNumber}/courses/${edit_course}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -74,20 +73,25 @@ const StudentRecord = () => {
   const [showAdd, setShowAdd] = useState(false);
   const handleShowAdd = () => {
     setShowAdd(true);
+    setCourseEdit("");
+    setGradeEdit("");
+    setUnitsEdit("");
+    setWeightEdit("");
+    setCumulativeEdit("");
   };
-  const handleCloseAdd = () => {
+  const handleCloseAdd = (semester) => {
     setShowAdd(false);
     const row = {
-      student_number: entries.studentNumber,
+      student_number: studentNumber,
       course_number: edit_course,
       grade: edit_grade,
       units: edit_units,
       weight: edit_weight,
       cumulative: edit_cumulative,
+      semester: semester,
     };
 
-    fetch("api/add", {
-      // not sure
+    fetch(`api/students/${studentNumber}/courses/${edit_course}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,11 +111,14 @@ const StudentRecord = () => {
   };
 
   //gets the student's data
-  const [entries, setEntries] = useState([]);
+  const [student, setStudent] = useState([]);
+
   useEffect(async () => {
-    const response = await fetch(`/api/student/${studentNumber}`);
+    console.log("test");
+    const response = await fetch(`/api/students/${studentNumber}`);
     const data = await response.json();
-    setEntries(data.student_data);
+    setStudent(data.student);
+    console.log("student", student);
   }, []);
 
   //deletes a row of student-data
@@ -122,8 +129,8 @@ const StudentRecord = () => {
       semester: semester,
     };
 
-    fetch("api/delete", {
-      method: "POST",
+    fetch(`api/students/${studentNumber}/courses/${course_number}`, {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
@@ -141,14 +148,6 @@ const StudentRecord = () => {
       });
   }
 
-  //get student
-  const [student, setStudent] = useState([]);
-  useEffect(async () => {
-    const response = await fetch(`/api/students/${studentNumber}`);
-    const data = await response.json();
-    setStudent(data.student);
-  }, []);
-
   //changing the status of the student to verified and unverified
   const [showStatus, setShowStatus] = useState(false);
 
@@ -156,6 +155,7 @@ const StudentRecord = () => {
   const handleCloseStatus = () => setShowStatus(false);
 
   function changeStatus() {
+    setShowStatus(false);
     if (student.status == "verified") {
       student.status = "unverified";
     } else {
@@ -290,9 +290,9 @@ const StudentRecord = () => {
                 />
               </Col>
               <Col className="my-auto">
-                <h1>{entries.name}</h1>
-                <div className="text-black">{entries.student_number}</div>
-                <div className="text-black">{entries.course}</div>
+                <h1>{student.name}</h1>
+                <div className="text-black">{student.student_number}</div>
+                <div className="text-black">{student.course}</div>
               </Col>
               <Col className="my-auto">
                 <Button onClick={handleShowStatus}>
@@ -306,14 +306,19 @@ const StudentRecord = () => {
                       {student.status}
                     </Badge>
                   )}
+                  {student.status == "pending" && (
+                    <Badge pill bg="secondary">
+                      {student.status}
+                    </Badge>
+                  )}
                 </Button>
               </Col>
             </Row>
             <Row></Row>
 
             <Row>
-              <Accordion defaultActiveKey={["1"]} alwaysOpen>
-                {entries.summary?.map((entry, index) => (
+              <Accordion defaultActiveKey="0" alwaysOpen>
+                {student.summary?.map((entry, index) => (
                   <Accordion.Item eventKey={"" + index + ""}>
                     <Accordion.Header>{entry.semester}</Accordion.Header>
                     <Accordion.Body>
@@ -327,7 +332,9 @@ const StudentRecord = () => {
                             <th>Cumulative</th>
                             <th>
                               <Button
-                                onClick={handleShowAdd}
+                                onClick={() => {
+                                  handleShowAdd(entry.semester);
+                                }}
                                 variant="outline-none"
                                 size="sm"
                               >
@@ -406,7 +413,27 @@ const StudentRecord = () => {
                     <Col>
                       <h6>GWA</h6>
                       <Card.Text className="text-black">
-                        {entries.GWA}
+                        {student.GWA}
+                      </Card.Text>
+                    </Col>
+                    <Col>
+                      <h6>Total Units</h6>
+                      <Card.Text className="text-black">
+                        {student.total_units}
+                      </Card.Text>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Row>
+            {/* <Row>
+            <Card>
+                <Card.Body>
+                  <Row>
+                    <Col>
+                      <h6>Required Units</h6>
+                      <Card.Text className="text-black">
+                        {entries.req_units}
                       </Card.Text>
                     </Col>
                     <Col>
@@ -418,7 +445,7 @@ const StudentRecord = () => {
                   </Row>
                 </Card.Body>
               </Card>
-            </Row>
+            </Row> */}
             <Row>
               <Card>
                 <Card.Body>
