@@ -1,11 +1,32 @@
-import React from "react";
-// import Login from "./pages/Login";
-import LoginPage from "./pages/LoginPage";
+import { StudentDirectory } from "/src/pages";
+import { Changelog } from "/src/pages";
+import { Settings } from "/src/pages";
+import { StudentRecord } from "/src/pages";
+import { Login } from "/src/pages";
+import { Register } from "/src/pages";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 const App = () => {
-  return <div>
-    <LoginPage/>
-    {/* <Login/> */}
-  </div>;
+  return (
+    <>
+      <Router>
+        <div className="content">
+          <Routes>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="/logout" element={<Login />}></Route>
+            <Route path="/" element={<StudentDirectory />}></Route>
+            <Route path="/change-log" element={<Changelog />}></Route>
+            <Route path="/settings" element={<Settings />}></Route>
+            <Route
+              path="/student/:studentNumber"
+              element={<StudentRecord />}
+            ></Route>
+            <Route path="/add-account" element={<Register />}></Route>
+          </Routes>
+        </div>
+      </Router>
+    </>
+  );
 };
 
 export default App;
