@@ -187,7 +187,6 @@ const StudentRecord = () => {
   const [showStatus, setShowStatus] = useState(false);
 
   const handleShowStatus = () => setShowStatus(true);
-  const handleCloseStatus = () => setShowStatus(false);
 
   function changeStatus() {
     setShowStatus(false);
@@ -215,6 +214,19 @@ const StudentRecord = () => {
         }
       });
   }
+
+  //closes modals
+  const handleCloseAll = () => {
+    setSemester("");
+    setCourseEdit("");
+    setGradeEdit("");
+    setUnitsEdit("");
+    setWeightEdit("");
+    setCumulativeEdit("");
+    setShowStatus(false);
+    setShowAdd(false);
+    setShow(false);
+  };
 
   return (
     <DashboardLayout fixedContent>
@@ -254,6 +266,9 @@ const StudentRecord = () => {
           <Button variant="secondary" onClick={handleCloseAdd}>
             Save
           </Button>
+          <Button variant="secondary" onClick={handleCloseAll}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
 
@@ -291,6 +306,9 @@ const StudentRecord = () => {
           <Button variant="secondary" onClick={handleClose}>
             Save
           </Button>
+          <Button variant="secondary" onClick={handleCloseAll}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
 
@@ -300,7 +318,7 @@ const StudentRecord = () => {
           <Button variant="secondary" onClick={changeStatus}>
             Yes
           </Button>
-          <Button variant="secondary" onClick={handleCloseStatus}>
+          <Button variant="secondary" onClick={handleCloseAll}>
             No
           </Button>
         </Modal.Footer>
