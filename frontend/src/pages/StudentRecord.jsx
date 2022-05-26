@@ -52,7 +52,7 @@ const StudentRecord = () => {
       cumulative: edit_cumulative,
     };
 
-    fetch(`api/students/${studentNumber}/courses/${edit_course}`, {
+    fetch(`/api/students/${studentNumber}/courses/${edit_course}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
