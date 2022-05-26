@@ -14,14 +14,13 @@ import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
 import { DashboardLayout } from "/src/components";
 
 const StudentDirectory = () => {
+  const [students, setStudents] = useState([]);
 
-  const [students, setStudents] = useState([])
-
-  useEffect(async ()=> {
-    const response = await fetch("/api/students/1");
+  useEffect(async () => {
+    const response = await fetch("/api/students");
     const data = await response.json();
     setStudents(data.students);
-  }, [])
+  }, []);
 
   const lowerStudentRange = 1;
   const upperStudentRange = 50;
@@ -82,23 +81,25 @@ const StudentDirectory = () => {
               </tr>
             </thead>
             <tbody>
-              {students.map(({ name, course_name, status, student_number }, index) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <a href={`/student/${student_number}`}>{name}</a>
-                    </td>
-                    <td>{course_name}</td>
-                    <td>
-                      {status == "verified" && (
-                        <Badge pill bg="success">
-                          {status}
-                        </Badge>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+              {students.map(
+                ({ name, course_name, status, student_number }, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <a href={`/student/${student_number}`}>{name}</a>
+                      </td>
+                      <td>{course_name}</td>
+                      <td>
+                        {status == "verified" && (
+                          <Badge pill bg="success">
+                            {status}
+                          </Badge>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
             </tbody>
           </Table>
         </div>
