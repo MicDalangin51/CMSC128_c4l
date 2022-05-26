@@ -30,6 +30,7 @@ const StudentRecord = () => {
   const [edit_units, setUnitsEdit] = useState("");
   const [edit_weight, setWeightEdit] = useState("");
   const [edit_cumulative, setCumulativeEdit] = useState("");
+  const [edit_semester, setSemester] = useState("");
 
   const handleShow = (course_number, grade, units, weight, cumulative) => {
     setShow(true);
@@ -72,16 +73,31 @@ const StudentRecord = () => {
 
   //for adding student-data row
   const [showAdd, setShowAdd] = useState(false);
-  const handleShowAdd = () => {
+  const handleShowAdd = (semester) => {
     setShowAdd(true);
-    setCourseEdit("");
-    setGradeEdit("");
-    setUnitsEdit("");
-    setWeightEdit("");
-    setCumulativeEdit("");
+    setSemester(semester);
   };
-  const handleCloseAdd = (semester) => {
+  const handleCloseAdd = () => {
     setShowAdd(false);
+    //#IL/15/16
+    //I/15/16
+    // console.log(
+    //   edit_semester[9] == 1
+    //     ? "I/" +
+    //         edit_semester.substring(17, 19) +
+    //         "/" +
+    //         edit_semester.substring(22, 24)
+    //     : "IL/" +
+    //         edit_semester.substring(17, 19) +
+    //         "/" +
+    //         edit_semester.substring(22, 24)
+    // );
+    // console.log(studentNumber);
+    // console.log("course " + edit_course);
+    // console.log("grade " + edit_grade);
+    // console.log("units " + edit_units);
+    // console.log("weight " + edit_weight);
+    // console.log("cumulative " + edit_cumulative);
     const row = {
       student_number: studentNumber,
       course_number: edit_course,
@@ -89,10 +105,19 @@ const StudentRecord = () => {
       units: edit_units,
       weight: edit_weight,
       cumulative: edit_cumulative,
-      semester: semester,
+      semester:
+        edit_semester[9] == 1
+          ? "I/" +
+            edit_semester.substring(17, 19) +
+            "/" +
+            edit_semester.substring(22, 24)
+          : "IL/" +
+            edit_semester.substring(17, 19) +
+            "/" +
+            edit_semester.substring(22, 24),
     };
 
-    fetch(`api/students/${studentNumber}/courses/${edit_course}`, {
+    fetch(`/api/students/${studentNumber}/courses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,6 +134,12 @@ const StudentRecord = () => {
           alert("Failed to add!");
         }
       });
+
+    setCourseEdit("");
+    setGradeEdit("");
+    setUnitsEdit("");
+    setWeightEdit("");
+    setCumulativeEdit("");
   };
 
   //gets the student's data
@@ -191,28 +222,30 @@ const StudentRecord = () => {
         <Modal.Body>
           <Row className="pb-2">
             <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control defaultValue={edit_course} />
+              <Form.Control onChange={(e) => setCourseEdit(e.target.value)} />
             </FloatingLabel>
           </Row>
           <Row className="g-2">
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control defaultValue={edit_grade} />
+                <Form.Control onChange={(e) => setGradeEdit(e.target.value)} />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control defaultValue={edit_units} />
+                <Form.Control onChange={(e) => setUnitsEdit(e.target.value)} />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control defaultValue={edit_weight} />
+                <Form.Control onChange={(e) => setWeightEdit(e.target.value)} />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
-                <Form.Control defaultValue={edit_cumulative} />
+                <Form.Control
+                  onChange={(e) => setCumulativeEdit(e.target.value)}
+                />
               </FloatingLabel>
             </Col>
           </Row>
