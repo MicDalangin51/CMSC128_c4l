@@ -16,6 +16,7 @@ import {
   Form,
   FloatingLabel,
   Dropdown,
+  Badge,
 } from "react-bootstrap";
 import casBuilding from "/src/images/cas-building.png";
 
@@ -122,14 +123,17 @@ const StudentRecord = () => {
   }, []);
 
   //deletes a row of student-data
-  function deleteRow(studentNumber, course_number, semester) {
+  function deleteRow(student_number, course_number, semester) {
+    console.log(student_number);
     const row = {
-      studentNumber: studentNumber,
+      student_number: student_number,
       course_number: course_number,
-      semester: semester,
+      semester: semester[9],
+      academic_year:
+        semester.substring(17, 19) + "/" + semester.substring(22, 24),
     };
 
-    fetch(`api/students/${studentNumber}/courses/${course_number}`, {
+    fetch(`/api/students/${studentNumber}/courses/${course_number}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -167,7 +171,7 @@ const StudentRecord = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(student),
+      body: JSON.stringify(student.status),
     })
       .then((response) => response.json())
       .then((body) => {
@@ -295,7 +299,7 @@ const StudentRecord = () => {
                 <div className="text-black">{student.course}</div>
               </Col>
               <Col className="my-auto">
-                <Button onClick={handleShowStatus}>
+                <Button onClick={handleShowStatus} variant="outline-light">
                   {student.status == "verified" && (
                     <Badge pill bg="success">
                       {student.status}
@@ -368,7 +372,7 @@ const StudentRecord = () => {
                                     size="sm"
                                     onClick={() =>
                                       deleteRow(
-                                        entry.studentNumber,
+                                        student.student_number,
                                         course_number,
                                         entry.semester
                                       )
