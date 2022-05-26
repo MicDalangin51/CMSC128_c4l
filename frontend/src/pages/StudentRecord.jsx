@@ -41,7 +41,7 @@ const StudentRecord = () => {
     setCumulativeEdit(cumulative);
   };
 
-  const handleClose = () => {
+  const editRow = () => {
     setShow(false);
     const row = {
       student_number: studentNumber,
@@ -64,9 +64,9 @@ const StudentRecord = () => {
         console.log(body);
 
         if (body.success) {
-          alert("Successfully edited!");
+          console.log("Successfully edited!");
         } else {
-          alert("Failed to edit!");
+          console.log("Failed to edit!");
         }
       });
   };
@@ -77,7 +77,8 @@ const StudentRecord = () => {
     setShowAdd(true);
     setSemester(semester);
   };
-  const handleCloseAdd = () => {
+
+  const addRow = () => {
     setShowAdd(false);
     //#IL/15/16
     //I/15/16
@@ -129,9 +130,9 @@ const StudentRecord = () => {
         console.log(body);
 
         if (body.success) {
-          alert("Successfully added!");
+          console.log("Successfully added!");
         } else {
-          alert("Failed to add!");
+          console.log("Failed to add!");
         }
       });
 
@@ -140,6 +141,7 @@ const StudentRecord = () => {
     setUnitsEdit("");
     setWeightEdit("");
     setCumulativeEdit("");
+    location.reload();
   };
 
   //gets the student's data
@@ -176,11 +178,12 @@ const StudentRecord = () => {
         console.log(body);
 
         if (body.success) {
-          alert("Successfully deleted!");
+          console.log("Successfully deleted!");
         } else {
-          alert("Failed to delete!");
+          console.log("Failed to delete!");
         }
       });
+    location.reload();
   }
 
   //changing the status of the student to verified and unverified
@@ -263,7 +266,7 @@ const StudentRecord = () => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseAdd}>
+          <Button variant="secondary" onClick={addRow}>
             Save
           </Button>
           <Button variant="secondary" onClick={handleCloseAll}>
@@ -303,7 +306,7 @@ const StudentRecord = () => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={editRow}>
             Save
           </Button>
           <Button variant="secondary" onClick={handleCloseAll}>
