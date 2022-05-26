@@ -1,14 +1,50 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form, InputGroup } from "react-bootstrap";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 import "./Login.css";
 import logo from "../images/cas-logo.png";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const [form, setForm] = useState({});
+  const [errors, setErrors] = useState({});
+  const setField = (field, value) => {
+    setForm({
+      ...form,
+      [field]: value
+    })
+
+    if (!!errors[field])
+      setErrors({
+        ...errors,
+        [field]: null
+      })
+  };
+
+  const validateForm = () => {
+    const { email, password } = form;
+    const newErrors = {};
+    const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
+    if (!email || email === '') newErrors.email = "Please enter your email address!"
+    else if (regex.test(email) === false) {
+      newErrors.email = "Please enter your email address in this format: yourname@example.com"
+    };
+
+    if (!password || password === '') newErrors.password = "Please enter your password!"
+
+    return newErrors;
+  }
+
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
 
   const navigateTo = useNavigate();
 
@@ -19,9 +55,18 @@ const Login = () => {
   function login(e) {
     e.preventDefault();
 
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+    }
+
+    console.log("form submitted");
+    console.log(form);
+
+
     const credentials = {
-      email: email,
-      password: password,
+      email: form.email,
+      password: form.password,
     };
 
     fetch("api/login", {
@@ -41,6 +86,7 @@ const Login = () => {
           alert("Failed to log in");
         }
       });
+  
   }
 
   return (
@@ -55,21 +101,40 @@ const Login = () => {
             <Form.Group controlId="formEmail" className="w-50">
               <Form.Label className="input-label">Email</Form.Label>
               <Form.Control
-                type="email"
+                //type="email"
                 title="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email"
+                value={form.email}
+                onChange={(e) => setField('email', e.target.value)}
+                isInvalid={!!errors.email}
               />
+              <Form.Control.Feedback type='invalid'>
+                {errors.email}
+              </Form.Control.Feedback>
             </Form.Group>
             <br />
             <Form.Group controlId="formPassword" className="w-50">
               <Form.Label className="input-label">Password</Form.Label>
-              <Form.Control
-                type="password"
-                title="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <InputGroup className="mb-3">
+                <Form.Control
+                  type={passwordShown ? "text" : "password"}
+                  title="Enter password"
+                  placeholder="Enter password"
+                  value={form.password}
+                  onChange={(e) => setField('password', e.target.value)}
+                  isInvalid={!!errors.password}
+                />  
+                <Button
+                  onClick={togglePassword}
+                  variant="outline-secondary"
+                  id="button-addon2"
+                >
+                  {passwordShown ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
+                </Button>
+                <Form.Control.Feedback type='invalid' >
+                  {errors.password}
+                </Form.Control.Feedback>
+              </InputGroup>
             </Form.Group>
 
             <br />

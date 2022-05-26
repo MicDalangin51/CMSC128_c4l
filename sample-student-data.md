@@ -7,7 +7,6 @@ var entries = {
   student_number: "2019-01234",
   GWA: "2.0",
   total_units: "150",
-  courses_not_taken: ["CMSC 12", "CMSC 13", "CMSC 14", "CMSC 15"],
   summary: [
     {
       id: 1,

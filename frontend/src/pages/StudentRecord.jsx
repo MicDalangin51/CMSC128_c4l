@@ -15,20 +15,22 @@ import {
   Modal,
   Form,
   FloatingLabel,
+  Dropdown,
+  Badge,
 } from "react-bootstrap";
 import casBuilding from "/src/images/cas-building.png";
 
 const StudentRecord = () => {
   const { studentNumber } = useParams();
-  const [entries, setEntries] = useState([]);
 
-  //for editing row
+  //for editing student-data row
   const [show, setShow] = useState(false);
   const [edit_course, setCourseEdit] = useState("");
   const [edit_grade, setGradeEdit] = useState("");
   const [edit_units, setUnitsEdit] = useState("");
   const [edit_weight, setWeightEdit] = useState("");
   const [edit_cumulative, setCumulativeEdit] = useState("");
+  const [edit_semester, setSemester] = useState("");
 
   const handleShow = (course_number, grade, units, weight, cumulative) => {
     setShow(true);
@@ -42,7 +44,7 @@ const StudentRecord = () => {
   const handleClose = () => {
     setShow(false);
     const row = {
-      student_number: entries.studentNumber,
+      student_number: studentNumber,
       course_number: edit_course,
       grade: edit_grade,
       units: edit_units,
@@ -50,9 +52,8 @@ const StudentRecord = () => {
       cumulative: edit_cumulative,
     };
 
-    fetch("api/edit", {
-      // not sure
-      method: "POST",
+    fetch(`/api/students/${studentNumber}/courses/${edit_course}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -70,24 +71,53 @@ const StudentRecord = () => {
       });
   };
 
-  //for adding Row
+  //for adding student-data row
   const [showAdd, setShowAdd] = useState(false);
-  const handleShowAdd = () => {
+  const handleShowAdd = (semester) => {
     setShowAdd(true);
+    setSemester(semester);
   };
   const handleCloseAdd = () => {
     setShowAdd(false);
+    //#IL/15/16
+    //I/15/16
+    // console.log(
+    //   edit_semester[9] == 1
+    //     ? "I/" +
+    //         edit_semester.substring(17, 19) +
+    //         "/" +
+    //         edit_semester.substring(22, 24)
+    //     : "IL/" +
+    //         edit_semester.substring(17, 19) +
+    //         "/" +
+    //         edit_semester.substring(22, 24)
+    // );
+    // console.log(studentNumber);
+    // console.log("course " + edit_course);
+    // console.log("grade " + edit_grade);
+    // console.log("units " + edit_units);
+    // console.log("weight " + edit_weight);
+    // console.log("cumulative " + edit_cumulative);
     const row = {
-      student_number: entries.studentNumber,
+      student_number: studentNumber,
       course_number: edit_course,
       grade: edit_grade,
       units: edit_units,
       weight: edit_weight,
       cumulative: edit_cumulative,
+      semester:
+        edit_semester[9] == 1
+          ? "I/" +
+            edit_semester.substring(17, 19) +
+            "/" +
+            edit_semester.substring(22, 24)
+          : "IL/" +
+            edit_semester.substring(17, 19) +
+            "/" +
+            edit_semester.substring(22, 24),
     };
 
-    fetch("api/add", {
-      // not sure
+    fetch(`/api/students/${studentNumber}/courses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -104,23 +134,38 @@ const StudentRecord = () => {
           alert("Failed to add!");
         }
       });
+
+    setCourseEdit("");
+    setGradeEdit("");
+    setUnitsEdit("");
+    setWeightEdit("");
+    setCumulativeEdit("");
   };
 
+  //gets the student's data
+  const [student, setStudent] = useState([]);
+
   useEffect(async () => {
-    const response = await fetch(`/api/student/${studentNumber}`);
+    console.log("test");
+    const response = await fetch(`/api/students/${studentNumber}`);
     const data = await response.json();
-    setEntries(data.student_data);
+    setStudent(data.student);
+    console.log("student", student);
   }, []);
 
-  function deleteRow(studentNumber, course_number, semester) {
+  //deletes a row of student-data
+  function deleteRow(student_number, course_number, semester) {
+    console.log(student_number);
     const row = {
-      studentNumber: studentNumber,
+      student_number: student_number,
       course_number: course_number,
-      semester: semester,
+      semester: semester[9],
+      academic_year:
+        semester.substring(17, 19) + "/" + semester.substring(22, 24),
     };
 
-    fetch("api/delete", {
-      method: "POST",
+    fetch(`/api/students/${studentNumber}/courses/${course_number}`, {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
@@ -138,34 +183,69 @@ const StudentRecord = () => {
       });
   }
 
+  //changing the status of the student to verified and unverified
+  const [showStatus, setShowStatus] = useState(false);
+
+  const handleShowStatus = () => setShowStatus(true);
+  const handleCloseStatus = () => setShowStatus(false);
+
+  function changeStatus() {
+    setShowStatus(false);
+    if (student.status == "verified") {
+      student.status = "unverified";
+    } else {
+      student.status = "verified";
+    }
+
+    fetch("api/change", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(student.status),
+    })
+      .then((response) => response.json())
+      .then((body) => {
+        console.log(body);
+
+        if (body.success) {
+          alert("Successfully changed!");
+        } else {
+          alert("Failed to change!");
+        }
+      });
+  }
+
   return (
     <DashboardLayout fixedContent>
       <Modal size="lg" show={showAdd} centered>
         <Modal.Body>
           <Row className="pb-2">
             <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control defaultValue={edit_course} />
+              <Form.Control onChange={(e) => setCourseEdit(e.target.value)} />
             </FloatingLabel>
           </Row>
           <Row className="g-2">
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control defaultValue={edit_grade} />
+                <Form.Control onChange={(e) => setGradeEdit(e.target.value)} />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control defaultValue={edit_units} />
+                <Form.Control onChange={(e) => setUnitsEdit(e.target.value)} />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control defaultValue={edit_weight} />
+                <Form.Control onChange={(e) => setWeightEdit(e.target.value)} />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
-                <Form.Control defaultValue={edit_cumulative} />
+                <Form.Control
+                  onChange={(e) => setCumulativeEdit(e.target.value)}
+                />
               </FloatingLabel>
             </Col>
           </Row>
@@ -214,6 +294,18 @@ const StudentRecord = () => {
         </Modal.Footer>
       </Modal>
 
+      <Modal size="lg" show={showStatus} centered>
+        <Modal.Body>Change verification?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={changeStatus}>
+            Yes
+          </Button>
+          <Button variant="secondary" onClick={handleCloseStatus}>
+            No
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div className="overflow-auto">
         <Row xs="auto" className="m-3">
           <Col>
@@ -235,16 +327,35 @@ const StudentRecord = () => {
                 />
               </Col>
               <Col className="my-auto">
-                <h1>{entries.name}</h1>
-                <div className="text-black">{entries.student_number}</div>
-                <div className="text-black">{entries.course}</div>
+                <h1>{student.name}</h1>
+                <div className="text-black">{student.student_number}</div>
+                <div className="text-black">{student.course}</div>
+              </Col>
+              <Col className="my-auto">
+                <Button onClick={handleShowStatus} variant="outline-light">
+                  {student.status == "verified" && (
+                    <Badge pill bg="success">
+                      {student.status}
+                    </Badge>
+                  )}
+                  {student.status == "unverified" && (
+                    <Badge pill bg="secondary">
+                      {student.status}
+                    </Badge>
+                  )}
+                  {student.status == "pending" && (
+                    <Badge pill bg="secondary">
+                      {student.status}
+                    </Badge>
+                  )}
+                </Button>
               </Col>
             </Row>
             <Row></Row>
 
             <Row>
-              <Accordion defaultActiveKey={["1"]} alwaysOpen>
-                {entries.summary?.map((entry, index) => (
+              <Accordion defaultActiveKey="0" alwaysOpen>
+                {student.summary?.map((entry, index) => (
                   <Accordion.Item eventKey={"" + index + ""}>
                     <Accordion.Header>{entry.semester}</Accordion.Header>
                     <Accordion.Body>
@@ -258,7 +369,9 @@ const StudentRecord = () => {
                             <th>Cumulative</th>
                             <th>
                               <Button
-                                onClick={handleShowAdd}
+                                onClick={() => {
+                                  handleShowAdd(entry.semester);
+                                }}
                                 variant="outline-none"
                                 size="sm"
                               >
@@ -292,7 +405,7 @@ const StudentRecord = () => {
                                     size="sm"
                                     onClick={() =>
                                       deleteRow(
-                                        entry.studentNumber,
+                                        student.student_number,
                                         course_number,
                                         entry.semester
                                       )
@@ -337,7 +450,27 @@ const StudentRecord = () => {
                     <Col>
                       <h6>GWA</h6>
                       <Card.Text className="text-black">
-                        {entries.GWA}
+                        {student.GWA}
+                      </Card.Text>
+                    </Col>
+                    <Col>
+                      <h6>Total Units</h6>
+                      <Card.Text className="text-black">
+                        {student.total_units}
+                      </Card.Text>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Row>
+            {/* <Row>
+            <Card>
+                <Card.Body>
+                  <Row>
+                    <Col>
+                      <h6>Required Units</h6>
+                      <Card.Text className="text-black">
+                        {entries.req_units}
                       </Card.Text>
                     </Col>
                     <Col>
@@ -349,15 +482,12 @@ const StudentRecord = () => {
                   </Row>
                 </Card.Body>
               </Card>
-            </Row>
+            </Row> */}
             <Row>
               <Card>
                 <Card.Body>
                   <Card.Text>
-                    <h6>Courses not taken</h6>
-                    {/* {entries.courses_not_taken.map((entry) => {
-                      return <div className="text-black"> {entry} </div>;
-                    })} */}
+                    <h6>General Errors</h6>
                   </Card.Text>
                 </Card.Body>
               </Card>
