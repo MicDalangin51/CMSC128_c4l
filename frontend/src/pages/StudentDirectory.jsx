@@ -11,10 +11,19 @@ import {
   Table,
 } from "react-bootstrap";
 import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
-import { DashboardLayout } from "/src/components";
+import { DashboardLayout, AddStudentModal } from "/src/components";
 
 const StudentDirectory = () => {
   const [students, setStudents] = useState([]);
+  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+
+  const openAddStudentModal = () => {
+    setShowAddStudentModal(true);
+  };
+
+  const closeAddStudentModal = () => {
+    setShowAddStudentModal(false);
+  };
 
   useEffect(async () => {
     const response = await fetch("/api/students");
@@ -30,23 +39,24 @@ const StudentDirectory = () => {
   const [sortProperty, setSortProperty] = useState("name");
 
   return (
-    <DashboardLayout fixedContent>
-      <Stack className="h-100">
-        <Row className="mb-2">
+    <>
+      <DashboardLayout fixedContent>
+        <Stack className="h-100">
+          <Row className="mb-2">
             <Col>
-              <Button>Add student</Button>
+              <Button onClick={openAddStudentModal}>Add student</Button>
             </Col>
-          <Col className="d-flex align-items-center">
-            <InputGroup>
-              <Button variant="outline-primary">
-                <FaSearch />
-              </Button>
-              <FormControl placeholder="Search student" />
-            </InputGroup>
-          </Col>
+            <Col className="d-flex align-items-center">
+              <InputGroup>
+                <Button variant="outline-primary">
+                  <FaSearch />
+                </Button>
+                <FormControl placeholder="Search student" />
+              </InputGroup>
+            </Col>
           </Row>
           <Row>
-          <Col>
+            <Col>
               <Stack direction="horizontal" gap="2" className="mb-2">
                 <span>Sort by</span>
                 <Form.Select className="w-auto">
@@ -61,31 +71,30 @@ const StudentDirectory = () => {
             </Col>
             <Col>
               <Stack direction="horizontal" gap="2" className="justify-content-end align-items-center">
-              <small>
-                {lowerStudentRange} – {upperStudentRange} of {studentCount}
-                students
-              </small>
-              <Button variant="outline-primary">
-                <FaAngleLeft />
-              </Button>
-              <Button variant="outline-primary">
-                <FaAngleRight />
-              </Button>
-            </Stack>
-          </Col>
-        </Row>
-        <div className="flex-fill overflow-auto">
-          <Table hover className="table-fixed-head">
-            <thead className="sticky-top">
-              <tr>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map(
-                ({ name, course_name, status, student_number }, index) => {
+                <small>
+                  {lowerStudentRange} – {upperStudentRange} of {studentCount}
+                  students
+                </small>
+                <Button variant="outline-primary">
+                  <FaAngleLeft />
+                </Button>
+                <Button variant="outline-primary">
+                  <FaAngleRight />
+                </Button>
+              </Stack>
+            </Col>
+          </Row>
+          <div className="flex-fill overflow-auto">
+            <Table hover className="table-fixed-head">
+              <thead className="sticky-top">
+                <tr>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map(({ name, course_name, status, student_number }, index) => {
                   return (
                     <tr key={index}>
                       <td>
@@ -101,13 +110,14 @@ const StudentDirectory = () => {
                       </td>
                     </tr>
                   );
-                }
-              )}
-            </tbody>
-          </Table>
-        </div>
-      </Stack>
-    </DashboardLayout>
+                })}
+              </tbody>
+            </Table>
+          </div>
+        </Stack>
+      </DashboardLayout>
+      <AddStudentModal show={showAddStudentModal} closeAddStudentModal={closeAddStudentModal} />
+    </>
   );
 };
 
