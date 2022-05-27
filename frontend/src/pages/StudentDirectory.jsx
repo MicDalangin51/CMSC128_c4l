@@ -33,6 +33,9 @@ const StudentDirectory = () => {
     <DashboardLayout fixedContent>
       <Stack className="h-100">
         <Row className="mb-2">
+            <Col>
+              <Button>Add student</Button>
+            </Col>
           <Col className="d-flex align-items-center">
             <InputGroup>
               <Button variant="outline-primary">
@@ -41,12 +44,23 @@ const StudentDirectory = () => {
               <FormControl placeholder="Search student" />
             </InputGroup>
           </Col>
+          </Row>
+          <Row>
           <Col>
-            <Stack
-              direction="horizontal"
-              gap="2"
-              className="justify-content-end align-items-center"
-            >
+              <Stack direction="horizontal" gap="2" className="mb-2">
+                <span>Sort by</span>
+                <Form.Select className="w-auto">
+                  <option value="name">Name</option>
+                  <option value="degree">Degree</option>
+                </Form.Select>
+                <Form.Select className="w-auto">
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </Form.Select>
+              </Stack>
+            </Col>
+            <Col>
+              <Stack direction="horizontal" gap="2" className="justify-content-end align-items-center">
               <small>
                 {lowerStudentRange} – {upperStudentRange} of {studentCount}
                 students
@@ -60,17 +74,6 @@ const StudentDirectory = () => {
             </Stack>
           </Col>
         </Row>
-        <Stack direction="horizontal" gap="2" className="mb-2">
-          <span>Sort by</span>
-          <Form.Select className="w-auto">
-            <option value="name">Name</option>
-            <option value="degree">Degree</option>
-          </Form.Select>
-          <Form.Select className="w-auto">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </Form.Select>
-        </Stack>
         <div className="flex-fill overflow-auto">
           <Table hover className="table-fixed-head">
             <thead className="sticky-top">
