@@ -70,7 +70,11 @@ const StudentDirectory = () => {
               </Stack>
             </Col>
             <Col>
-              <Stack direction="horizontal" gap="2" className="justify-content-end align-items-center">
+              <Stack
+                direction="horizontal"
+                gap="2"
+                className="justify-content-end align-items-center"
+              >
                 <small>
                   {lowerStudentRange} – {upperStudentRange} of {studentCount}
                   students
@@ -94,29 +98,34 @@ const StudentDirectory = () => {
                 </tr>
               </thead>
               <tbody>
-                {students.map(({ name, course_name, status, student_number }, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>
-                        <a href={`/student/${student_number}`}>{name}</a>
-                      </td>
-                      <td>{course_name}</td>
-                      <td>
-                        {status == "verified" && (
-                          <Badge pill bg="success">
-                            {status}
-                          </Badge>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {students.map(
+                  ({ name, course_name, status, student_number }, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>
+                          <a href={`/student/${student_number}`}>{name}</a>
+                        </td>
+                        <td>{course_name}</td>
+                        <td>
+                          {status == "verified" && (
+                            <Badge pill bg="success">
+                              {status}
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
               </tbody>
             </Table>
           </div>
         </Stack>
       </DashboardLayout>
-      <AddStudentModal show={showAddStudentModal} closeAddStudentModal={closeAddStudentModal} />
+      <AddStudentModal
+        show={showAddStudentModal}
+        closeAddStudentModal={closeAddStudentModal}
+      />
     </>
   );
 };
