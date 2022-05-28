@@ -48,15 +48,20 @@ const Register = () => {
               <FloatingLabel label="Full Name" className="mb-3 text-black">
                 <Form.Control
                   value={name}
+                  placeholder=" "
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
+                {/* placeholder is set to any non-empty string for FloatingLabel to work */}
               </FloatingLabel>
 
               <FloatingLabel label="Email address" className="mb-3 text-black">
                 <Form.Control
                   type="email"
                   value={email}
+                  placeholder=" "
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </FloatingLabel>
 
@@ -64,7 +69,9 @@ const Register = () => {
                 <Form.Control
                   type="password"
                   value={password}
+                  placeholder=" "
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </FloatingLabel>
 
@@ -75,7 +82,9 @@ const Register = () => {
                 <Form.Control
                   type="password"
                   value={confirmPassword}
+                  placeholder=" "
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
                 />
               </FloatingLabel>
 
