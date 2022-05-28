@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { DashboardLayout } from "/src/components";
+import { DashboardLayout, ChangeVerificationModal } from "/src/components";
 import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
 import {
   Accordion,
@@ -11,11 +11,9 @@ import {
   Col,
   Button,
   Card,
-  Container,
   Modal,
   Form,
   FloatingLabel,
-  Dropdown,
   Badge,
 } from "react-bootstrap";
 import casBuilding from "/src/images/cas-building.png";
@@ -82,23 +80,6 @@ const StudentRecord = () => {
     setShowAdd(false);
     //#IL/15/16
     //I/15/16
-    // console.log(
-    //   edit_semester[9] == 1
-    //     ? "I/" +
-    //         edit_semester.substring(17, 19) +
-    //         "/" +
-    //         edit_semester.substring(22, 24)
-    //     : "IL/" +
-    //         edit_semester.substring(17, 19) +
-    //         "/" +
-    //         edit_semester.substring(22, 24)
-    // );
-    // console.log(studentNumber);
-    // console.log("course " + edit_course);
-    // console.log("grade " + edit_grade);
-    // console.log("units " + edit_units);
-    // console.log("weight " + edit_weight);
-    // console.log("cumulative " + edit_cumulative);
     const row = {
       student_number: studentNumber,
       course_number: edit_course,
@@ -152,7 +133,7 @@ const StudentRecord = () => {
     const response = await fetch(`/api/students/${studentNumber}`);
     const data = await response.json();
     setStudent(data.student);
-    console.log("student", student);
+    console.log("student", data.student);
   }, []);
 
   //deletes a row of student-data
@@ -188,23 +169,27 @@ const StudentRecord = () => {
 
   //changing the status of the student to verified and unverified
   const [showStatus, setShowStatus] = useState(false);
-
   const handleShowStatus = () => setShowStatus(true);
 
-  function changeStatus() {
+  //edits the student
+  function editStudent(column, new_data) {
     setShowStatus(false);
-    if (student.status == "verified") {
-      student.status = "unverified";
-    } else {
-      student.status = "verified";
-    }
 
-    fetch("api/change", {
-      method: "POST",
+    console.log(studentNumber);
+    console.log(new_data);
+    console.log(column);
+    const data = {
+      student_id: studentNumber,
+      new_data: new_data,
+      column: column,
+    };
+
+    fetch(`/api/students/${studentNumber}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(student.status),
+      body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((body) => {
@@ -229,10 +214,47 @@ const StudentRecord = () => {
     setShowStatus(false);
     setShowAdd(false);
     setShow(false);
+    setShowVerify1(false);
+    setShowVerify2(false);
+    setShowVerify3(false);
   };
+
+  //changing the verification
+  const [showVerify1, setShowVerify1] = useState(false);
+  const handleShowVerify1 = () => setShowVerify1(true);
+
+  const [showVerify2, setShowVerify2] = useState(false);
+  const handleShowVerify2 = () => setShowVerify2(true);
+
+  const [showVerify3, setShowVerify3] = useState(false);
+  const handleShowVerify3 = () => setShowVerify3(true);
 
   return (
     <DashboardLayout fixedContent>
+      <ChangeVerificationModal
+        showModal={showVerify1}
+        closeModal={handleCloseAll}
+        verifier="first_verifier"
+        shac_member="shac member"
+        student_num={studentNumber}
+      />
+
+      <ChangeVerificationModal
+        showModal={showVerify2}
+        closeModal={handleCloseAll}
+        verifier="second_verifier"
+        shac_member="shac member"
+        student_num={studentNumber}
+      />
+
+      <ChangeVerificationModal
+        showModal={showVerify3}
+        closeModal={handleCloseAll}
+        verifier="other_verifier"
+        shac_member="shac member"
+        student_num={studentNumber}
+      />
+
       <Modal size="lg" show={showAdd} centered>
         <Modal.Body>
           <Row className="pb-2">
@@ -316,9 +338,17 @@ const StudentRecord = () => {
       </Modal>
 
       <Modal size="lg" show={showStatus} centered>
-        <Modal.Body>Change verification?</Modal.Body>
+        <Modal.Body>Change status?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={changeStatus}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              editStudent(
+                "status",
+                student.status == "verified" ? "unverified" : "verified"
+              );
+            }}
+          >
             Yes
           </Button>
           <Button variant="secondary" onClick={handleCloseAll}>
@@ -351,25 +381,6 @@ const StudentRecord = () => {
                 <h1>{student.name}</h1>
                 <div className="text-black">{student.student_number}</div>
                 <div className="text-black">{student.course}</div>
-              </Col>
-              <Col className="my-auto">
-                <Button onClick={handleShowStatus} variant="outline-light">
-                  {student.status == "verified" && (
-                    <Badge pill bg="success">
-                      {student.status}
-                    </Badge>
-                  )}
-                  {student.status == "unverified" && (
-                    <Badge pill bg="secondary">
-                      {student.status}
-                    </Badge>
-                  )}
-                  {student.status == "pending" && (
-                    <Badge pill bg="secondary">
-                      {student.status}
-                    </Badge>
-                  )}
-                </Button>
               </Col>
             </Row>
             <Row></Row>
@@ -463,7 +474,81 @@ const StudentRecord = () => {
           </Col>
 
           <Col className="flex-fill m-5">
-            <Row className="my-5 py-3"></Row>
+            <Row className="my-auto">
+              <Col className="my-auto">First Verifier</Col>
+              <Col className="my-auto">
+                <Button variant="link" onClick={handleShowVerify1}>
+                  {typeof student.first_verifier == "string" && (
+                    <Badge pill bg="success">
+                      {student.first_verifier}
+                    </Badge>
+                  )}
+                  {student.first_verifier == null && (
+                    <Badge pill bg="secondary">
+                      none
+                    </Badge>
+                  )}
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="my-auto">
+              <Col className="my-auto">Second Verifier</Col>
+              <Col className="my-auto">
+                <Button variant="link" onClick={handleShowVerify2}>
+                  {typeof student.second_verifier == "string" && (
+                    <Badge pill bg="success">
+                      {student.second_verifier}
+                    </Badge>
+                  )}
+                  {student.second_verifier == null && (
+                    <Badge pill bg="secondary">
+                      none
+                    </Badge>
+                  )}
+                </Button>
+              </Col>
+            </Row>
+
+            <Row className="my-auto">
+              <Col className="my-auto">Other Verifier</Col>
+              <Col className="my-auto">
+                <Button variant="link" onClick={handleShowVerify3}>
+                  {typeof student.other_verifier == "string" && (
+                    <Badge pill bg="success">
+                      {student.other_verifier}
+                    </Badge>
+                  )}
+                  {student.other_verifier == null && (
+                    <Badge pill bg="secondary">
+                      none
+                    </Badge>
+                  )}
+                </Button>
+              </Col>
+            </Row>
+            <Row className="my-auto">
+              <Col className="my-auto">Status</Col>
+              <Col className="my-auto">
+                <Button onClick={handleShowStatus} variant="link">
+                  {student.status == "verified" && (
+                    <Badge pill bg="success">
+                      {student.status}
+                    </Badge>
+                  )}
+                  {student.status == "unverified" && (
+                    <Badge pill bg="secondary">
+                      {student.status}
+                    </Badge>
+                  )}
+                  {student.status == null && (
+                    <Badge pill bg="secondary">
+                      unverified
+                    </Badge>
+                  )}
+                </Button>
+              </Col>
+            </Row>
             <Row className="my-5">
               <Card>
                 <Card.Body>
@@ -484,26 +569,6 @@ const StudentRecord = () => {
                 </Card.Body>
               </Card>
             </Row>
-            {/* <Row>
-            <Card>
-                <Card.Body>
-                  <Row>
-                    <Col>
-                      <h6>Required Units</h6>
-                      <Card.Text className="text-black">
-                        {entries.req_units}
-                      </Card.Text>
-                    </Col>
-                    <Col>
-                      <h6>Total Units</h6>
-                      <Card.Text className="text-black">
-                        {entries.total_units}
-                      </Card.Text>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Row> */}
             <Row>
               <Card>
                 <Card.Body>
