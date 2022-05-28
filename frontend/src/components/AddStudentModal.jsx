@@ -3,7 +3,15 @@ import { Modal, Tabs, Tab, Form, FloatingLabel, Row, Col, Button, Stack, Alert }
 
 const AddStudentModal = ({ show, closeAddStudentModal }) => {
   const [tabKey, setTabKey] = useState("");
-  const [alertMessage, setAlertMessage] = useState("");
+  const [fileUploadAlertMessage, setFileUploadAlertMessage] = useState("");
+  const [fillUpFormAlertMessage, setFillUpFormAlertMessage] = useState("");
+
+  const hideModalHandler = () => {
+    closeAddStudentModal();
+
+    setFileUploadAlertMessage("");
+    setFillUpFormAlertMessage("");
+  };
 
   const submitFileHandler = async (event) => {
     event.preventDefault();
@@ -21,7 +29,35 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
         closeAddStudentModal();
         break;
       default:
-        setAlertMessage("Adding students was unsuccessful");
+        setFileUploadAlertMessage("Adding students was unsuccessful");
+    }
+  };
+
+  const submitFormHandler = async (event) => {
+    event.preventDefault();
+
+    const { student_id, first_name, middle_name, last_name, degree_program, college, gwa, batch } = event.target;
+
+    const response = await fetch("/api/students", {
+      method: "POST",
+      body: JSON.stringify({
+        student_id: student_id.value,
+        first_name: first_name.value,
+        middle_name: middle_name.value,
+        last_name: last_name.value,
+        degree_program: degree_program.value,
+        college: college.value,
+        gwa: parseFloat(gwa.value),
+        batch: parseInt(batch.value),
+      }),
+    });
+
+    switch (response.status) {
+      case 200:
+        closeAddStudentModal();
+        break;
+      default:
+        setFillUpFormAlertMessage("Adding student was unsuccessful");
     }
   };
 
@@ -29,7 +65,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
     <Modal
       show={show}
       onShow={() => setTabKey("csv")}
-      onHide={closeAddStudentModal}
+      onHide={hideModalHandler}
       size={tabKey == "form" && "lg"}
       backdrop={tabKey == "form" ? "static" : true}
       centered
@@ -44,7 +80,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
               <Form.Group controlId="formFile" className="mb-3">
                 <Form.Control type="file" name="file" accept=".csv,.xls,.xlsx" required />
               </Form.Group>
-              {alertMessage !== "" && <Alert variable="danger">{alertMessage}</Alert>}
+              {fileUploadAlertMessage !== "" && <Alert variable="danger">{fileUploadAlertMessage}</Alert>}
               <Stack direction="horizontal">
                 <Button type="submit" className="ms-auto">
                   Upload
@@ -53,56 +89,57 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
             </Form>
           </Tab>
           <Tab eventKey="form" title="Fill up form" className="p-4">
-            <Form>
+            <Form onSubmit={submitFormHandler}>
               <Row className="mb-3">
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="First name">
                     {/* placeholder is set to any non-empty string for FloatingLabel to work */}
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="first_name" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="Middle name">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="middle_name" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="Last name">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="last_name" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
               </Row>
               <Row className="mb-3">
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="Batch number">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="batch" type="number" min="1908" max="9999" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="Student number">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="student_id" pattern="\d{4}-\d{5}" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
               </Row>
               <Row className="mb-3">
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="College">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="college" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="Degree program">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="degree_program" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
               </Row>
               <Row className="mb-3">
                 <Col xs={6} className="px-2">
                   <FloatingLabel controlId="floatingInput" label="General weighted average (GWA)">
-                    <Form.Control placeholder="temp" required />
+                    <Form.Control name="gwa" pattern="[12](.\d+)?|[345]" placeholder=" " required />
                   </FloatingLabel>
                 </Col>
               </Row>
+              {fillUpFormAlertMessage !== "" && <Alert variable="danger">{fillUpFormAlertMessage}</Alert>}
               <Stack direction="horizontal">
                 <Button type="submit" className="ms-auto">
                   Submit
