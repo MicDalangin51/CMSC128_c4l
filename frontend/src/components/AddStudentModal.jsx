@@ -36,7 +36,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
   const submitFormHandler = async (event) => {
     event.preventDefault();
 
-    const { student_id, first_name, middle_name, last_name, degree_program, college, gwa, batch } = event.target;
+    const { student_id, first_name, middle_name, last_name, degree_program, college, gwa } = event.target;
 
     const response = await fetch("/api/students", {
       method: "POST",
@@ -48,7 +48,6 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
         degree_program: degree_program.value,
         college: college.value,
         gwa: parseFloat(gwa.value),
-        batch: parseInt(batch.value),
       }),
     });
 
@@ -110,18 +109,6 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
               </Row>
               <Row className="mb-3">
                 <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="Batch number">
-                    <Form.Control name="batch" type="number" min="1908" max="9999" placeholder=" " required />
-                  </FloatingLabel>
-                </Col>
-                <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="Student number">
-                    <Form.Control name="student_id" pattern="\d{4}-\d{5}" placeholder=" " required />
-                  </FloatingLabel>
-                </Col>
-              </Row>
-              <Row className="mb-3">
-                <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="College">
                     <Form.Control name="college" placeholder=" " required />
                   </FloatingLabel>
@@ -133,7 +120,12 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
                 </Col>
               </Row>
               <Row className="mb-3">
-                <Col xs={6} className="px-2">
+                <Col className="px-2">
+                  <FloatingLabel controlId="floatingInput" label="Student number">
+                    <Form.Control name="student_id" pattern="\d{4}-\d{5}" placeholder=" " required />
+                  </FloatingLabel>
+                </Col>
+                <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="General weighted average (GWA)">
                     <Form.Control name="gwa" pattern="[12](.\d+)?|[345]" placeholder=" " required />
                   </FloatingLabel>
