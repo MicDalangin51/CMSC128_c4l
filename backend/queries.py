@@ -27,8 +27,8 @@ def get_all_students():
 
 
 def get_student(student_id):
-    cursor.execute(f"SELECT first_name, last_name, degree_program, student_id, gwa, total_units FROM student WHERE student_id = ?", student_id)
-    first_name, last_name, course, student_id, gwa, total_units = cursor.fetchone()
+    cursor.execute(f"SELECT first_verifier, second_verifier, other_verifier, status, first_name, last_name, degree_program, student_id, gwa, total_units FROM student WHERE student_id = ?", student_id)
+    first_verifier, second_verifier, other_verifier, status, first_name, last_name, course, student_id, gwa, total_units = cursor.fetchone()
 
     summary = standardize_data(get_student_data(student_id))
     student_data = {
@@ -38,6 +38,10 @@ def get_student(student_id):
         "GWA": gwa,
         "total_units": total_units,
         "summary": summary,
+        "status": status,
+        "first_verifier": first_verifier,
+        "second_verifier" :second_verifier,
+        "other_verifier": other_verifier,
     }
     
     connection.commit()
@@ -325,9 +329,76 @@ def get_student_data_flags(student_id):
 
 def edit_student(student_id, col_name, new_data):
     cursor.execute(f"UPDATE student SET {col_name} = '{new_data}' WHERE student_id = '{student_id}'")
+    connection.commit()
 
 
-record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade', '2', '1')
+# TO BE IMPLEMENTED ===========================
+
+# GET CHANGELOGS
+def get_changelogs():
+    changelogs = []
+    for faculty_id, student_id, date, time, justification, col_name, prev_data, new_data in cursor.execute(f"SELECT faculty_id, student_id, date, time, justification, col_name, prev_data, new_data FROM changelogs"):
+        changelog = {
+            "faculty_id": faculty_id,
+            "student_id": student_id,
+            "date": date,
+            "time": time,
+            "justification": justification,
+            "col_name": col_name,
+            "prev_data": prev_data,
+            "new_data": new_data
+        }
+
+        changelogs.append(changelog)
+
+    return changelogs
+# GET ALL FACULTY MEMBERS
+def get_faculty_members():
+    faculties = []
+    for name, email, faculty_id in cursor.execute(f"SELECT name, email, faculty_id FROM faculty"):
+        faculty = {
+            "name": name,
+            "email": email,
+            "faculty_id": faculty_id
+        }
+
+        faculties.append(faculty)
+    return faculties
+
+# DELETE FACULTY MEMBER
+def delete_faculty_member(faculty_id):
+    cursor.execute(f"DELETE FROM faculty WHERE faculty_id = '{faculty_id}'")
+    connection.commit()
+
+# EDIT FACULTY MEMBER
+
+# DELETE STUDENT
+def delete_student(student_id):
+    cursor.execute(f"DELETE FROM student WHERE student_id = '{student_id}'")
+    connection.commit()
+
+def get_courses(student_number):
+    for student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status in cursor.execute(f"SELECT student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status FROM student WHERE student_number = ?", student_number):
+        student = {
+            "student_number": student_number,
+            "first_name": first_name,
+            "last_name": last_name,
+            "degree_program": degree_program,
+            "gwa": gwa,
+            "computed_gwa": computed_gwa,
+            "college": college,
+            "total_units": total_units,
+            "req_units": req_units,
+            "total_cumulative": total_cumulative,
+            "first_verifier": first_verifier,
+            "second_verifier": second_verifier,
+            "other_verifier" :other_verifier,
+            "status" : status,
+        }
+        return student
+
+
+# record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade', '2', '1')
 # edit_data('3284-18043', 'studentData', 'ENG 1(AH)', '3', '15/16', 'grade', '2')
 
 # check_ge_requirements('4579-76154')
@@ -336,22 +407,3 @@ record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade'
 # print(get_all_faculties())
 
 
-# def get_courses(student_number):
-#     for student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status in cursor.execute(f"SELECT student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status FROM student WHERE student_number = ?", student_number):
-#         student = {
-#             "student_number": student_number,
-#             "first_name": first_name,
-#             "last_name": last_name,
-#             "degree_program": degree_program,
-#             "gwa": gwa,
-#             "computed_gwa": computed_gwa,
-#             "college": college,
-#             "total_units": total_units,
-#             "req_units": req_units,
-#             "total_cumulative": total_cumulative,
-#             "first_verifier": first_verifier,
-#             "second_verifier": second_verifier,
-#             "other_verifier" :other_verifier,
-#             "status" : status,
-#         }
-#         return student
