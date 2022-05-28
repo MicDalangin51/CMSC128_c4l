@@ -251,6 +251,7 @@ const StudentRecord = () => {
         showModal={showVerify3}
         closeModal={handleCloseAll}
         verifier="other_verifier"
+        //return from login the credentials of the shac member
         shac_member="shac member"
         student_num={studentNumber}
       />
@@ -259,29 +260,51 @@ const StudentRecord = () => {
         <Modal.Body>
           <Row className="pb-2">
             <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control onChange={(e) => setCourseEdit(e.target.value)} />
+              <Form.Control
+                placeholder=" "
+                onChange={(e) => setCourseEdit(e.target.value)}
+                required
+              />
             </FloatingLabel>
           </Row>
           <Row className="g-2">
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control onChange={(e) => setGradeEdit(e.target.value)} />
+                <Form.Control
+                  placeholder=" "
+                  onChange={(e) => setGradeEdit(e.target.value)}
+                  pattern="^\d+(\.\d+)?$"
+                  required
+                />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control onChange={(e) => setUnitsEdit(e.target.value)} />
+                <Form.Control
+                  placeholder=" "
+                  onChange={(e) => setUnitsEdit(e.target.value)}
+                  pattern="^\d+$"
+                  required
+                />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control onChange={(e) => setWeightEdit(e.target.value)} />
+                <Form.Control
+                  placeholder=" "
+                  onChange={(e) => setWeightEdit(e.target.value)}
+                  pattern="^\d+(\.\d+)?$"
+                  required
+                />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
                 <Form.Control
+                  placeholder=" "
                   onChange={(e) => setCumulativeEdit(e.target.value)}
+                  pattern="^\d+(\.\d+)?$"
+                  required
                 />
               </FloatingLabel>
             </Col>
@@ -301,28 +324,52 @@ const StudentRecord = () => {
         <Modal.Body>
           <Row className="pb-2">
             <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control defaultValue={edit_course} />
+              <Form.Control
+                defaultValue={edit_course}
+                onChange={(e) => setCourseEdit(e.target.value)}
+                required
+              />
             </FloatingLabel>
           </Row>
           <Row className="g-2">
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control defaultValue={edit_grade} />
+                <Form.Control
+                  defaultValue={edit_grade}
+                  onChange={(e) => setGradeEdit(e.target.value)}
+                  pattern="^\d+(\.\d+)?$"
+                  required
+                />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control defaultValue={edit_units} />
+                <Form.Control
+                  defaultValue={edit_units}
+                  onChange={(e) => setUnitsEdit(e.target.value)}
+                  pattern="^\d+$"
+                  required
+                />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control defaultValue={edit_weight} />
+                <Form.Control
+                  defaultValue={edit_weight}
+                  onChange={(e) => setWeightEdit(e.target.value)}
+                  pattern="^\d+(\.\d+)?$"
+                  required
+                />
               </FloatingLabel>
             </Col>
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
-                <Form.Control defaultValue={edit_cumulative} />
+                <Form.Control
+                  defaultValue={edit_cumulative}
+                  onChange={(e) => setCumulativeEdit(e.target.value)}
+                  pattern="^\d+(\.\d+)?$"
+                  required
+                />
               </FloatingLabel>
             </Col>
           </Row>
