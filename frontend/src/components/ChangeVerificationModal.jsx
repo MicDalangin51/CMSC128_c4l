@@ -19,7 +19,7 @@ const ChangeVerificationModal = ({
       column: verifier,
     };
 
-    fetch(`/api/students/${studentNumber}`, {
+    fetch(`/api/students/${student_num}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
