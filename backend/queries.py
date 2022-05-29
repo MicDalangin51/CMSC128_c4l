@@ -193,11 +193,18 @@ def add_studentData(student_id, code, grade, units, weight, cumulative, semester
         return False
 
 # returns True if user exists in the database. Otherwise, it returns False
-def check_credentials( username, password):
+def check_credentials(username, password):
+
+
     values = cursor.execute('SELECT email, password FROM faculty')
     for i in values:
         if(i[0] == username.strip() and i[1] == password.strip()):
-            return True
+            for name, department in cursor.execute(f"SELECT name, department FROM faculty WHERE email = '{username}' AND password = '{password}'"):
+                faculty = {
+                    "name": name,
+                    "department": department
+                }
+                return True, faculty
         # print( i[0] + ' ---- '+username.strip())
         # print(i[1]  + ' ---- '+password.strip())
     return False
@@ -340,12 +347,12 @@ def get_student_data_flags(student_id):
 
 # returns True if editing a student is successful. Otherwise it returns False 
 def edit_student(student_id, col_name, new_data):
-    try:
-        cursor.execute(f"UPDATE student SET {col_name} = '{new_data}' WHERE student_id = '{student_id}'")
-        connection.commit()
-        return True
-    except:
-        return False
+    # try:
+    cursor.execute(f"UPDATE student SET {col_name} = '{new_data}' WHERE student_id = '{student_id}'")
+    connection.commit()
+    return True
+    # except:
+    #     return False
 
 
 # TO BE IMPLEMENTED ===========================
@@ -439,6 +446,26 @@ def get_courses(student_number):
         }
         return student
 
+def insert_student(student_id, first_name, last_name, degree_program, gwa, total_units, req_units, total_cumulative):
+    cursor = connection.cursor()
+    cursor.execute('insert into student(student_id, first_name, last_name, degree_program, gwa, total_units, req_units, total_cumulative) values(?,?,?,?,?,?,?,?);', (student_id, first_name, last_name, degree_program, gwa, total_units, req_units, total_cumulative))
+    connection.commit()
+
+def edit_studentData(table_name, student_id, col_name, new_data, semester, acad_year):
+    cursor = connection.cursor()
+    if col_name not in ['student_id', 'course_code', 'semester', 'acad_year']:
+        cursor.execute(f"UPDATE {table_name} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND semester = '{semester}' AND acad_year = '{acad_year}';")
+    else:
+        print("To be implemented...")
+    connection.commit()
+
+
+def get_access_level(faculty_id):
+    try:
+        for access_level in cursor.execute(f"SELECT access_level FROM faculty WHERE faculty_id = '{faculty_id}'"):
+            return access_level
+    except:
+        print("SHAC Member does not exist")
 
 # record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade', '2', '1')
 # edit_data('3284-18043', 'studentData', 'ENG 1(AH)', '3', '15/16', 'grade', '2')
