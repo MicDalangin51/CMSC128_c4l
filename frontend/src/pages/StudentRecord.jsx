@@ -146,7 +146,6 @@ const StudentRecord = () => {
   const [student, setStudent] = useState([]);
 
   useEffect(async () => {
-    console.log("test");
     const response = await fetch(`/api/students/${studentNumber}`);
     const data = await response.json();
     setStudent(data.student);
@@ -155,7 +154,6 @@ const StudentRecord = () => {
 
   //deletes a row of student-data
   function deleteRow(student_number, course_number, semester) {
-    console.log(student_number);
     const row = {
       student_number: student_number,
       course_number: course_number,
@@ -163,6 +161,8 @@ const StudentRecord = () => {
       academic_year:
         semester.substring(17, 19) + "/" + semester.substring(22, 24),
     };
+
+    console.log(row);
 
     fetch(`/api/students/${studentNumber}/courses/${course_number}`, {
       method: "DELETE",
