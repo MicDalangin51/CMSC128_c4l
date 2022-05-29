@@ -34,6 +34,9 @@ const EditStudentModal = ({
 
     const response = await fetch("/api/students", {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         student_id: student_num,
         new_data: first_name.value,
