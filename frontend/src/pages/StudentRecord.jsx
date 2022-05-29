@@ -5,6 +5,7 @@ import {
   DashboardLayout,
   ChangeVerificationModal,
   EditStudentModal,
+  EditStudentCourseModal,
   AddStudentCourseModal,
 } from "/src/components";
 import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
@@ -27,52 +28,12 @@ const StudentRecord = () => {
   const { studentNumber } = useParams();
 
   //for editing student-data row
-  const [show, setShow] = useState(false);
   const [edit_course, setCourseEdit] = useState("");
   const [edit_grade, setGradeEdit] = useState("");
   const [edit_units, setUnitsEdit] = useState("");
   const [edit_weight, setWeightEdit] = useState("");
   const [edit_cumulative, setCumulativeEdit] = useState("");
   const [edit_semester, setSemester] = useState("");
-
-  const handleShow = (course_number, grade, units, weight, cumulative) => {
-    setShow(true);
-    setCourseEdit(course_number);
-    setGradeEdit(grade);
-    setUnitsEdit(units);
-    setWeightEdit(weight);
-    setCumulativeEdit(cumulative);
-  };
-
-  const editRow = () => {
-    setShow(false);
-    const row = {
-      student_number: studentNumber,
-      course_number: edit_course,
-      grade: edit_grade,
-      units: edit_units,
-      weight: edit_weight,
-      cumulative: edit_cumulative,
-    };
-
-    fetch(`/api/students/${studentNumber}/courses/${edit_course}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-
-        if (body.success) {
-          console.log("Successfully edited!");
-        } else {
-          console.log("Failed to edit!");
-        }
-      });
-  };
 
   //gets the student's data
   const [student, setStudent] = useState([]);
@@ -161,13 +122,12 @@ const StudentRecord = () => {
     setWeightEdit("");
     setCumulativeEdit("");
     setShowStatus(false);
-    setShowAdd(false);
-    setShow(false);
     setShowVerify1(false);
     setShowVerify2(false);
     setShowVerify3(false);
     setShowEditStudent(false);
     setShowAddCourse(false);
+    setShowEditCourse(false);
   };
 
   //changing the verification
@@ -191,6 +151,24 @@ const StudentRecord = () => {
     setShowAddCourse(true);
   };
 
+  const [showEditCourse, setShowEditCourse] = useState(false);
+  const handleShowEdit = (
+    course_number,
+    grade,
+    units,
+    weight,
+    cumulative,
+    semester
+  ) => {
+    setShowEditCourse(true);
+    setCourseEdit(course_number);
+    setGradeEdit(grade);
+    setUnitsEdit(units);
+    setWeightEdit(weight);
+    setCumulativeEdit(cumulative);
+    setSemester(semester);
+  };
+
   return (
     <DashboardLayout fixedContent>
       <AddStudentCourseModal
@@ -198,6 +176,18 @@ const StudentRecord = () => {
         closeModal={handleCloseAll}
         student_num={student.student_number}
         semester={edit_semester}
+      />
+
+      <EditStudentCourseModal
+        showModal={showEditCourse}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        semester={edit_semester}
+        course_number_param={edit_course}
+        grade_param={edit_grade}
+        units_param={edit_units}
+        weight_param={edit_weight}
+        cumulative_param={edit_cumulative}
       />
 
       {/* <EditStudentModal
@@ -232,70 +222,6 @@ const StudentRecord = () => {
         shac_member="shac member"
         student_num={student.student_number}
       />
-
-      <Modal size="lg" show={show} centered>
-        <Modal.Body>
-          <Row className="pb-2">
-            <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control
-                defaultValue={edit_course}
-                onChange={(e) => setCourseEdit(e.target.value)}
-                required
-              />
-            </FloatingLabel>
-          </Row>
-          <Row className="g-2">
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control
-                  defaultValue={edit_grade}
-                  onChange={(e) => setGradeEdit(e.target.value)}
-                  pattern="^[0-9]+\.?[0-9]+$"
-                  required
-                />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control
-                  defaultValue={edit_units}
-                  onChange={(e) => setUnitsEdit(e.target.value)}
-                  pattern="^\d+$"
-                  required
-                />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control
-                  defaultValue={edit_weight}
-                  onChange={(e) => setWeightEdit(e.target.value)}
-                  pattern="^[0-9]+\.?[0-9]+$"
-                  required
-                />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
-                <Form.Control
-                  defaultValue={edit_cumulative}
-                  onChange={(e) => setCumulativeEdit(e.target.value)}
-                  pattern="^[0-9]+\.?[0-9]+$"
-                  required
-                />
-              </FloatingLabel>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={editRow}>
-            Save
-          </Button>
-          <Button variant="secondary" onClick={handleCloseAll}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
       <Modal size="lg" show={showStatus} centered>
         <Modal.Body>Change status?</Modal.Body>
@@ -416,12 +342,13 @@ const StudentRecord = () => {
                                   </Button>
                                   <Button
                                     onClick={() =>
-                                      handleShow(
+                                      handleShowEdit(
                                         course_number,
                                         grade,
                                         units,
                                         weight,
-                                        cumulative
+                                        cumulative,
+                                        entry.semester
                                       )
                                     }
                                     variant="outline-none"
