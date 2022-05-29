@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { DashboardLayout, ChangeVerificationModal } from "/src/components";
+import {
+  DashboardLayout,
+  ChangeVerificationModal,
+  EditStudentModal,
+} from "/src/components";
 import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
 import {
   Accordion,
@@ -217,6 +221,7 @@ const StudentRecord = () => {
     setShowVerify1(false);
     setShowVerify2(false);
     setShowVerify3(false);
+    setShowEditStudent(false);
   };
 
   //changing the verification
@@ -229,14 +234,26 @@ const StudentRecord = () => {
   const [showVerify3, setShowVerify3] = useState(false);
   const handleShowVerify3 = () => setShowVerify3(true);
 
+  //changing the verification
+  const [showEditStudent, setShowEditStudent] = useState(false);
+  const handleShowEditStudent = () => setShowEditStudent(true);
+
   return (
     <DashboardLayout fixedContent>
+      <EditStudentModal
+        showModal={showEditStudent}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        fullname={student.name}
+        course={student.course}
+      />
+
       <ChangeVerificationModal
         showModal={showVerify1}
         closeModal={handleCloseAll}
         verifier="first_verifier"
         shac_member="shac member"
-        student_num={studentNumber}
+        student_num={student.student_number}
       />
 
       <ChangeVerificationModal
@@ -244,7 +261,7 @@ const StudentRecord = () => {
         closeModal={handleCloseAll}
         verifier="second_verifier"
         shac_member="shac member"
-        student_num={studentNumber}
+        student_num={student.student_number}
       />
 
       <ChangeVerificationModal
@@ -253,7 +270,7 @@ const StudentRecord = () => {
         verifier="other_verifier"
         //return from login the credentials of the shac member
         shac_member="shac member"
-        student_num={studentNumber}
+        student_num={student.student_number}
       />
 
       <Modal size="lg" show={showAdd} centered>
@@ -273,7 +290,7 @@ const StudentRecord = () => {
                 <Form.Control
                   placeholder=" "
                   onChange={(e) => setGradeEdit(e.target.value)}
-                  pattern="^\d+(\.\d+)?$"
+                  pattern="^[0-9]+\.?[0-9]+$"
                   required
                 />
               </FloatingLabel>
@@ -293,7 +310,7 @@ const StudentRecord = () => {
                 <Form.Control
                   placeholder=" "
                   onChange={(e) => setWeightEdit(e.target.value)}
-                  pattern="^\d+(\.\d+)?$"
+                  pattern="^[0-9]+\.?[0-9]+$"
                   required
                 />
               </FloatingLabel>
@@ -303,7 +320,7 @@ const StudentRecord = () => {
                 <Form.Control
                   placeholder=" "
                   onChange={(e) => setCumulativeEdit(e.target.value)}
-                  pattern="^\d+(\.\d+)?$"
+                  pattern="^[0-9]+\.?[0-9]+$"
                   required
                 />
               </FloatingLabel>
@@ -337,7 +354,7 @@ const StudentRecord = () => {
                 <Form.Control
                   defaultValue={edit_grade}
                   onChange={(e) => setGradeEdit(e.target.value)}
-                  pattern="^\d+(\.\d+)?$"
+                  pattern="^[0-9]+\.?[0-9]+$"
                   required
                 />
               </FloatingLabel>
@@ -357,7 +374,7 @@ const StudentRecord = () => {
                 <Form.Control
                   defaultValue={edit_weight}
                   onChange={(e) => setWeightEdit(e.target.value)}
-                  pattern="^\d+(\.\d+)?$"
+                  pattern="^[0-9]+\.?[0-9]+$"
                   required
                 />
               </FloatingLabel>
@@ -367,7 +384,7 @@ const StudentRecord = () => {
                 <Form.Control
                   defaultValue={edit_cumulative}
                   onChange={(e) => setCumulativeEdit(e.target.value)}
-                  pattern="^\d+(\.\d+)?$"
+                  pattern="^[0-9]+\.?[0-9]+$"
                   required
                 />
               </FloatingLabel>
@@ -428,6 +445,15 @@ const StudentRecord = () => {
                 <h1>{student.name}</h1>
                 <div className="text-black">{student.student_number}</div>
                 <div className="text-black">{student.course}</div>
+              </Col>
+              <Col className="my-4">
+                <Button
+                  variant="outline-none"
+                  size="sm"
+                  onClick={handleShowEditStudent}
+                >
+                  <FaEdit />
+                </Button>
               </Col>
             </Row>
             <Row></Row>
