@@ -2,14 +2,14 @@ from database_connect import connection
 
 cursor = connection.cursor()
 
-# function that returns the number of students
+# returns an INT    ex. student_count = 10
 def get_num_of_students():
     cursor.execute("SELECT COUNT(*) FROM student")
     student_count = cursor.fetchone()[0]
 
     return student_count
 
-
+# returns DICTIONARIES within a LIST   ex. students = [{}, {}, {}, ..., {}]
 def get_all_students():
     cursor.execute('SELECT first_name, last_name, student_id, degree_program, status FROM student')
     rows = cursor.fetchall()
@@ -25,10 +25,10 @@ def get_all_students():
     connection.commit()
     return students
 
-
+# returns DICTIONARIES inside a LIST    ex. student_data = [{}, {}, {}, ..., {}]
 def get_student(student_id):
-    cursor.execute(f"SELECT first_name, last_name, degree_program, student_id, gwa, total_units FROM student WHERE student_id = ?", student_id)
-    first_name, last_name, course, student_id, gwa, total_units = cursor.fetchone()
+    cursor.execute(f"SELECT first_verifier, second_verifier, other_verifier, status, first_name, last_name, degree_program, student_id, gwa, total_units FROM student WHERE student_id = ?", student_id)
+    first_verifier, second_verifier, other_verifier, status, first_name, last_name, course, student_id, gwa, total_units = cursor.fetchone()
 
     summary = standardize_data(get_student_data(student_id))
     student_data = {
@@ -38,12 +38,16 @@ def get_student(student_id):
         "GWA": gwa,
         "total_units": total_units,
         "summary": summary,
+        "status": status,
+        "first_verifier": first_verifier,
+        "second_verifier" :second_verifier,
+        "other_verifier": other_verifier,
     }
     
     connection.commit()
     return student_data
 
-
+# returns 3D DICTIONARIES within a LIST 
 def get_student_data(student_id):
     cursor.execute(f"SELECT course_code, grade, units, weight, cumulative, semester, acad_year FROM studentData WHERE student_id = ?", student_id)
     raw_student_data = cursor.fetchall()
@@ -68,7 +72,7 @@ def get_student_data(student_id):
 
     return student_data
 
-
+# returns a JSON format similar to the frontends' mock data   (mahirap i-describe so please refer to the API for example)
 def standardize_data(student_data_list):
 
     # student_data_list = [{}, {}, {},]
@@ -157,29 +161,38 @@ def standardize_data(student_data_list):
 
 
 
-# function that tracks the changelog
 
+# returns True if successful, False if failed
 def delete_studentData(student_id, code, semester, acad_year):
-    print(f"DELETE FROM studentData WHERE student_id = '{student_id}' AND course_code = '{code}' AND semester = '{semester}' AND acad_year = '{acad_year}'")
-    cursor.execute(f"DELETE FROM studentData WHERE student_id = '{student_id}' AND course_code = '{code}' AND semester = '{semester}' AND acad_year = '{acad_year}'")
-
-    connection.commit()
+    # print(f"DELETE FROM studentData WHERE student_id = '{student_id}' AND course_code = '{code}' AND semester = '{semester}' AND acad_year = '{acad_year}'")
+    try:
+        cursor.execute(f"DELETE FROM studentData WHERE student_id = '{student_id}' AND course_code = '{code}' AND semester = '{semester}' AND acad_year = '{acad_year}'")
+        connection.commit()
+        return True
+    except:
+        return False
 
 # function to add student
+# returns True if successful, False if failed
 def add_studentData(student_id, code, grade, units, weight, cumulative, semester):
-    # if the semester string contains the substirng "midyear", treat the added student data as midyear, else, it would the first or second semester
-    if "midyear" in semester:
-        semester_num = 'M'
-        semester_year = semester[7:12]
-    else:
-        semester_num =  1 if len(semester) == 7 else 2 
-        semester_year = semester[2:7] if len(semester) == 7 else semester[3:8]
-    #IL/15/16
-    #I/15/16
-    #midyear 2016
-    cursor.execute('insert into studentData(student_id, course_code, grade, units, weight, cumulative, semester, acad_year) values(?,?,?,?,?,?,?,?);', (student_id, code, grade, units, weight, cumulative, semester_num, semester_year))
-    connection.commit()                                                                                                                #what do you need me to do? Hahaha
+    try: 
+        # if the semester string contains the substirng "midyear", treat the added student data as midyear, else, it would the first or second semester
+        if "midyear" in semester:
+            semester_num = 'M'
+            semester_year = semester[7:12]
+        else:
+            semester_num =  1 if len(semester) == 7 else 2 
+            semester_year = semester[2:7] if len(semester) == 7 else semester[3:8]
+        #IL/15/16
+        #I/15/16
+        #midyear 2016
+        cursor.execute('insert into studentData(student_id, course_code, grade, units, weight, cumulative, semester, acad_year) values(?,?,?,?,?,?,?,?);', (student_id, code, grade, units, weight, cumulative, semester_num, semester_year))
+        connection.commit()                                                           
+        return True
+    except:
+        return False
 
+# returns True if user exists in the database. Otherwise, it returns False
 def check_credentials( username, password):
     values = cursor.execute('SELECT email, password FROM faculty')
     for i in values:
@@ -189,9 +202,7 @@ def check_credentials( username, password):
         # print(i[1]  + ' ---- '+password.strip())
     return False
 
-# add_studentData('4579-76154', 'CMSC 128', 1, 3, 6, 156, 'll/15/16')
-# delete_studentData('4579-76154', 'CMSC 128', 1, '15/16')
-
+# returns the List of GE Courses
 def get_GECourses():
     GEList = []
 
@@ -211,8 +222,6 @@ def check_ge_requirements(student_id):
     hk12_count = 0
     nstp1_count = 0
     nstp2_count = 0
-
-    
 
     for student in students:
         for student_data_acad_year in list(student.keys()):
@@ -245,11 +254,6 @@ def check_ge_requirements(student_id):
     # print('hk count:' + str(hk_count))
     # print('nstp count:'+ str(nstp_count))
                         
-                        
-                        
-    # 7 dapat yung core GEs
-    # 3 lang yung elective GEs
-                  
 
     if (core_count < 7 and elective_count < 3):
         cursor.execute('insert into studentFlags(student_id, flag) values(?,?);', (student_id, 'Incomplete GE'))
@@ -267,27 +271,36 @@ def check_ge_requirements(student_id):
         cursor.execute('insert into studentFlags(student_id, flag) values(?,?);', (student_id, 'Incomplete NSTP1'))
         
     connection.commit()
-    
+
+# returns True if edit data is successful. Otherwise it returns False
 def edit_data(student_id, table, course_code, semester, acad_year, col_name, new_data):
-    # try:
-    cursor.execute(f"UPDATE {table} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND course_code = '{course_code}' AND acad_year = '{acad_year}' AND semester = '{semester}'")
-    connection.commit()
-    # except:
+    try:
+        cursor.execute(f"UPDATE {table} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND course_code = '{course_code}' AND acad_year = '{acad_year}' AND semester = '{semester}'")
+        connection.commit()
+        return True
+    except:
+        return False
     #     print("Invalid Data!")           
-            
+
+# returns True if adding a faculty is successful. Otherwise it returns False         
 def add_faculty(email, password, faculty_id, name):
-    cursor.execute(f"INSERT into faculty(email, password, faculty_id, name) values(?,?,?,?);", (email, password, faculty_id, name))
-    connection.commit()
+    try:
+        cursor.execute(f"INSERT into faculty(email, password, faculty_id, name) values(?,?,?,?);", (email, password, faculty_id, name))
+        connection.commit()
+        return True
+    except:
+        return False
 
-def remove_faculty(faculty_id):
-    cursor.execute(f"DELETE FROM faculty WHERE faculty_id = '{faculty_id}'")
-    connection.commit()
-
-
+# returns True if inserting a changelog is successful. Otherwise it returns False    
 def record_changelogs(faculty_id, student_id, justification, col_name, prev_data, new_data):
-    cursor.execute(f"INSERT INTO changelogs(faculty_id, student_id, date, time, justification, col_name, prev_data, new_data) values('{faculty_id}','{student_id}',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'{justification}','{col_name}','{prev_data}','{new_data}')")
-    connection.commit()
+    try:
+        cursor.execute(f"INSERT INTO changelogs(faculty_id, student_id, date, time, justification, col_name, prev_data, new_data) values('{faculty_id}','{student_id}',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'{justification}','{col_name}','{prev_data}','{new_data}')")
+        connection.commit()
+        return True
+    except:
+        return False
 
+# returns dictionaries within a list
 def get_all_faculties():
     faculties = []
     for name, faculty_id, email, in cursor.execute('SELECT name, faculty_id, email FROM faculty'):
@@ -300,6 +313,7 @@ def get_all_faculties():
 
     return faculties
 
+# returns a list of errors
 def get_student_flags(student_id):
     errors = []
     for flags in cursor.execute(f"SELECT flag FROM studentFlags WHERE student_id = '{student_id}'"):
@@ -307,6 +321,7 @@ def get_student_flags(student_id):
         
     return errors
 
+# returns dictionaries within a list
 def get_student_data_flags(student_id):
     flags = []
     for id, course_code, semester, acad_year, col_name, prev_data, new_data in cursor.execute(f"SELECT student_id, course_code, semester, acad_year, col_name, prev_data, new_data FROM remarks WHERE student_id = '{student_id}'"):
@@ -323,11 +338,109 @@ def get_student_data_flags(student_id):
 
     return flags
 
+# returns True if editing a student is successful. Otherwise it returns False 
 def edit_student(student_id, col_name, new_data):
-    cursor.execute(f"UPDATE student SET {col_name} = '{new_data}' WHERE student_id = '{student_id}'")
+    try:
+        cursor.execute(f"UPDATE student SET {col_name} = '{new_data}' WHERE student_id = '{student_id}'")
+        connection.commit()
+        return True
+    except:
+        return False
 
 
-record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade', '2', '1')
+# TO BE IMPLEMENTED ===========================
+
+# GET CHANGELOGS
+def get_changelogs():
+    changelogs = []
+    for faculty_id, student_id, date, time, justification, col_name, prev_data, new_data in cursor.execute(f"SELECT faculty_id, student_id, date, time, justification, col_name, prev_data, new_data FROM changelogs"):
+        changelog = {
+            "faculty_id": faculty_id,
+            "student_id": student_id,
+            "date": date,
+            "time": time,
+            "justification": justification,
+            "col_name": col_name,
+            "prev_data": prev_data,
+            "new_data": new_data
+        }
+
+        changelogs.append(changelog)
+
+    return changelogs
+
+# DELETE FACULTY MEMBER
+def delete_faculty_member(faculty_id):
+    cursor.execute(f"DELETE FROM faculty WHERE faculty_id = '{faculty_id}'")
+    connection.commit()
+
+# EDIT FACULTY MEMBER
+
+# returns True if successful. False if failed
+def edit_faculty_password(faculty_id, old_pw, new_pw):
+    for password in cursor.execute(f"SELECT password FROM faculty WHERE faculty_id = '{faculty_id}'"):
+        if password == old_pw:
+            cursor.execute("UPDATE faculty SET password = '{new_pw}' WHERE faculty_id = '{faculty_id}'")
+            connection.commit()
+            return True
+    return False
+
+def edit_faculty_name(faculty_id, new_name):
+    cursor.execute(f"UPDATE faculty SET name = '{new_name} WHERE faculty_id = '{faculty_id}''")
+    connection.commit()
+
+# DELETE STUDENT
+def delete_student(student_id):
+    try:
+        cursor.execute(f"DELETE FROM student WHERE student_id = '{student_id}'")
+        connection.commit()
+        return True
+    except:
+        return False
+    
+
+# DELETE REMARKS
+def delete_student_remarks(student_id, course_code, semester, acad_year):
+    try:
+        cursor.execute(f"DELETE FROM remarks WHERE student_id = '{student_id}' AND course_code = '{course_code}' AND acad_year = '{acad_year}' AND semester = '{semester}'")
+        connection.commit()
+        return True
+    except:
+        return False
+    
+
+# DELETE FLAGS
+def delete_student_flag(student_id, flag):
+    try:
+        cursor.execute(f"DELETE FROM studentFlags WHERE student_id = '{student_id}' AND flag = '{flag}'")
+        connection.commit()
+        return True
+    except:
+        return False
+    
+
+def get_courses(student_number):
+    for student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status in cursor.execute(f"SELECT student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status FROM student WHERE student_number = ?", student_number):
+        student = {
+            "student_number": student_number,
+            "first_name": first_name,
+            "last_name": last_name,
+            "degree_program": degree_program,
+            "gwa": gwa,
+            "computed_gwa": computed_gwa,
+            "college": college,
+            "total_units": total_units,
+            "req_units": req_units,
+            "total_cumulative": total_cumulative,
+            "first_verifier": first_verifier,
+            "second_verifier": second_verifier,
+            "other_verifier" :other_verifier,
+            "status" : status,
+        }
+        return student
+
+
+# record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade', '2', '1')
 # edit_data('3284-18043', 'studentData', 'ENG 1(AH)', '3', '15/16', 'grade', '2')
 
 # check_ge_requirements('4579-76154')
@@ -336,22 +449,3 @@ record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade'
 # print(get_all_faculties())
 
 
-# def get_courses(student_number):
-#     for student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status in cursor.execute(f"SELECT student_number, first_name, last_name, degree_program, gwa, computed_gwa, college,  total_units, req_units, total_cumulative, first_verifier, second_verifier, other_verifier, status FROM student WHERE student_number = ?", student_number):
-#         student = {
-#             "student_number": student_number,
-#             "first_name": first_name,
-#             "last_name": last_name,
-#             "degree_program": degree_program,
-#             "gwa": gwa,
-#             "computed_gwa": computed_gwa,
-#             "college": college,
-#             "total_units": total_units,
-#             "req_units": req_units,
-#             "total_cumulative": total_cumulative,
-#             "first_verifier": first_verifier,
-#             "second_verifier": second_verifier,
-#             "other_verifier" :other_verifier,
-#             "status" : status,
-#         }
-#         return student
