@@ -6,7 +6,6 @@ from numpy import append
 import pyodbc
 import random
 from database_connect import *
-
 from create_tables import * 
 
 
@@ -180,6 +179,7 @@ def read_csv_xlsx():
     Tk().withdraw()
     filepath = filedialog.askopenfilename()
     student_data = None
+    Tk().mainloop()
     if(filepath.endswith('.csv')):
         student_data = csv_read_file(filepath)
         # for i in student_data:
@@ -211,6 +211,7 @@ def read_csv_xlsx():
         #             print(k)
         #     print(i.recommended_units_taken)
         #     print(i.student_units_taken)
+    
     return (student_data)
     
 

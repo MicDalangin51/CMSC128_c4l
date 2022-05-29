@@ -1,13 +1,14 @@
 import pyodbc
 import sys
 
+
 # connect to the MS SQL Server
-# connection = pyodbc.connect('Driver={SQL Server};' 
-#                             'Server=26.28.83.84,1433;'   
-#                             'Database=login;' 
-#                             'UID=gwa_verifier;'
-#                             'PWD=cmsc128;'
-#                             'Trusted_connection=no;')
+connection = pyodbc.connect('Driver={SQL Server};' 
+                            'Server=26.28.83.84,1433;'   
+                            'Database=login;' 
+                            'UID=gwa_verifier;'
+                            'PWD=cmsc128;'
+                            'Trusted_connection=no;')
 
 # create the student data table
 def create_studentData(connection):
@@ -83,6 +84,7 @@ def create_faculty(connection):
                             password varchar(30) not null, 
                             faculty_id varchar(15) primary key, 
                             access_level int,
+                            department varchar(15),
                             name varchar(30) not null
                     );
         ''')
@@ -111,7 +113,6 @@ def create_remarks(connection):
                             col_name varchar(15),
                             prev_data varchar(15),
                             new_data varchar(15),
-                            CONSTRAINT PK_remarks PRIMARY KEY (student_id, course_code, semester, acad_year)
                         );
         ''')
         connection.commit()
@@ -119,36 +120,36 @@ def create_remarks(connection):
         print('TABLE: remarks already exists.')
 
 # create the flags table
-def create_flags(connection):
-    # establish a connection to the database
-    cursor = connection.cursor()
+# def create_flags(connection):
+#     # establish a connection to the database
+#     cursor = connection.cursor()
     
-    # check if the table does not exist in the database
-    if not cursor.tables(table='flags', tableType='TABLE').fetchone():
-        print("TABLE: flags does not exist \nCreating one...")
+#     # check if the table does not exist in the database
+#     if not cursor.tables(table='flags', tableType='TABLE').fetchone():
+#         print("TABLE: flags does not exist \nCreating one...")
 
-        # if it does not exist, create a table
-        cursor.execute('''
-                       CREATE TABLE flags (
-                            student_id varchar(10) not null,
-                            course_code varchar(15) not null,
-                            semester varchar(15) not null,
-                            acad_year varchar(15) not null,
-                            overload_flag int,
-                            underload_flag int,
-                            inc_flag int,
-                            dfg_flag int,
-                            drp_flag int,
-                            loa_flag int,
-                            awol_flag int,
-                            other varchar(50),
-                            other_flag int,
-                            CONSTRAINT FK_flags FOREIGN KEY (student_id, course_code, semester, acad_year) references remarks(student_id, course_code, semester, acad_year)
-                        );
-        ''')
-        connection.commit()
-    else:
-        print('TABLE: flags already exists.')
+#         # if it does not exist, create a table
+#         cursor.execute('''
+#                        CREATE TABLE flags (
+#                             student_id varchar(10) not null,
+#                             course_code varchar(15) not null,
+#                             semester varchar(15) not null,
+#                             acad_year varchar(15) not null,
+#                             overload_flag int,
+#                             underload_flag int,
+#                             inc_flag int,
+#                             dfg_flag int,
+#                             drp_flag int,
+#                             loa_flag int,
+#                             awol_flag int,
+#                             other varchar(50),
+#                             other_flag int,
+#                             CONSTRAINT FK_flags FOREIGN KEY (student_id, course_code, semester, acad_year) references remarks(student_id, course_code, semester, acad_year)
+#                         );
+#         ''')
+#         connection.commit()
+#     else:
+#         print('TABLE: flags already exists.')
 
 def create_changelogs(connection):
     # establish a connection to the database
@@ -247,6 +248,7 @@ def create_ge_courses(connection):
 # format
 # foreign key: faculty_id varchar(15) foreign key references faculty(faculty_id), 
 # composite primary key: CONSTRAINT PK_sample PRIMARY KEY (faculty_id, access_level)
+
 
 # create_faculty(connection)
 # create_student(connection)

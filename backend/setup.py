@@ -9,7 +9,7 @@ create_faculty(connection)
 create_student(connection)
 create_studentData(connection)
 create_remarks(connection)
-create_flags(connection)
+# create_flags(connection)
 create_changelogs(connection)
 create_ge_courses(connection)
 create_studentFlags(connection)
@@ -44,7 +44,7 @@ def backend_setup():
         
         
             for k in j.courses:
-                count +=1
+            
                 # print('=========')
                 # print(k)
             
@@ -65,4 +65,5 @@ def backend_setup():
                             pass
         
                         # print("nothing suspicious here ")
-               
+
+backend_setup()
