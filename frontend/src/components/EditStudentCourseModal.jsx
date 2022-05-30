@@ -47,7 +47,7 @@ const EditStudentCourseModal = ({
         },
         body: JSON.stringify({
           student_number: student_num,
-          col_name: "course_number",
+          col_name: "course_code",
           new_data: course_number.value,
           prev_data: course_number_param,
           semester: sem,
@@ -55,15 +55,6 @@ const EditStudentCourseModal = ({
         }),
       }
     );
-
-    switch (response.status) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student data was unsuccessful");
-    }
 
     const response1 = await fetch(
       `/api/students/${student_num}/courses/${course_number_param}`,
@@ -83,15 +74,6 @@ const EditStudentCourseModal = ({
       }
     );
 
-    switch (response1.status) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student data was unsuccessful");
-    }
-
     const response2 = await fetch(
       `/api/students/${student_num}/courses/${course_number_param}`,
       {
@@ -109,15 +91,6 @@ const EditStudentCourseModal = ({
         }),
       }
     );
-
-    switch (response2.status) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student data was unsuccessful");
-    }
 
     const response3 = await fetch(
       `/api/students/${student_num}/courses/${course_number_param}`,
@@ -137,15 +110,6 @@ const EditStudentCourseModal = ({
       }
     );
 
-    switch (response3.status) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student data was unsuccessful");
-    }
-
     const response4 = await fetch(
       `/api/students/${student_num}/courses/${course_number_param}`,
       {
@@ -164,7 +128,13 @@ const EditStudentCourseModal = ({
       }
     );
 
-    switch (response4.status) {
+    switch (
+      response.status &&
+      response1.status &&
+      response2.status &&
+      response3.status &&
+      response4.status
+    ) {
       case 200:
         closeModal();
         location.reload();
