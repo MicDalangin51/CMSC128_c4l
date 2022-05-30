@@ -18,10 +18,8 @@ import {
   Col,
   Button,
   Card,
-  Modal,
-  Form,
-  FloatingLabel,
   Badge,
+  ListGroup,
 } from "react-bootstrap";
 import casBuilding from "/src/images/cas-building.png";
 
@@ -38,13 +36,27 @@ const StudentRecord = () => {
 
   //gets the student's data
   const [student, setStudent] = useState([]);
+  const [genError, setGenError] = useState([]);
+  const [dataFlags, setDataFlags] = useState([]);
 
   useEffect(async () => {
     const response = await fetch(`/api/students/${studentNumber}`);
     const data = await response.json();
     setStudent(data.student);
-    console.log("student", data.student);
+    setGenError(data.genError);
+    setDataFlags(data.dataFlags);
   }, []);
+
+  function findRow(semester, academic_year, course_number) {
+    let something = dataFlags.find(
+      (flag) =>
+        flag.course_code == course_number &&
+        flag.acad_year == academic_year &&
+        flag.semester == semester
+    );
+
+    console.log(something);
+  }
 
   //deletes a row of student-data
   function deleteRow(student_number, course_number, semester) {
@@ -160,13 +172,14 @@ const StudentRecord = () => {
         cumulative_param={edit_cumulative}
       />
 
-      {/* <EditStudentModal
+      <EditStudentModal
         showModal={showEditStudent}
         closeModal={handleCloseAll}
         student_num={student.student_number}
-        fullname={student.name}
+        firstname={student.first_name}
+        lastname={student.last_name}
         course={student.course}
-      /> */}
+      />
 
       <ChangeVerificationModal
         showModal={showVerify1}
@@ -221,7 +234,9 @@ const StudentRecord = () => {
                 />
               </Col>
               <Col className="my-auto">
-                <h1>{student.name}</h1>
+                <h1>
+                  {student.last_name}, {student.first_name}
+                </h1>
                 <div className="text-black">{student.student_number}</div>
                 <div className="text-black">{student.course}</div>
               </Col>
@@ -276,9 +291,24 @@ const StudentRecord = () => {
                               },
                               index
                             ) => {
+                              var semester = entry.semester[9];
+                              var acad_year =
+                                entry.semester.substring(17, 19) +
+                                "/" +
+                                entry.semester.substring(22, 24);
+
+                              let color =
+                                findRow(semester, acad_year, course_number) ==
+                                grade
+                                  ? "red"
+                                  : "green";
+                              // console.log(color);
+
                               return (
                                 <tr key={index}>
-                                  <td>{course_number}</td>
+                                  <td style={{ backgroundColor: color }}>
+                                    {course_number}
+                                  </td>
                                   <td>{grade}</td>
                                   <td>{units}</td>
                                   <td>{weight}</td>
@@ -427,6 +457,9 @@ const StudentRecord = () => {
                 <Card.Body>
                   <Card.Text>
                     <h6>General Errors</h6>
+                    {genError?.map(({ flags }, index) => (
+                      <ListGroup key={index}>{flags}</ListGroup>
+                    ))}
                   </Card.Text>
                 </Card.Body>
               </Card>
