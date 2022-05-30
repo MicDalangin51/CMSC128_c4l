@@ -14,11 +14,10 @@ const EditStudentModal = ({
   showModal,
   closeModal,
   student_num,
-  fullname,
+  firstname,
+  lastname,
   course,
 }) => {
-  var fullName = fullname.split(", ");
-
   const handleClose = () => {
     closeModal();
 
@@ -32,7 +31,7 @@ const EditStudentModal = ({
 
     const { first_name, last_name, degree_program } = event.target;
 
-    const response = await fetch("/api/students", {
+    const response = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -40,25 +39,31 @@ const EditStudentModal = ({
       body: JSON.stringify({
         student_id: student_num,
         new_data: first_name.value,
-        column: "first_name",
+        col_name: "first_name",
       }),
     });
 
-    const response1 = await fetch("/api/students", {
+    const response1 = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         student_id: student_num,
         new_data: last_name.value,
-        column: "last_name",
+        col_name: "last_name",
       }),
     });
 
-    const response2 = await fetch("/api/students", {
+    const response2 = await fetch(`/api/students/${student_num}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "PATCH",
       body: JSON.stringify({
         student_id: student_num,
         new_data: degree_program.value,
-        column: "degree_program",
+        col_name: "degree_program",
       }),
     });
 
@@ -85,7 +90,7 @@ const EditStudentModal = ({
                 {/* placeholder is set to any non-empty string for FloatingLabel to work */}
                 <Form.Control
                   name="first_name"
-                  defaultValue={fullName[0]}
+                  defaultValue={firstname}
                   required
                 />
               </FloatingLabel>
@@ -94,7 +99,7 @@ const EditStudentModal = ({
               <FloatingLabel controlId="floatingInput" label="Last name">
                 <Form.Control
                   name="last_name"
-                  defaultValue={fullName[1]}
+                  defaultValue={lastname}
                   required
                 />
               </FloatingLabel>
