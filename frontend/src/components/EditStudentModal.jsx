@@ -44,14 +44,6 @@ const EditStudentModal = ({
       }),
     });
 
-    switch (response.status) {
-      case 200:
-        closeModal();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student was unsuccessful");
-    }
-
     const response1 = await fetch("/api/students", {
       method: "PATCH",
       body: JSON.stringify({
@@ -60,14 +52,6 @@ const EditStudentModal = ({
         column: "last_name",
       }),
     });
-
-    switch (response1.status) {
-      case 200:
-        closeModal();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student was unsuccessful");
-    }
 
     const response2 = await fetch("/api/students", {
       method: "PATCH",
@@ -78,9 +62,10 @@ const EditStudentModal = ({
       }),
     });
 
-    switch (response2.status) {
+    switch (response.status && response1.status && response2.status) {
       case 200:
         closeModal();
+        location.reload();
         break;
       default:
         setFillUpFormAlertMessage("Editing student was unsuccessful");
