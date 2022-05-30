@@ -31,8 +31,9 @@ def getStudents():
 @app.route('/api/students/<string:student_number>')
 def getStudent(student_number):
     student = get_student(student_number)
-    return {"student": student}
-  
+    general_errors = get_student_flags(student_number)
+    errors = get_student_data_flags(student_number)
+    return {"student": student, "genError": general_errors, "dataFlags" :errors}
 
 @app.route('/api/login', methods = ['POST'])
 def get_credentials():
@@ -79,7 +80,7 @@ def add_student():
 
 # gumagana
 @app.route('/api/students/<string:student_number>', methods = ['PATCH'])
-def edit_student(student_number):
+def edit_students(student_number):
     details = request.get_json()
     edit_student(details['student_id'], details['col_name'], details['new_data'])
     print("hahaha")
