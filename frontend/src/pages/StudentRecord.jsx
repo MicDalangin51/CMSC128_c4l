@@ -7,6 +7,7 @@ import {
   EditStudentModal,
   EditStudentCourseModal,
   AddStudentCourseModal,
+  EditStatusModal,
 } from "/src/components";
 import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
 import {
@@ -77,42 +78,6 @@ const StudentRecord = () => {
     location.reload();
   }
 
-  //changing the status of the student to verified and unverified
-  const [showStatus, setShowStatus] = useState(false);
-  const handleShowStatus = () => setShowStatus(true);
-
-  //edits the student
-  function editStudent(column, new_data) {
-    setShowStatus(false);
-
-    console.log(studentNumber);
-    console.log(new_data);
-    console.log(column);
-    const data = {
-      student_id: studentNumber,
-      new_data: new_data,
-      column: column,
-    };
-
-    fetch(`/api/students/${studentNumber}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-
-        if (body.success) {
-          alert("Successfully changed!");
-        } else {
-          alert("Failed to change!");
-        }
-      });
-  }
-
   //closes modals
   const handleCloseAll = () => {
     setSemester("");
@@ -151,6 +116,7 @@ const StudentRecord = () => {
     setShowAddCourse(true);
   };
 
+  //editing row
   const [showEditCourse, setShowEditCourse] = useState(false);
   const handleShowEdit = (
     course_number,
@@ -168,6 +134,10 @@ const StudentRecord = () => {
     setCumulativeEdit(cumulative);
     setSemester(semester);
   };
+
+  //changing the status of the student to verified and unverified
+  const [showStatus, setShowStatus] = useState(false);
+  const handleShowStatus = () => setShowStatus(true);
 
   return (
     <DashboardLayout fixedContent>
@@ -223,25 +193,12 @@ const StudentRecord = () => {
         student_num={student.student_number}
       />
 
-      <Modal size="lg" show={showStatus} centered>
-        <Modal.Body>Change status?</Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              editStudent(
-                "status",
-                student.status == "verified" ? "unverified" : "verified"
-              );
-            }}
-          >
-            Yes
-          </Button>
-          <Button variant="secondary" onClick={handleCloseAll}>
-            No
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <EditStatusModal
+        showModal={showStatus}
+        closeModal={handleCloseAll}
+        current_status={student.status}
+        student_num={student.student_number}
+      />
 
       <div className="overflow-auto">
         <Row xs="auto" className="m-3">
@@ -427,14 +384,14 @@ const StudentRecord = () => {
               <Col className="my-auto">Status</Col>
               <Col className="my-auto">
                 <Button onClick={handleShowStatus} variant="link">
-                  {student.status == "verified" && (
+                  {student.status == "true" && (
                     <Badge pill bg="success">
-                      {student.status}
+                      verified
                     </Badge>
                   )}
-                  {student.status == "unverified" && (
+                  {student.status == "false" && (
                     <Badge pill bg="secondary">
-                      {student.status}
+                      unverified
                     </Badge>
                   )}
                   {student.status == null && (
