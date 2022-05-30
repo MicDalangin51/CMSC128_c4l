@@ -11,52 +11,112 @@ import {
   Badge,
 } from "react-bootstrap";
 import { FaEdit, FaPlus, FaMinus } from "react-icons/fa";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 import { useEffect, useState } from "react";
-import { DashboardLayout } from "/src/components";
+import { DashboardLayout, EditShacModal } from "/src/components";
 
 const Settings = () => {
   // Temporary variables
-  var currentStaff = {
-    name: "Garth Lapitan",
-    department: "ICS",
-    access: 1,
-  };
+  // var currentStaff = {
+  //   name: "Garth Lapitan",
+  //   department: "ICS",
+  //   access: 1,
+  // };
 
   let staffAccounts = [
     {
       name: "Garth Lapitan",
+      email: "g@up",
       department: "ICS",
-      access: 1,
+      access_level: 1,
+      faculty_id: 0,
     },
     {
       name: "Jemuel Juatco",
+      email: "g@up",
       department: "ICS",
-      access: 0,
+      access_level: 0,
+      faculty_id: 1,
     },
     {
       name: "Nathan Muncal",
+      email: "g@up",
       department: "ICS",
-      access: 0,
+      access_level: 0,
+      faculty_id: 2,
     },
     {
       name: "Ronn Jiongco",
+      email: "g@up",
       department: "ICS",
-      access: 0,
+      access_level: 0,
+      faculty_id: 3,
     },
   ];
+
+  const [currentStaff, setCurrentStaff] = useState([]);
+
+  useEffect(async () => {
+    const response = await fetch(`/api/users/${faculty_id}`);
+    const data = await response.json();
+    setCurrentStaff(data.currentStaff);
+  }, []);
 
   const [staff, setStaff] = useState([]);
 
   useEffect(async () => {
-    const response = await fetch("/api/staff");
+    const response = await fetch("/api/users");
     const data = await response.json();
-    setStudents(data.staff);
+    setStaff(data.users);
   }, []);
 
   // for (let i = 0; i < 3; i++) students = [...students, ...students];
 
+  function deleteSHACuser(faculty_id) {
+    fetch(`/api/users/${faculty_id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        faculty_id: faculty_id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((body) => {
+        console.log(body);
+
+        if (body.success) {
+          console.log("Successfully deleted!");
+        } else {
+          console.log("Failed to delete!");
+        }
+      });
+    location.reload();
+  }
+
+  //edit SHAC member
+  const [editStaffName, seteditStaffName] = useState("");
+  const [editFacultyid, seteditFacultyid] = useState("");
+
+  const [showSHACEdit, setShowSHACEdit] = useState(false);
+  const handleShowSHACEdit = (staff_name, faculty_id) => {
+    setShowSHACEdit(true);
+    seteditStaffName(staff_name);
+    seteditFacultyid(faculty_id);
+  };
+
+  const handleCloseSHACEdit = () => setShowSHACEdit(false);
+
   return (
     <DashboardLayout fixedContent>
+      <EditShacModal
+        showModal={showSHACEdit}
+        closeModal={handleCloseSHACEdit}
+        facultyid={editFacultyid}
+        current_staffname={editStaffName}
+      />
+
       <div className="p-4">
         <h1>Settings</h1>
       </div>
@@ -119,13 +179,19 @@ const Settings = () => {
                     <th>Name</th>
                     <th>Department</th>
                     <th>Access Level</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {staffAccounts.map(({ name, department, access }, index) => {
-                    return (
-                      <tr key={index}>
-                        {/* <td>
+                  {staffAccounts.map(
+                    (
+                      { name, faculty_id, email, department, access_level },
+                      index
+                    ) => {
+                      return (
+                        <tr key={index}>
+                          {/* <td>
                           {" "}
                           <Image
                             src={
@@ -137,12 +203,31 @@ const Settings = () => {
                           />
                           <FaMinus className="m-1" />
                         </td> */}
-                        <td>{name}</td>
-                        <td>{department}</td>
-                        <td>{access ? "Admin" : "Staff"}</td>
-                      </tr>
-                    );
-                  })}
+                          <td>{name}</td>
+                          <td>{department}</td>
+                          <td>{access_level ? "Admin" : "Staff"}</td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              onClick={() =>
+                                handleShowSHACEdit(name, faculty_id)
+                              }
+                            >
+                              <FaEdit />
+                            </Button>
+                          </td>
+                          <td>
+                            <Button
+                              variant="outline-primary"
+                              onClick={() => deleteSHACuser(faculty_id)}
+                            >
+                              <RiDeleteBin2Fill />
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
                 </tbody>
               </Table>
             </div>
