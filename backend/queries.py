@@ -32,7 +32,8 @@ def get_student(student_id):
 
     summary = standardize_data(get_student_data(student_id))
     student_data = {
-        "name": first_name + ", " + last_name,
+        "first_name": first_name,
+        "last_name": last_name,
         "course": course,
         "student_number": student_id,
         "GWA": gwa,
