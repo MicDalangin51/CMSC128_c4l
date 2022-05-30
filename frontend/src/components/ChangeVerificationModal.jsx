@@ -1,4 +1,5 @@
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Alert, Form } from "react-bootstrap";
+import { useState } from "react";
 
 const ChangeVerificationModal = ({
   showModal,
@@ -9,47 +10,51 @@ const ChangeVerificationModal = ({
 }) => {
   const handleClose = () => {
     closeModal();
+
+    setFillUpFormAlertMessage("");
   };
 
-  //edits the student
-  function editStudent() {
-    const data = {
-      student_id: student_num,
-      new_data: shac_member,
-      column: verifier,
-    };
+  const [fillUpFormAlertMessage, setFillUpFormAlertMessage] = useState("");
 
-    fetch(`/api/students/${student_num}`, {
+  const submitFormHandler = async (event) => {
+    event.preventDefault();
+    const response = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
+      body: JSON.stringify({
+        student_id: student_num,
+        new_data: shac_member,
+        col_name: verifier,
+      }),
+    });
 
-        if (body.success) {
-          alert("Successfully changed!");
-        } else {
-          alert("Failed to change!");
-        }
-      });
-
-    closeModal();
-  }
+    switch (response.status) {
+      case 200:
+        closeModal();
+        location.reload();
+        break;
+      default:
+        setFillUpFormAlertMessage("Changing verification unsuccessful!");
+    }
+  };
 
   return (
     <Modal size="lg" show={showModal} centered>
       <Modal.Body>Change {verifier}?</Modal.Body>
+      {fillUpFormAlertMessage !== "" && (
+        <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
+      )}
       <Modal.Footer>
-        <Button variant="secondary" onClick={editStudent}>
-          Yes
-        </Button>
-        <Button variant="secondary" onClick={handleClose}>
-          No
-        </Button>
+        <Form onSubmit={submitFormHandler}>
+          <Button variant="secondary" type="submit" className="mx-3">
+            Yes
+          </Button>
+          <Button variant="secondary" onClick={handleClose}>
+            No
+          </Button>
+        </Form>
       </Modal.Footer>
     </Modal>
   );
