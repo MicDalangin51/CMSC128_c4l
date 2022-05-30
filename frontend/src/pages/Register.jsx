@@ -3,39 +3,39 @@ import { Button, Container, Form, FloatingLabel } from "react-bootstrap";
 import "./Register.css";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const submitFormHandler = async (event) => {
+    event.preventDefault();
 
-  function register(e) {
-    e.preventDefault();
+    const { name, email, department, access_level, password, confirmpass } =
+      event.target;
 
-    const credentials = {
-      name: name,
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword,
-    };
-
-    fetch("api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-
-        if (body.success) {
-          setIsAuthenticated(true);
-        } else {
-          alert("Failed to register");
-        }
+    console.log(access_level.value);
+    if (password === confirmpass) {
+      const response = await fetch("/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.value,
+          email: email.value,
+          password: password.value,
+          department: department.value,
+          access_level: access_level.value,
+        }),
       });
-  }
+
+      switch (response.status) {
+        case 200:
+          location.reload();
+          break;
+        default:
+          console.log("error");
+      }
+    } else {
+      console.log("password is not a match");
+    }
+  };
 
   return (
     <>
@@ -44,33 +44,37 @@ const Register = () => {
         <div className="rightSide">
           <h1 className="text-center">Add Account</h1>
           <Container className="contain" fluid="xs">
-            <Form>
+            <Form onSubmit={submitFormHandler}>
               <FloatingLabel label="Full Name" className="mb-3 text-black">
-                <Form.Control
-                  value={name}
-                  placeholder=" "
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
+                <Form.Control placeholder=" " name="name" required />
                 {/* placeholder is set to any non-empty string for FloatingLabel to work */}
               </FloatingLabel>
 
               <FloatingLabel label="Email address" className="mb-3 text-black">
                 <Form.Control
                   type="email"
-                  value={email}
                   placeholder=" "
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
                   required
                 />
+              </FloatingLabel>
+
+              <FloatingLabel label="Department" className="mb-3 text-black">
+                <Form.Control placeholder=" " name="department" required />
+              </FloatingLabel>
+
+              <FloatingLabel label="Access Level" className="mb-3 text-black">
+                <Form.Select name="access_level" required>
+                  <option>Staff</option>
+                  <option>Admin</option>
+                </Form.Select>
               </FloatingLabel>
 
               <FloatingLabel label="Password" className="mb-3 text-black">
                 <Form.Control
                   type="password"
-                  value={password}
                   placeholder=" "
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
                   required
                 />
               </FloatingLabel>
@@ -81,14 +85,13 @@ const Register = () => {
               >
                 <Form.Control
                   type="password"
-                  value={confirmPassword}
                   placeholder=" "
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  name="confirmpass"
                   required
                 />
               </FloatingLabel>
 
-              <Button onClick={register}>Save</Button>
+              <Button type="submit">Save</Button>
 
               <a href="/settings">
                 <Button className="mx-3">Cancel</Button>
