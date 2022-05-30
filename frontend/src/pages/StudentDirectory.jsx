@@ -48,6 +48,9 @@ const StudentDirectory = () => {
   // const deleteStudent = async (student_id) => {
   //   console.log(student_id);
   //   const response = await fetch(`/api/students`, {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
   //     method: "DELETE",
   //     body: JSON.stringify({
   //       student_id: student_id,
