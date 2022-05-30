@@ -8,6 +8,7 @@ import {
   EditStudentCourseModal,
   AddStudentCourseModal,
   EditStatusModal,
+  AlternateAddStudentCourseModal,
 } from "/src/components";
 import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
 import {
@@ -105,6 +106,7 @@ const StudentRecord = () => {
     setShowEditStudent(false);
     setShowAddCourse(false);
     setShowEditCourse(false);
+    setShowAddCourse2(false);
   };
 
   //changing the verification
@@ -151,8 +153,18 @@ const StudentRecord = () => {
   const [showStatus, setShowStatus] = useState(false);
   const handleShowStatus = () => setShowStatus(true);
 
+  //adding rows with semester and acad year
+  const [showAddCourse2, setShowAddCourse2] = useState(false);
+  const handleShowAddCourse2 = () => setShowAddCourse2(true);
+
   return (
     <DashboardLayout fixedContent>
+      <AlternateAddStudentCourseModal
+        showModal={showAddCourse2}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+      />
+
       <AddStudentCourseModal
         showModal={showAddCourse}
         closeModal={handleCloseAll}
@@ -357,6 +369,11 @@ const StudentRecord = () => {
           </Col>
 
           <Col className="flex-fill m-5">
+            <Row className="my-3">
+              <Button variant="outline-primary" onClick={handleShowAddCourse2}>
+                Add Course
+              </Button>
+            </Row>
             <Row className="my-auto">
               <Col className="my-auto">First Verifier</Col>
               <Col className="my-auto">
