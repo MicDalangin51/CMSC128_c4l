@@ -1,5 +1,16 @@
 import { useState } from "react";
-import { Modal, Tabs, Tab, Form, FloatingLabel, Row, Col, Button, Stack, Alert } from "react-bootstrap";
+import {
+  Modal,
+  Tabs,
+  Tab,
+  Form,
+  FloatingLabel,
+  Row,
+  Col,
+  Button,
+  Stack,
+  Alert,
+} from "react-bootstrap";
 
 const AddStudentModal = ({ show, closeAddStudentModal }) => {
   const [tabKey, setTabKey] = useState("");
@@ -36,24 +47,38 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
   const submitFormHandler = async (event) => {
     event.preventDefault();
 
-    const { student_id, first_name, middle_name, last_name, degree_program, college, gwa } = event.target;
+    const {
+      student_id,
+      first_name,
+      last_name,
+      degree_program,
+      gwa,
+      total_units,
+      req_units,
+      total_cumulative,
+    } = event.target;
 
     const response = await fetch("/api/students", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         student_id: student_id.value,
         first_name: first_name.value,
-        middle_name: middle_name.value,
         last_name: last_name.value,
         degree_program: degree_program.value,
-        college: college.value,
         gwa: parseFloat(gwa.value),
+        total_units: total_units.value,
+        req_units: req_units.value,
+        total_cumulative: total_cumulative.value,
       }),
     });
 
     switch (response.status) {
       case 200:
         closeAddStudentModal();
+        location.reload();
         break;
       default:
         setFillUpFormAlertMessage("Adding student was unsuccessful");
@@ -77,9 +102,16 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
           <Tab eventKey="csv" title="Upload CSV" className="p-4">
             <Form onSubmit={submitFileHandler}>
               <Form.Group controlId="formFile" className="mb-3">
-                <Form.Control type="file" name="file" accept=".csv,.xls,.xlsx" required />
+                <Form.Control
+                  type="file"
+                  name="file"
+                  accept=".csv,.xls,.xlsx"
+                  required
+                />
               </Form.Group>
-              {fileUploadAlertMessage !== "" && <Alert variable="danger">{fileUploadAlertMessage}</Alert>}
+              {fileUploadAlertMessage !== "" && (
+                <Alert variable="danger">{fileUploadAlertMessage}</Alert>
+              )}
               <Stack direction="horizontal">
                 <Button type="submit" className="ms-auto">
                   Upload
@@ -97,11 +129,6 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="Middle name">
-                    <Form.Control name="middle_name" placeholder=" " required />
-                  </FloatingLabel>
-                </Col>
-                <Col className="px-2">
                   <FloatingLabel controlId="floatingInput" label="Last name">
                     <Form.Control name="last_name" placeholder=" " required />
                   </FloatingLabel>
@@ -109,29 +136,85 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
               </Row>
               <Row className="mb-3">
                 <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="College">
-                    <Form.Control name="college" placeholder=" " required />
+                  <FloatingLabel
+                    controlId="floatingInput"
+                    label="Degree program"
+                  >
+                    <Form.Control
+                      name="degree_program"
+                      placeholder=" "
+                      required
+                    />
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="Degree program">
-                    <Form.Control name="degree_program" placeholder=" " required />
+                  <FloatingLabel
+                    controlId="floatingInput"
+                    label="Student number"
+                  >
+                    <Form.Control
+                      name="student_id"
+                      pattern="\d{4}-\d{5}"
+                      placeholder=" "
+                      required
+                    />
                   </FloatingLabel>
                 </Col>
               </Row>
               <Row className="mb-3">
                 <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="Student number">
-                    <Form.Control name="student_id" pattern="\d{4}-\d{5}" placeholder=" " required />
+                  <FloatingLabel
+                    controlId="floatingInput"
+                    label="General weighted average (GWA)"
+                  >
+                    <Form.Control
+                      name="gwa"
+                      pattern="[12](.\d+)?|[345]"
+                      placeholder=" "
+                      required
+                    />
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
-                  <FloatingLabel controlId="floatingInput" label="General weighted average (GWA)">
-                    <Form.Control name="gwa" pattern="[12](.\d+)?|[345]" placeholder=" " required />
+                  <FloatingLabel controlId="floatingInput" label="Total Units">
+                    <Form.Control
+                      name="total_units"
+                      pattern="\d+"
+                      placeholder=" "
+                      required
+                    />
+                  </FloatingLabel>
+                </Col>
+                <Col className="px-2">
+                  <FloatingLabel
+                    controlId="floatingInput"
+                    label="Required Units"
+                  >
+                    <Form.Control
+                      name="req_units"
+                      pattern="\d+"
+                      placeholder=" "
+                      required
+                    />
+                  </FloatingLabel>
+                </Col>
+                <Col className="px-2">
+                  <FloatingLabel
+                    controlId="floatingInput"
+                    label="Total Cumulative"
+                  >
+                    <Form.Control
+                      name="total_cumulative"
+                      pattern="\d+"
+                      placeholder=" "
+                      required
+                    />
                   </FloatingLabel>
                 </Col>
               </Row>
-              {fillUpFormAlertMessage !== "" && <Alert variable="danger">{fillUpFormAlertMessage}</Alert>}
+              {fillUpFormAlertMessage !== "" && (
+                <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
+              )}
               <Stack direction="horizontal">
                 <Button type="submit" className="ms-auto">
                   Submit

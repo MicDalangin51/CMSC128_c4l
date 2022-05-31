@@ -32,7 +32,8 @@ def get_student(student_id):
 
     summary = standardize_data(get_student_data(student_id))
     student_data = {
-        "name": first_name + ", " + last_name,
+        "first_name": first_name,
+        "last_name": last_name,
         "course": course,
         "student_number": student_id,
         "GWA": gwa,
@@ -310,29 +311,33 @@ def record_changelogs(faculty_id, student_id, justification, col_name, prev_data
 # returns dictionaries within a list
 def get_all_faculties():
     faculties = []
-    for name, faculty_id, email, in cursor.execute('SELECT name, faculty_id, email FROM faculty'):
+    for name, faculty_id, email, department, access_level in cursor.execute('SELECT name, faculty_id, email, department, access_level FROM faculty'):
         faculty = {
             "name": name,
             "faculty_id": faculty_id,
-            "email": email
+            "email": email,
+            "department":department,
+            "access_level":access_level,
         }
         faculties.append(faculty)
 
     return faculties
 
-# returns a list of errors
 def get_student_flags(student_id):
     errors = []
-    for flags in cursor.execute(f"SELECT flag FROM studentFlags WHERE student_id = '{student_id}'"):
-        errors.append(flags)
-        
+    for flag in cursor.execute(f"SELECT flag FROM studentFlags WHERE student_id = '{student_id}'"):
+        temp = {
+            "flags": flag[0]
+        }
+        errors.append(temp) 
+    # print(errors)   
     return errors
 
 # returns dictionaries within a list
 def get_student_data_flags(student_id):
     flags = []
     for id, course_code, semester, acad_year, col_name, prev_data, new_data in cursor.execute(f"SELECT student_id, course_code, semester, acad_year, col_name, prev_data, new_data FROM remarks WHERE student_id = '{student_id}'"):
-        flag = {
+        temp = {
             "student_id": id,
             "course_code": course_code,
             "semester": semester,
@@ -341,8 +346,8 @@ def get_student_data_flags(student_id):
             "prev_data": prev_data,
             "new_data": new_data
         }
-        flags.append(flag)
-
+        flags.append (temp)
+    print(flags)
     return flags
 
 # returns True if editing a student is successful. Otherwise it returns False 
@@ -471,8 +476,15 @@ def get_access_level(faculty_id):
 # edit_data('3284-18043', 'studentData', 'ENG 1(AH)', '3', '15/16', 'grade', '2')
 
 # check_ge_requirements('4579-76154')
-# create_faculty('shac_shac91@gmail.com', 'shac', '1111-11111', 'Shac Member 91')
-
+# add_faculty('shac_shac91@gmail.com', 'shac', '1111-11111', 'Shac Member 91')
+# add_faculty('shac@gmail.com', 'shacmem', '1111-22222', 'Shac Member 1')
 # print(get_all_faculties())
 
+# cursor = connection.cursor()
+# cursor.execute('insert into studentFlags(student_id, flag) values(?,?);', ('7025-43182', 'Incomplete GE'))
+# cursor.execute('insert into studentFlags(student_id, flag) values(?,?);', ('7261-38974', 'Incomplete GE'))
+# cursor.execute('insert into remarks(student_id, course_code, semester, acad_year, col_name, prev_data, new_data) values(?,?,?,?,?,?,?);', ('7025-43182', 'ENG 2(AH)', '2', '15/16', 'grade', '1.5', '3'))
+# connection.commit()
+# delete_student_flag('7025-43182', 'Incomplete GE')
+# delete_student_remarks('7025-43182', 'ENG 2(AH)', '2', '15/16')
 

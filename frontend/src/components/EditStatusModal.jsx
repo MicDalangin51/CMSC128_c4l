@@ -1,13 +1,14 @@
 import { Modal, Button, Alert, Form } from "react-bootstrap";
 import { useState } from "react";
 
-const ChangeVerificationModal = ({
+const EditStatusModal = ({
   showModal,
   closeModal,
-  verifier,
-  shac_member,
+  current_status,
   student_num,
 }) => {
+  var status = current_status == "true" ? "false" : "true";
+
   const handleClose = () => {
     closeModal();
 
@@ -25,8 +26,8 @@ const ChangeVerificationModal = ({
       },
       body: JSON.stringify({
         student_id: student_num,
-        new_data: shac_member,
-        col_name: verifier,
+        new_data: status,
+        col_name: "status",
       }),
     });
 
@@ -36,17 +37,16 @@ const ChangeVerificationModal = ({
         location.reload();
         break;
       default:
-        setFillUpFormAlertMessage("Changing verification unsuccessful!");
+        setFillUpFormAlertMessage("Changing status unsuccessful!");
     }
   };
 
   return (
     <Modal size="lg" show={showModal} centered>
       <Modal.Body>
-        Confirm verification?
-        <br />
+        Change status?
         <p className="text-secondary">
-          Press yes if there are no errors were detected.
+          Press yes if you want to edit student status.
         </p>
         {fillUpFormAlertMessage !== "" && (
           <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
@@ -66,4 +66,4 @@ const ChangeVerificationModal = ({
   );
 };
 
-export default ChangeVerificationModal;
+export default EditStatusModal;

@@ -10,7 +10,13 @@ import {
   Stack,
   Table,
 } from "react-bootstrap";
-import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaSearch,
+  FaMinus,
+  FaEdit,
+} from "react-icons/fa";
 import { DashboardLayout, AddStudentModal } from "/src/components";
 
 const StudentDirectory = () => {
@@ -37,6 +43,55 @@ const StudentDirectory = () => {
   // Temporary variables [END] -----------------------------------------------------
 
   const [sortProperty, setSortProperty] = useState("name");
+
+  // //deletes a student
+  // const deleteStudent = async (student_id) => {
+  //   console.log(student_id);
+  //   const response = await fetch(`/api/students`, {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     method: "DELETE",
+  //     body: JSON.stringify({
+  //       student_id: student_id,
+  //     }),
+  //   });
+
+  //   switch (response.status) {
+  //     case 200:
+  //       console.log("Student deleted");
+  //       break;
+  //     default:
+  //       console.log("Student not deleted");
+  //   }
+  // };
+
+  //deletes a student
+  function deleteStudent(student_number) {
+    console.log(student_number);
+    const row = {
+      student_number: student_number,
+    };
+
+    fetch(`/api/students`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(row),
+    })
+      .then((response) => response.json())
+      .then((body) => {
+        console.log(body);
+
+        if (body.success) {
+          console.log("Successfully deleted!");
+        } else {
+          console.log("Failed to delete!");
+        }
+      });
+    // location.reload();
+  }
 
   return (
     <>
@@ -95,6 +150,7 @@ const StudentDirectory = () => {
                   <th>Name</th>
                   <th>Course</th>
                   <th>Status</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -112,6 +168,15 @@ const StudentDirectory = () => {
                               {status}
                             </Badge>
                           )}
+                        </td>
+                        <td>
+                          <Button
+                            variant="outline-none"
+                            size="sm"
+                            onClick={() => deleteStudent(student_number)}
+                          >
+                            <FaMinus />
+                          </Button>
                         </td>
                       </tr>
                     );
