@@ -102,12 +102,12 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
           <Tab eventKey="csv" title="Upload CSV" className="p-4">
             <Form onSubmit={submitFileHandler}>
               <Form.Group controlId="formFile" className="mb-3">
-                <Form.Control
+                {/* <Form.Control
                   type="file"
                   name="file"
                   accept=".csv,.xls,.xlsx"
                   required
-                />
+                /> */}
               </Form.Group>
               {fileUploadAlertMessage !== "" && (
                 <Alert variable="danger">{fileUploadAlertMessage}</Alert>
