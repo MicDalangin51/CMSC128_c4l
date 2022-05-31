@@ -12,34 +12,22 @@ import {
 } from "react-bootstrap";
 import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
 
-import { DashboardLayout } from "/src/components";
+import { DashboardLayout, MainTableControls } from "/src/components";
+
+const rowLimit = 50;
+
+const sortOptions = [
+  { label: "Date", value: "date" },
+  { label: "User", value: "user" },
+];
 
 const Changelog = () => {
-  // Temporary variables
-  let changes = [
-    {
-      date: "5-1-22",
-      user: "Admin 1",
-      change: "change",
-    },
-    {
-      date: "5-1-22",
-      user: "Admin 2",
-      change: "change",
-    },
-    {
-      date: "5-1-22",
-      user: "Admin 3",
-      change: "change",
-    },
-    {
-      date: "5-1-22",
-      user: "Admin 4",
-      change: "change",
-    },
-  ];
-
-  const [changelog, setChangelog] = useState([]);
+  const [changeLogs, setChangeLogs] = useState([]);
+  const [totalChangeLogCount, setTotalChangeLogCount] = useState(0);
+  const [search, setSearch] = useState("");
+  const [tablePage, setTablePage] = useState(1);
+  const [sortBy, setSortBy] = useState(sortOptions[0].value);
+  const [orderBy, setOrderBy] = useState("asc");
 
   useEffect(async () => {
     const response = await fetch("/api/changelog");
@@ -50,42 +38,17 @@ const Changelog = () => {
   return (
     <DashboardLayout fixedContent>
       <Stack className="h-100">
-        <Row className="mb-2">
-          <Col className="d-flex align-items-center">
-            <InputGroup>
-              <Button variant="outline-primary">
-                <FaSearch />
-              </Button>
-              <FormControl placeholder="Search change" />
-            </InputGroup>
-          </Col>
-          <Col>
-            <Stack
-              direction="horizontal"
-              gap="2"
-              className="justify-content-end align-items-center"
-            >
-              <small></small>
-              <Button variant="outline-primary" disabled>
-                <FaAngleLeft />
-              </Button>
-              <Button variant="outline-primary" disabled>
-                <FaAngleRight />
-              </Button>
-            </Stack>
-          </Col>
-        </Row>
-        <Stack direction="horizontal" gap="2" className="mb-2">
-          <span>Sort by</span>
-          <Form.Select className="w-auto">
-            <option value="date">Date</option>
-            <option value="user">User</option>
-          </Form.Select>
-          <Form.Select className="w-auto">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </Form.Select>
-        </Stack>
+        <MainTableControls
+          objectName="change log"
+          totalObjectCount={totalChangeLogCount}
+          tablePage={tablePage}
+          rowLimit={rowLimit}
+          setTablePage={setTablePage}
+          sortOptions={sortOptions}
+          onSortVariableChange={(e) => setSortBy(e.target.value)}
+          onSortOrderChange={(e) => setOrderBy(e.target.value)}
+          setSearch={setSearch}
+        />
         <div className="flex-fill overflow-auto">
           <Table hover className="table-fixed-head">
             <thead className="sticky-top">
@@ -96,7 +59,7 @@ const Changelog = () => {
               </tr>
             </thead>
             <tbody>
-              {changes.map(({ date, user, change }, index) => {
+              {changeLogs.map(({ date, user, change }, index) => {
                 return (
                   <tr key={index}>
                     <td>{date}</td>
