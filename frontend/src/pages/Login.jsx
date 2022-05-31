@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Container, Form, InputGroup } from "react-bootstrap";
+import { Button, Container, Form, InputGroup, Alert } from "react-bootstrap";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 import "./Login.css";
@@ -14,36 +14,46 @@ const Login = () => {
 
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
   const setField = (field, value) => {
     setForm({
       ...form,
-      [field]: value
-    })
+      [field]: value,
+    });
 
     if (!!errors[field])
       setErrors({
         ...errors,
-        [field]: null
-      })
+        [field]: null,
+      });
   };
 
   const validateForm = () => {
     const { email, password } = form;
     const newErrors = {};
-    const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    const regex =
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
-    if (!email || email === '') newErrors.email = "Please enter your email address!"
+    if (!email || email === "")
+      newErrors.email = "Please enter your email address!";
     else if (regex.test(email) === false) {
-      newErrors.email = "Please enter your email address in this format: yourname@example.com"
-    };
+      newErrors.email =
+        "Please enter your email address in this format: yourname@up.edu.ph";
+    }
 
-    if (!password || password === '') newErrors.password = "Please enter your password!"
+    if (!password || password === "")
+      newErrors.password = "Please enter your password!";
 
     return newErrors;
-  }
+  };
 
   const togglePassword = () => {
     setPasswordShown(!passwordShown);
+  };
+
+  const credentialError = () => {
+    setLoginError("Failed to Login! Invalid Email/Password!");
+    setTimeout(() => { setLoginError("") }, 5000);
   };
 
   const navigateTo = useNavigate();
@@ -62,7 +72,6 @@ const Login = () => {
 
     console.log("form submitted");
     console.log(form);
-
 
     const credentials = {
       email: form.email,
@@ -83,10 +92,10 @@ const Login = () => {
         if (body.success) {
           setIsAuthenticated(true);
         } else {
-          alert("Failed to log in");
+          credentialError();
+          //alert("Failed to log in");
         }
       });
-  
   }
 
   return (
@@ -105,10 +114,10 @@ const Login = () => {
                 title="Enter email"
                 placeholder="Enter email"
                 value={form.email}
-                onChange={(e) => setField('email', e.target.value)}
+                onChange={(e) => setField("email", e.target.value)}
                 isInvalid={!!errors.email}
               />
-              <Form.Control.Feedback type='invalid'>
+              <Form.Control.Feedback type="invalid">
                 {errors.email}
               </Form.Control.Feedback>
             </Form.Group>
@@ -121,9 +130,9 @@ const Login = () => {
                   title="Enter password"
                   placeholder="Enter password"
                   value={form.password}
-                  onChange={(e) => setField('password', e.target.value)}
+                  onChange={(e) => setField("password", e.target.value)}
                   isInvalid={!!errors.password}
-                />  
+                />
                 <Button
                   onClick={togglePassword}
                   variant="outline-secondary"
@@ -131,10 +140,11 @@ const Login = () => {
                 >
                   {passwordShown ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
                 </Button>
-                <Form.Control.Feedback type='invalid' >
+                <Form.Control.Feedback type="invalid">
                   {errors.password}
                 </Form.Control.Feedback>
               </InputGroup>
+                
             </Form.Group>
 
             <br />
@@ -145,6 +155,7 @@ const Login = () => {
             >
               Login
             </Button>
+            <span style={{color: "#d63f41",}} className="mt-2">{loginError}</span>
           </Form>
         </Container>
       </div>
