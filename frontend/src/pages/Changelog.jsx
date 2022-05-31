@@ -30,10 +30,26 @@ const Changelog = () => {
   const [orderBy, setOrderBy] = useState("asc");
 
   useEffect(async () => {
-    const response = await fetch("/api/changelog");
+    const changeLogStartRange = (tablePage - 1) * rowLimit + 1;
+
+    const queries = {
+      search,
+      offset: changeLogStartRange - 1,
+      limit: rowLimit,
+      sort_by: sortBy,
+      order: orderBy,
+    };
+
+    console.log("/api/change-logs?" + new URLSearchParams(queries));
+
+    const response = await fetch(
+      "/api/change-logs?" + new URLSearchParams(queries)
+    );
     const data = await response.json();
-    setChangelog(data.changelog);
-  }, []);
+
+    setChangeLogs(data.changeLogs);
+    setTotalChangeLogCount(data.totalChangeLogCount);
+  }, [search, tablePage, sortBy, orderBy]);
 
   return (
     <DashboardLayout fixedContent>
