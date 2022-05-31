@@ -5,11 +5,22 @@ from flask_cors import CORS
 from queries import *
 from csv_reader import *
 
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    jwt_required,
+    get_jwt_identity,
+)
+
 
 client_dist_folder = "../frontend/dist"
 
 app = Flask(__name__, static_folder=f"{client_dist_folder}/assets")
 CORS(app)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+jwt = JWTManager(app)
+
 
 @app.route('/')
 @app.route('/<path:path>')
