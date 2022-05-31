@@ -67,7 +67,7 @@ const Settings = () => {
   useEffect(async () => {
     const response = await fetch("/api/users");
     const data = await response.json();
-    setStaff(data.users);
+    setStaff(data.staff);
   }, []);
 
   // for (let i = 0; i < 3; i++) students = [...students, ...students];
