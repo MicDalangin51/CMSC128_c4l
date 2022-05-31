@@ -8,3 +8,4 @@ export { default as EditStudentCourseModal } from "./EditStudentCourseModal";
 export { default as EditStatusModal } from "./EditStatusModal";
 export { default as EditShacModal } from "./EditShacModal";
 export { default as AlternateAddStudentCourseModal } from "./AlternateAddStudentCourseModal";
+export { default as MainTableControls } from "./MainTableControls";
