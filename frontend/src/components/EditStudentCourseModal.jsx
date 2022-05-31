@@ -147,7 +147,7 @@ const EditStudentCourseModal = ({
   return (
     <Modal size="lg" show={showModal} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Add Course</Modal.Title>
+        <Modal.Title>Edit Course</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={submitFormHandler}>

@@ -43,10 +43,15 @@ const EditStatusModal = ({
 
   return (
     <Modal size="lg" show={showModal} centered>
-      <Modal.Body>Change status?</Modal.Body>
-      {fillUpFormAlertMessage !== "" && (
-        <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
-      )}
+      <Modal.Body>
+        Change status?
+        <p className="text-secondary">
+          Press yes if you want to edit student status.
+        </p>
+        {fillUpFormAlertMessage !== "" && (
+          <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
+        )}
+      </Modal.Body>
       <Modal.Footer>
         <Form onSubmit={submitFormHandler}>
           <Button variant="secondary" type="submit" className="mx-3">

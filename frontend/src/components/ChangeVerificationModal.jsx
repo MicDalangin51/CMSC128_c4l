@@ -42,10 +42,16 @@ const ChangeVerificationModal = ({
 
   return (
     <Modal size="lg" show={showModal} centered>
-      <Modal.Body>Change {verifier}?</Modal.Body>
-      {fillUpFormAlertMessage !== "" && (
-        <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
-      )}
+      <Modal.Body>
+        Confirm verification?
+        <br />
+        <p className="text-secondary">
+          Press yes if there are no errors were detected.
+        </p>
+        {fillUpFormAlertMessage !== "" && (
+          <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
+        )}
+      </Modal.Body>
       <Modal.Footer>
         <Form onSubmit={submitFormHandler}>
           <Button variant="secondary" type="submit" className="mx-3">
