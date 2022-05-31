@@ -89,53 +89,28 @@ const StudentDirectory = () => {
   }, [tablePage, totalStudentCount]);
 
   // //deletes a student
-  // const deleteStudent = async (student_id) => {
-  //   console.log(student_id);
-  //   const response = await fetch(`/api/students`, {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     method: "DELETE",
-  //     body: JSON.stringify({
-  //       student_id: student_id,
-  //     }),
-  //   });
-
-  //   switch (response.status) {
-  //     case 200:
-  //       console.log("Student deleted");
-  //       break;
-  //     default:
-  //       console.log("Student not deleted");
-  //   }
-  // };
-
-  //deletes a student
-  function deleteStudent(student_number) {
-    console.log(student_number);
-    const row = {
-      student_number: student_number,
-    };
-
-    fetch(`/api/students`, {
-      method: "DELETE",
+  const deleteStudent = async (student_id) => {
+    console.log(student_id);
+    const response = await fetch(`/api/students`, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
+      method: "DELETE",
+      body: JSON.stringify({
+        student_number: student_id,
+      }),
+    });
 
-        if (body.success) {
-          console.log("Successfully deleted!");
-        } else {
-          console.log("Failed to delete!");
-        }
-      });
-    // location.reload();
-  }
+    switch (response.status) {
+      case 200:
+        console.log("Student deleted");
+        location.reload();
+        break;
+      default:
+        console.log("Student not deleted");
+        alert("Student not deleted");
+    }
+  };
 
   return (
     <>
@@ -232,11 +207,22 @@ const StudentDirectory = () => {
                         </td>
                         <td>{course_name}</td>
                         <td>
-                          {status == "verified" && (
+                          {status == "true" && (
                             <Badge pill bg="success">
-                              {status}
+                              verified
                             </Badge>
                           )}
+                          {status == "false" && (
+                            <Badge pill bg="secondary">
+                              unverified
+                            </Badge>
+                          )}
+                          {status == null ||
+                            (status == "pending" && (
+                              <Badge pill bg="secondary">
+                                unverified
+                              </Badge>
+                            ))}
                         </td>
                         <td>
                           <Button
