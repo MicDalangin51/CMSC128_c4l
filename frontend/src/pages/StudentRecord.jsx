@@ -311,7 +311,7 @@ const StudentRecord = () => {
                       <Table hover responsive>
                         <thead>
                           <tr className="text-secondary">
-                            <th>Course Number</th>
+                            <th>Course Code</th>
                             <th>Grade</th>
                             <th>Units</th>
                             <th>Weight</th>

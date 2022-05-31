@@ -64,7 +64,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        student_id: student_id.value,
+        student_number: student_id.value,
         first_name: first_name.value,
         last_name: last_name.value,
         degree_program: degree_program.value,
