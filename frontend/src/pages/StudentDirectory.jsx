@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Badge,
   Button,
+  ButtonGroup,
   Col,
   Form,
   FormControl,
@@ -20,6 +21,11 @@ import {
 import { DashboardLayout, AddStudentModal } from "/src/components";
 
 const rowLimit = 50;
+
+const sortOptions = [
+  { label: "Name", value: "name" },
+  { label: "Degree", value: "degree" },
+];
 
 const StudentDirectory = () => {
   const [students, setStudents] = useState([]);
@@ -131,25 +137,30 @@ const StudentDirectory = () => {
               </InputGroup>
             </Col>
           </Row>
-          <Row>
+          <Row className="mb-1">
             <Col>
-              <Stack direction="horizontal" gap="2" className="mb-2">
+              <Stack direction="horizontal" gap="2">
                 <span>Sort by</span>
-                <Form.Select className="w-auto">
-                  <option value="name">Name</option>
-                  <option value="degree">Degree</option>
-                </Form.Select>
-                <Form.Select className="w-auto">
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </Form.Select>
+                <InputGroup size="sm" className="w-auto">
+                  <Form.Select className="w-auto">
+                    {sortOptions.map(({ label, value }, index) => (
+                      <option value={value} key={index}>
+                        {label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Select className="w-auto">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </Form.Select>
+                </InputGroup>
               </Stack>
             </Col>
             <Col>
               <Stack
                 direction="horizontal"
                 gap="2"
-                className="justify-content-end align-items-center"
+                className="justify-content-end"
               >
                 <span>
                   {`${
@@ -157,20 +168,22 @@ const StudentDirectory = () => {
                     `${studentStartRange} - ${studentEndRange} of ${totalStudentCount}`
                   } students`}
                 </span>
-                <Button
-                  variant="outline-primary"
-                  onClick={goToPreviousPage}
-                  disabled={tablePage == 1}
-                >
-                  <FaAngleLeft />
-                </Button>
-                <Button
-                  variant="outline-primary"
-                  onClick={goToNextPage}
-                  disabled={totalStudentCount === studentEndRange}
-                >
-                  <FaAngleRight />
-                </Button>
+                <ButtonGroup size="sm">
+                  <Button
+                    variant="outline-primary"
+                    onClick={goToPreviousPage}
+                    disabled={tablePage == 1}
+                  >
+                    <FaAngleLeft />
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={goToNextPage}
+                    disabled={totalStudentCount === studentEndRange}
+                  >
+                    <FaAngleRight />
+                  </Button>
+                </ButtonGroup>
               </Stack>
             </Col>
           </Row>
