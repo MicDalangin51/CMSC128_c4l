@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import {
   Badge,
   Button,
+  ButtonGroup,
   Col,
   Form,
-  FormControl,
   InputGroup,
   Row,
   Stack,
@@ -19,9 +19,37 @@ import {
 } from "react-icons/fa";
 import { DashboardLayout, AddStudentModal } from "/src/components";
 
+const rowLimit = 50;
+
+const sortOptions = [
+  { label: "Name", value: "name" },
+  { label: "Degree", value: "degree" },
+];
+
 const StudentDirectory = () => {
   const [students, setStudents] = useState([]);
+  const [totalStudentCount, setTotalStudentCount] = useState(0);
+  const [search, setSearch] = useState("");
+  const [tablePage, setTablePage] = useState(1);
+  const [studentStartRange, setStudentStartRange] = useState(1);
+  const [studentEndRange, setStudentEndRange] = useState(rowLimit);
+  const [sortBy, setSortBy] = useState(sortOptions[0].value);
+  const [orderBy, setOrderBy] = useState("asc");
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+
+  const updateSearch = (e) => {
+    e.preventDefault();
+
+    setSearch(e.target.search.value);
+  };
+
+  const goToPreviousPage = () => {
+    setTablePage(tablePage - 1);
+  };
+
+  const goToNextPage = () => {
+    setTablePage(tablePage + 1);
+  };
 
   const openAddStudentModal = () => {
     setShowAddStudentModal(true);
@@ -32,17 +60,33 @@ const StudentDirectory = () => {
   };
 
   useEffect(async () => {
-    const response = await fetch("/api/students");
+    const queries = {
+      search,
+      offset: studentStartRange - 1,
+      limit: rowLimit,
+      sort_by: sortBy,
+      order: orderBy,
+    };
+
+    const response = await fetch(
+      "/api/students?" + new URLSearchParams(queries)
+    );
     const data = await response.json();
+
     setStudents(data.students);
-  }, []);
+    setTotalStudentCount(data.totalStudentCount);
+  }, [search, studentStartRange, sortBy, orderBy]);
 
-  const lowerStudentRange = 1;
-  const upperStudentRange = 50;
-  const studentCount = 1372;
-  // Temporary variables [END] -----------------------------------------------------
+  useEffect(() => {
+    setStudentStartRange((tablePage - 1) * rowLimit + 1);
 
-  const [sortProperty, setSortProperty] = useState("name");
+    const computedStudentEndRange = tablePage * rowLimit;
+    setStudentEndRange(
+      computedStudentEndRange <= totalStudentCount
+        ? computedStudentEndRange
+        : totalStudentCount
+    );
+  }, [tablePage, totalStudentCount]);
 
   // //deletes a student
   // const deleteStudent = async (student_id) => {
@@ -102,44 +146,69 @@ const StudentDirectory = () => {
               <Button onClick={openAddStudentModal}>Add student</Button>
             </Col>
             <Col className="d-flex align-items-center">
-              <InputGroup>
-                <Button variant="outline-primary">
-                  <FaSearch />
-                </Button>
-                <FormControl placeholder="Search student" />
-              </InputGroup>
+              <Form onSubmit={updateSearch} className="w-100">
+                <InputGroup>
+                  <Button type="submit" variant="outline-primary">
+                    <FaSearch />
+                  </Button>
+                  <Form.Control name="search" placeholder="Search student" />
+                </InputGroup>
+              </Form>
             </Col>
           </Row>
-          <Row>
+          <Row className="mb-1">
             <Col>
-              <Stack direction="horizontal" gap="2" className="mb-2">
+              <Stack direction="horizontal" gap="2">
                 <span>Sort by</span>
-                <Form.Select className="w-auto">
-                  <option value="name">Name</option>
-                  <option value="degree">Degree</option>
-                </Form.Select>
-                <Form.Select className="w-auto">
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </Form.Select>
+                <InputGroup size="sm" className="w-auto">
+                  <Form.Select
+                    className="w-auto"
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    {sortOptions.map(({ label, value }, index) => (
+                      <option value={value} key={index}>
+                        {label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Select
+                    className="w-auto"
+                    onChange={(e) => setOrderBy(e.target.value)}
+                  >
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                  </Form.Select>
+                </InputGroup>
               </Stack>
             </Col>
             <Col>
               <Stack
                 direction="horizontal"
                 gap="2"
-                className="justify-content-end align-items-center"
+                className="justify-content-end"
               >
-                <small>
-                  {lowerStudentRange} – {upperStudentRange} of {studentCount}
-                  students
-                </small>
-                <Button variant="outline-primary">
-                  <FaAngleLeft />
-                </Button>
-                <Button variant="outline-primary">
-                  <FaAngleRight />
-                </Button>
+                <span>
+                  {`${
+                    totalStudentCount &&
+                    `${studentStartRange} - ${studentEndRange} of ${totalStudentCount}`
+                  } students`}
+                </span>
+                <ButtonGroup size="sm">
+                  <Button
+                    variant="outline-primary"
+                    onClick={goToPreviousPage}
+                    disabled={tablePage == 1}
+                  >
+                    <FaAngleLeft />
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={goToNextPage}
+                    disabled={totalStudentCount === studentEndRange}
+                  >
+                    <FaAngleRight />
+                  </Button>
+                </ButtonGroup>
               </Stack>
             </Col>
           </Row>
