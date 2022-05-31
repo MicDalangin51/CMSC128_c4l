@@ -60,11 +60,22 @@ const StudentDirectory = () => {
   };
 
   useEffect(async () => {
-    const response = await fetch("/api/students");
+    const queries = {
+      search,
+      offset: studentStartRange - 1,
+      limit: rowLimit,
+      sort_by: sortBy,
+      order: orderBy,
+    };
+
+    const response = await fetch(
+      "/api/students?" + new URLSearchParams(queries)
+    );
     const data = await response.json();
+
     setStudents(data.students);
     setTotalStudentCount(data.totalStudentCount);
-  }, []);
+  }, [search, studentStartRange, sortBy, orderBy]);
 
   useEffect(() => {
     setStudentStartRange((tablePage - 1) * rowLimit + 1);
@@ -76,8 +87,6 @@ const StudentDirectory = () => {
         : totalStudentCount
     );
   }, [tablePage, totalStudentCount]);
-
-  const [sortProperty, setSortProperty] = useState("name");
 
   // //deletes a student
   // const deleteStudent = async (student_id) => {
