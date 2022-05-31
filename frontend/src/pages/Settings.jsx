@@ -10,7 +10,7 @@ import {
   Table,
   Badge,
 } from "react-bootstrap";
-import { FaEdit, FaPlus, FaMinus } from "react-icons/fa";
+import { FaEdit, FaPlus } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import { DashboardLayout, EditShacModal } from "/src/components";

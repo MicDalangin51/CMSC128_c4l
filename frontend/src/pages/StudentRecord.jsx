@@ -10,7 +10,8 @@ import {
   EditStatusModal,
   AlternateAddStudentCourseModal,
 } from "/src/components";
-import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 import {
   Accordion,
   Table,
@@ -325,6 +326,7 @@ const StudentRecord = () => {
                                 size="sm"
                               >
                                 <FaPlus />
+                                Add Course
                               </Button>
                             </th>
                           </tr>
@@ -491,7 +493,8 @@ const StudentRecord = () => {
                                       )
                                     }
                                   >
-                                    <FaMinus />
+                                    <RiDeleteBin2Fill />
+                                    Delete
                                   </Button>
                                   <Button
                                     onClick={() =>
@@ -508,6 +511,7 @@ const StudentRecord = () => {
                                     size="sm"
                                   >
                                     <FaEdit />
+                                    Edit
                                   </Button>
                                 </tr>
                               );

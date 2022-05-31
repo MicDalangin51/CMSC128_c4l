@@ -10,13 +10,8 @@ import {
   Stack,
   Table,
 } from "react-bootstrap";
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaSearch,
-  FaMinus,
-  FaEdit,
-} from "react-icons/fa";
+import { FaAngleLeft, FaAngleRight, FaSearch, FaEdit } from "react-icons/fa";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 
 import {
   DashboardLayout,
@@ -151,7 +146,8 @@ const StudentDirectory = () => {
                             size="sm"
                             onClick={() => deleteStudent(student_number)}
                           >
-                            <FaMinus />
+                            <RiDeleteBin2Fill />
+                            Delete
                           </Button>
                         </td>
                       </tr>
