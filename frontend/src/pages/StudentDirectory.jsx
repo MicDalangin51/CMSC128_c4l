@@ -19,9 +19,23 @@ import {
 } from "react-icons/fa";
 import { DashboardLayout, AddStudentModal } from "/src/components";
 
+const rowLimit = 50;
+
 const StudentDirectory = () => {
   const [students, setStudents] = useState([]);
+  const [totalStudentCount, setTotalStudentCount] = useState(0);
+  const [tablePage, setTablePage] = useState(1);
+  const [studentStartRange, setStudentStartRange] = useState(1);
+  const [studentEndRange, setStudentEndRange] = useState(rowLimit);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+
+  const goToPreviousPage = () => {
+    setTablePage(tablePage - 1);
+  };
+
+  const goToNextPage = () => {
+    setTablePage(tablePage + 1);
+  };
 
   const openAddStudentModal = () => {
     setShowAddStudentModal(true);
@@ -35,12 +49,19 @@ const StudentDirectory = () => {
     const response = await fetch("/api/students");
     const data = await response.json();
     setStudents(data.students);
+    setTotalStudentCount(data.totalStudentCount);
   }, []);
 
-  const lowerStudentRange = 1;
-  const upperStudentRange = 50;
-  const studentCount = 1372;
-  // Temporary variables [END] -----------------------------------------------------
+  useEffect(() => {
+    setStudentStartRange((tablePage - 1) * rowLimit + 1);
+
+    const computedStudentEndRange = tablePage * rowLimit;
+    setStudentEndRange(
+      computedStudentEndRange <= totalStudentCount
+        ? computedStudentEndRange
+        : totalStudentCount
+    );
+  }, [tablePage, totalStudentCount]);
 
   const [sortProperty, setSortProperty] = useState("name");
 
@@ -130,14 +151,24 @@ const StudentDirectory = () => {
                 gap="2"
                 className="justify-content-end align-items-center"
               >
-                <small>
-                  {lowerStudentRange} – {upperStudentRange} of {studentCount}
-                  students
-                </small>
-                <Button variant="outline-primary">
+                <span>
+                  {`${
+                    totalStudentCount &&
+                    `${studentStartRange} - ${studentEndRange} of ${totalStudentCount}`
+                  } students`}
+                </span>
+                <Button
+                  variant="outline-primary"
+                  onClick={goToPreviousPage}
+                  disabled={tablePage == 1}
+                >
                   <FaAngleLeft />
                 </Button>
-                <Button variant="outline-primary">
+                <Button
+                  variant="outline-primary"
+                  onClick={goToNextPage}
+                  disabled={totalStudentCount === studentEndRange}
+                >
                   <FaAngleRight />
                 </Button>
               </Stack>
