@@ -64,7 +64,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        student_id: student_id.value,
+        student_number: student_id.value,
         first_name: first_name.value,
         last_name: last_name.value,
         degree_program: degree_program.value,
@@ -102,12 +102,12 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
           <Tab eventKey="csv" title="Upload CSV" className="p-4">
             <Form onSubmit={submitFileHandler}>
               <Form.Group controlId="formFile" className="mb-3">
-                <Form.Control
+                {/* <Form.Control
                   type="file"
                   name="file"
                   accept=".csv,.xls,.xlsx"
                   required
-                />
+                /> */}
               </Form.Group>
               {fileUploadAlertMessage !== "" && (
                 <Alert variable="danger">{fileUploadAlertMessage}</Alert>

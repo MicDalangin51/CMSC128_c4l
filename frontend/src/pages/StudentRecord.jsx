@@ -10,7 +10,8 @@ import {
   EditStatusModal,
   AlternateAddStudentCourseModal,
 } from "/src/components";
-import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 import {
   Accordion,
   Table,
@@ -21,6 +22,9 @@ import {
   Card,
   Badge,
   ListGroup,
+  OverlayTrigger,
+  Overlay,
+  Tooltip,
 } from "react-bootstrap";
 import casBuilding from "/src/images/cas-building.png";
 
@@ -56,7 +60,42 @@ const StudentRecord = () => {
         flag.semester == semester
     );
 
-    console.log(something);
+    if (something == undefined) {
+      return undefined;
+    } else {
+      return something.prev_data;
+    }
+  }
+
+  function findSuggestion(semester, academic_year, course_number) {
+    let something = dataFlags.find(
+      (flag) =>
+        flag.course_code == course_number &&
+        flag.acad_year == academic_year &&
+        flag.semester == semester
+    );
+
+    if (something == undefined) {
+      return undefined;
+    } else {
+      return something.new_data;
+    }
+  }
+
+  function changeColor(column, semester, acad_year, course_number) {
+    const previous_data = findRow(semester, acad_year, course_number);
+    let color = previous_data == column ? "red" : "white";
+    return color;
+  }
+
+  function changeMessage(column, semester, acad_year, course_number) {
+    const hasError = findSuggestion(semester, acad_year, course_number);
+    const previous_data = findRow(semester, acad_year, course_number);
+    let message =
+      hasError && previous_data == column
+        ? "ERROR: Please change " + column + " to " + hasError
+        : "NO ERROR";
+    return message;
   }
 
   //deletes a row of student-data
@@ -273,7 +312,7 @@ const StudentRecord = () => {
                       <Table hover responsive>
                         <thead>
                           <tr className="text-secondary">
-                            <th>Course Number</th>
+                            <th>Course Code</th>
                             <th>Grade</th>
                             <th>Units</th>
                             <th>Weight</th>
@@ -287,6 +326,7 @@ const StudentRecord = () => {
                                 size="sm"
                               >
                                 <FaPlus />
+                                Add Course
                               </Button>
                             </th>
                           </tr>
@@ -309,22 +349,138 @@ const StudentRecord = () => {
                                 "/" +
                                 entry.semester.substring(22, 24);
 
-                              let color =
-                                findRow(semester, acad_year, course_number) ==
-                                grade
-                                  ? "red"
-                                  : "green";
-                              // console.log(color);
-
                               return (
                                 <tr key={index}>
-                                  <td style={{ backgroundColor: color }}>
-                                    {course_number}
-                                  </td>
-                                  <td>{grade}</td>
-                                  <td>{units}</td>
-                                  <td>{weight}</td>
-                                  <td>{cumulative}</td>
+                                  <OverlayTrigger
+                                    placement="left"
+                                    overlay={
+                                      <Tooltip>
+                                        {changeMessage(
+                                          course_number,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        )}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <td
+                                      style={{
+                                        backgroundColor: changeColor(
+                                          course_number,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        ),
+                                      }}
+                                    >
+                                      {course_number}
+                                    </td>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger
+                                    placement="left"
+                                    overlay={
+                                      <Tooltip>
+                                        {changeMessage(
+                                          grade,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        )}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <td
+                                      style={{
+                                        backgroundColor: changeColor(
+                                          grade,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        ),
+                                      }}
+                                    >
+                                      {grade}
+                                    </td>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger
+                                    placement="left"
+                                    overlay={
+                                      <Tooltip>
+                                        {changeMessage(
+                                          units,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        )}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <td
+                                      style={{
+                                        backgroundColor: changeColor(
+                                          units,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        ),
+                                      }}
+                                    >
+                                      {units}
+                                    </td>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger
+                                    placement="left"
+                                    overlay={
+                                      <Tooltip>
+                                        {changeMessage(
+                                          weight,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        )}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <td
+                                      style={{
+                                        backgroundColor: changeColor(
+                                          weight,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        ),
+                                      }}
+                                    >
+                                      {weight}
+                                    </td>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger
+                                    placement="left"
+                                    overlay={
+                                      <Tooltip>
+                                        {changeMessage(
+                                          cumulative,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        )}
+                                      </Tooltip>
+                                    }
+                                  >
+                                    <td
+                                      style={{
+                                        backgroundColor: changeColor(
+                                          cumulative,
+                                          semester,
+                                          acad_year,
+                                          course_number
+                                        ),
+                                      }}
+                                    >
+                                      {cumulative}
+                                    </td>
+                                  </OverlayTrigger>
 
                                   <Button
                                     variant="outline-none"
@@ -337,7 +493,8 @@ const StudentRecord = () => {
                                       )
                                     }
                                   >
-                                    <FaMinus />
+                                    <RiDeleteBin2Fill />
+                                    Delete
                                   </Button>
                                   <Button
                                     onClick={() =>
@@ -354,6 +511,7 @@ const StudentRecord = () => {
                                     size="sm"
                                   >
                                     <FaEdit />
+                                    Edit
                                   </Button>
                                 </tr>
                               );
