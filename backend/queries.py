@@ -1,7 +1,9 @@
 from database_connect import connection
+from datetime import datetime
 
 cursor = connection.cursor()
 
+#dictionary['15/16']
 # returns an INT    ex. student_count = 10
 def get_num_of_students():
     cursor.execute("SELECT COUNT(*) FROM student")
@@ -52,10 +54,9 @@ def get_student(student_id):
 def get_student_data(student_id):
     cursor.execute(f"SELECT course_code, grade, units, weight, cumulative, semester, acad_year FROM studentData WHERE student_id = ?", student_id)
     raw_student_data = cursor.fetchall()
-
+    # print('hello')
     student_data = []
     for course_code, grade, units, weight, cumulative, semester, acad_year in raw_student_data:
-        
         student_dict = {
           acad_year: {
             semester: {
@@ -176,22 +177,20 @@ def delete_studentData(student_id, code, semester, acad_year):
 # function to add student
 # returns True if successful, False if failed
 def add_studentData(student_id, code, grade, units, weight, cumulative, semester):
-    try: 
         # if the semester string contains the substirng "midyear", treat the added student data as midyear, else, it would the first or second semester
-        if "midyear" in semester:
-            semester_num = 'M'
-            semester_year = semester[7:12]
-        else:
-            semester_num =  1 if len(semester) == 7 else 2 
-            semester_year = semester[2:7] if len(semester) == 7 else semester[3:8]
-        #IL/15/16
-        #I/15/16
-        #midyear 2016
-        cursor.execute('insert into studentData(student_id, course_code, grade, units, weight, cumulative, semester, acad_year) values(?,?,?,?,?,?,?,?);', (student_id, code, grade, units, weight, cumulative, semester_num, semester_year))
-        connection.commit()                                                           
-        return True
-    except:
-        return False
+    if "midyear" in semester:
+        semester_num = 'M'
+        semester_year = semester[7:12]
+    else:
+        semester_num =  1 if len(semester) == 7 else 2 
+        semester_year = semester[2:7] if len(semester) == 7 else semester[3:8]
+    #IL/15/16
+    #I/15/16
+    #midyear 2016
+    cursor.execute('insert into studentData(student_id, course_code, grade, units, weight, cumulative, semester, acad_year) values(?,?,?,?,?,?,?,?);', (student_id, code, grade, units, weight, cumulative, semester_num, semester_year))
+    connection.commit()                                                           
+    return True
+    
 
 # returns True if user exists in the database. Otherwise, it returns False
 def check_credentials(username, password):
@@ -301,6 +300,7 @@ def add_faculty(email, password, faculty_id, name):
 
 # returns True if inserting a changelog is successful. Otherwise it returns False    
 def record_changelogs(faculty_id, student_id, justification, col_name, prev_data, new_data):
+
     try:
         cursor.execute(f"INSERT INTO changelogs(faculty_id, student_id, date, time, justification, col_name, prev_data, new_data) values('{faculty_id}','{student_id}',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'{justification}','{col_name}','{prev_data}','{new_data}')")
         connection.commit()
@@ -401,14 +401,26 @@ def edit_faculty_name(faculty_id, new_name):
     cursor.execute(f"UPDATE faculty SET name = '{new_name} WHERE faculty_id = '{faculty_id}''")
     connection.commit()
 
+def clear_studentData(student_id):
+    cursor.execute(f"DELETE FROM studentData WHERE student_id = '{student_id}'")
+    connection.commit()
+
+def clear_studentFlags(student_id):
+    try:
+        cursor.execute(f"DELETE FROM studentFlags WHERE student_id = '{student_id}'")
+        connection.commit()
+    except:
+        None
+
 # DELETE STUDENT
 def delete_student(student_id):
-    try:
-        cursor.execute(f"DELETE FROM student WHERE student_id = '{student_id}'")
-        connection.commit()
-        return True
-    except:
-        return False
+    # try:
+    clear_studentData(student_id)
+    cursor.execute(f"DELETE FROM student WHERE student_id = '{student_id}'")
+    connection.commit()
+        # return True
+    # except:
+        # return False
     
 
 # DELETE REMARKS
@@ -456,12 +468,11 @@ def insert_student(student_id, first_name, last_name, degree_program, gwa, total
     cursor.execute('insert into student(student_id, first_name, last_name, degree_program, gwa, total_units, req_units, total_cumulative) values(?,?,?,?,?,?,?,?);', (student_id, first_name, last_name, degree_program, gwa, total_units, req_units, total_cumulative))
     connection.commit()
 
-def edit_studentData(table_name, student_id, col_name, new_data, semester, acad_year):
-    cursor = connection.cursor()
-    if col_name not in ['student_id', 'course_code', 'semester', 'acad_year']:
-        cursor.execute(f"UPDATE {table_name} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND semester = '{semester}' AND acad_year = '{acad_year}';")
-    else:
-        print("To be implemented...")
+def edit_studentData(table_name, student_id, col_name, new_data, semester, acad_year, course_code):
+    # if col_name not in ['student_id', 'course_code', 'semester', 'acad_year']:
+    cursor.execute(f"UPDATE {table_name} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND semester = '{semester}' AND acad_year = '{acad_year}' AND course_code = '{course_code}';")
+    # else:
+    #     print("To be implemented...")
     connection.commit()
 
 
@@ -488,3 +499,4 @@ def get_access_level(faculty_id):
 # delete_student_flag('7025-43182', 'Incomplete GE')
 # delete_student_remarks('7025-43182', 'ENG 2(AH)', '2', '15/16')
 
+# print(get_student_data('7261-38974'))

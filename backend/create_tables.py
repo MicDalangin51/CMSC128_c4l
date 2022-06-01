@@ -113,6 +113,7 @@ def create_remarks(connection):
                             col_name varchar(15),
                             prev_data varchar(15),
                             new_data varchar(15),
+                            CONSTRAINT PK_remarks PRIMARY KEY (student_id, course_code, col_name, semester, acad_year, prev_data, new_data)
                         );
         ''')
         connection.commit()
@@ -191,6 +192,7 @@ def create_studentFlags(connection):
                        CREATE TABLE studentFlags (
                             student_id varchar(10) foreign key references student(student_id) not null,
                             flag varchar(100) not null
+                            CONSTRAINT PK_studentFlags PRIMARY KEY (student_id, flag)
                         );
         ''')
         connection.commit()
