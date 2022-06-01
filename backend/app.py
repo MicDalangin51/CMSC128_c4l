@@ -4,6 +4,7 @@ from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from queries import *
 from csv_reader import *
+from setup import *
 
 
 client_dist_folder = "../frontend/dist"
@@ -26,7 +27,7 @@ def getStudents():
     students = get_all_students()
     student_count = get_num_of_students()
     
-    return {"students": students, "studentsCount": student_count}
+    return {"students": students, "totalStudentCount": student_count}
 
 @app.route('/api/students/<string:student_number>')
 def getStudent(student_number):
@@ -83,14 +84,16 @@ def add_student():
 def edit_students(student_number):
     details = request.get_json()
     edit_student(details['student_id'], details['col_name'], details['new_data'])
-    print("hahaha")
+    
+    record_changelogs("initial test",details['student_id'],'to test the gwa verifier', details['col_name'],"10","10")
     return {'success': True}
         # return {'success': False}
 
 @app.route('/api/students', methods = ['DELETE'])
-def delete_student():
+def del_student():
     details = request.get_json()
     print("delete student")
+    print(details)
     delete_student(details['student_number'])
     return {'success': True }
 
@@ -104,7 +107,9 @@ def edit_student_course(student_number, course_code):
         # FORMAT from frontend: {'student_number': '5698-61298', 'course_number': 'ENG 1(AH)', 'grade': '2', 'units': 3, 'weight': 6, 'cumulative': 6}
         # EXAMPLE FORMAT NG JSON para sa BACKEND: {'student_number': '1234-12345', 'col_name': 'grade', 'new_data': 3, 'prev_data': 2, 'semester': '2', 'acad_year': '15/16'}
         # basically, yung parameters na need ng edit_studentData ay (student_number, col_name, new_data, prev_data, semester, acad_year)
-        edit_studentData('studentData', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'])
+        edit_studentData('studentData', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'], course_code)
+        
+        #record_changelogs(faculty_id, details['student_number'], justification, details['col_name'], prev_data, details['new_data'])
         return {'success': True}
     except:
         return {'success': False}
@@ -130,26 +135,56 @@ def add_student_course(id):
 @app.route('/api/students:file', methods = ['POST'])
 async def read_file(): 
     import tkinter as tk
-    from tkinter.filedialog import askopenfilename
-    file = request.files.get("file")
-    print("ok")
+    from tkinter.filedialog import askopenfilenames
+    # file = request.files.get("file")
+    # fileData = file.read()
     root = tk.Tk()
     
     root.attributes('-topmost',True, '-alpha',0)
-    filepath = askopenfilename(parent=root)
-    # root.withdraw()
-    print(filepath)
-    
-    root.mainloop()
-
-    # fileData = file.read()
-    # print(fileData)
-    # read_csv_xlsx()
-    # Tk().withdraw()
-    # filepath = filedialog.askopenfilename()
-    # Tk().mainloop()
-    
-    # await asyncio.sleep(10)
+    filepath = askopenfilenames(parent=root, title='Choose a file/s')
+    root.withdraw()
+    for file in filepath:
+        backend_setup(read_csv_xlsx(file))
+    # root.mainloop()
+    #student_data = read_csv_xlsx(filepath)
+    print("working")
     
     return {'success': True}
+
+
+@app.route('/api/change-logs', methods = ['GET'])
+def get_all_changelogs():
+    changelogs = get_changelogs()
+    return {"changelogs": changelogs}
+
+
+@app.route('/api/users', methods = ['GET'])
+def get_users():
+    faculty = get_all_faculties()
+    return {"staff": faculty}
+
+@app.route('/api/users', methods = ['POST'])
+def add_user():
+    
+    faculty = request.get_json()
+    successful = add_faculty(faculty['email'], faculty['password'], faculty['faculty_id'], faculty['name'])
+    return {'success': True} if successful else {'success': False}
+    
+
+
+@app.route('/api/users', methods = ['DELETE'])
+def delete_users():
+    faculty = request.get_json()
+    successful = delete_faculty_member(faculty['faculty_id'])
+    return {'success': True} if successful else {'success': False}
+
+@app.route('/api/users/<string:faculty_id>', methods = ['PATCH'])
+def edit_user(faculty_id):
+    data = request.get_json()
+    if(len(data) == 2):
+        edit_faculty_name(data['faculty_id'], data['student_id'], data['justification'], data['col_name'], data['prev_data'], data['new_data'])
+    else:
+        edit_faculty_password(data['faculty_id'], data['old_pw'], data['new_pw'])
+
+    
 

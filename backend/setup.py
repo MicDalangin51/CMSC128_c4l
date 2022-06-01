@@ -2,6 +2,7 @@ from database_connect import *
 from csv_reader import *
 from create_tables import *
 from queries import *
+from gwa_verifier import *
 
 
 
@@ -17,9 +18,9 @@ create_studentFlags(connection)
 
 
 
-def backend_setup():
-    test = read_csv_xlsx()
-    for  i in test:
+def backend_setup(student_data):
+    
+    for  i in student_data:
         student_num = auto_increment()
         # print("student added to the database")
         # print("Name:" + i.name)
@@ -44,26 +45,32 @@ def backend_setup():
         
         
             for k in j.courses:
-            
-                # print('=========')
-                # print(k)
-            
-            
                 if(k[0] == 'CRSE NO.'):
                     None
                 else:
                     try:
+                       
                         add_studentData(student_num, k[0], k[1], k[2], k[3], k[4] ,j.date)
-                        None
+                        
+                        
                     except:
-                        print(k[2])
-                        print(k[2][3])
                         try:
                             add_studentData(student_num, k[0], k[1], k[2][3], k[3], k[4] ,j.date)
-                            None
+                            
                         except:
+                            print("nothing suspicious here ")
                             pass
+        #insert GWA verifier here
+        verify_gwa(student_num)
         
-                        # print("nothing suspicious here ")
+                        
 
-backend_setup()
+# import tkinter as tk
+# from tkinter.filedialog import askopenfilename
+  
+# root = tk.Tk()
+    
+# root.attributes('-topmost',True, '-alpha',0)
+# filepath = askopenfilename(parent=root, title='Choose a file/s')
+# backend_setup(read_csv_xlsx(filepath))
+# root.withdraw()

@@ -175,11 +175,9 @@ def xlsx_read_file(filepath):
     return(student_list)
     
         
-def read_csv_xlsx():
-    Tk().withdraw()
-    filepath = filedialog.askopenfilename()
+def read_csv_xlsx(filepath):
+    
     student_data = None
-    Tk().mainloop()
     if(filepath.endswith('.csv')):
         student_data = csv_read_file(filepath)
         # for i in student_data:
@@ -227,16 +225,16 @@ def auto_increment():
     str_num = number + '-' + number_1
     return str_num
 
-def edit_studentData(table_name, student_id, col_name, new_data, semester, acad_year):
-    cursor = connection.cursor()
-    if col_name not in ['student_id', 'course_code', 'semester', 'acad_year']:
-        cursor.execute(f"UPDATE {table_name} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND semester = '{semester}' AND acad_year = '{acad_year}';")
-    else:
-        print("To be implemented...")
+# def edit_studentData(table_name, student_id, col_name, new_data, semester, acad_year):
+#     cursor = connection.cursor()
+#     if col_name not in ['student_id', 'course_code', 'semester', 'acad_year']:
+#         cursor.execute(f"UPDATE {table_name} SET {col_name} = '{new_data}' WHERE student_id = '{student_id}' AND semester = '{semester}' AND acad_year = '{acad_year}';")
+#     else:
+#         print("To be implemented...")
 
 
-    # cursor.execute(f'UPDATE {table_name} SET {col_name} = "{new_data}" WHERE student_id = "{student_id}" AND semester = "{semester}" AND acad_year = "{acad_year}";')
-    connection.commit()
+#     # cursor.execute(f'UPDATE {table_name} SET {col_name} = "{new_data}" WHERE student_id = "{student_id}" AND semester = "{semester}" AND acad_year = "{acad_year}";')
+#     connection.commit()
 
 # test = csv_read_file(filepath)
 # test = xlsx_read_file(filepath)
