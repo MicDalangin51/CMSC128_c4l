@@ -278,7 +278,7 @@ const StudentRecord = () => {
           </Col>
           <Col className="flex-fill">
             <Row xs="auto" className="m-3">
-              <Col>
+              {/* <Col>
                 <Image
                   src={casBuilding}
                   width="150"
@@ -286,7 +286,7 @@ const StudentRecord = () => {
                   className="me-2"
                   roundedCircle
                 />
-              </Col>
+              </Col> */}
               <Col className="my-auto">
                 <h1>
                   {student.last_name}, {student.first_name}

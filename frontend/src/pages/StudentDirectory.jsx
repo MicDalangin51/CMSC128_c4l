@@ -95,7 +95,7 @@ const StudentDirectory = () => {
                   <th>Name</th>
                   <th>Course</th>
                   <th>Status</th>
-                  <th></th>
+                  <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,7 +134,6 @@ const StudentDirectory = () => {
                             }
                           >
                             <RiDeleteBin2Fill />
-                            Delete
                           </Button>
                         </td>
                       </tr>
