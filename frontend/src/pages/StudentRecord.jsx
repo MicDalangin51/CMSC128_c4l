@@ -10,6 +10,7 @@ import {
   EditStatusModal,
   AlternateAddStudentCourseModal,
   DeleteCourseModal,
+  EditStudentSummaryModal,
 } from "/src/components";
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
@@ -116,6 +117,7 @@ const StudentRecord = () => {
     setShowEditCourse(false);
     setShowAddCourse2(false);
     setShowDeleteCourse(false);
+    setShowEditStudentSummary(false);
   };
 
   //changing the verification
@@ -174,8 +176,22 @@ const StudentRecord = () => {
     setSemester(semester);
   };
 
+  //adding rows with semester and acad year
+  const [showEditStudentSummary, setShowEditStudentSummary] = useState(false);
+  const handleShowEditStudentSummary = () => setShowEditStudentSummary(true);
+
   return (
     <DashboardLayout fixedContent>
+      <EditStudentSummaryModal
+        showModal={showEditStudentSummary}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        requnits={student.req_units}
+        totalunits={student.total_units}
+        totalcumulative={student.total_cumulative}
+        finalgwa={student.GWA}
+      />
+
       <DeleteCourseModal
         showModal={showDeleteCourse}
         closeModal={handleCloseAll}
@@ -596,7 +612,11 @@ const StudentRecord = () => {
             <Row className="my-5">
               <Card>
                 <Card.Body>
-                  <Button variant="outline-none" size="sm">
+                  <Button
+                    variant="outline-none"
+                    size="sm"
+                    onClick={handleShowEditStudentSummary}
+                  >
                     <FaEdit />
                   </Button>
 
