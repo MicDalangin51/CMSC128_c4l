@@ -184,7 +184,7 @@ const Settings = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {staffAccounts.map(
+                  {staff.map(
                     (
                       { name, faculty_id, email, department, access_level },
                       index

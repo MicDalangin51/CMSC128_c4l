@@ -53,7 +53,9 @@ const Login = () => {
 
   const credentialError = () => {
     setLoginError("Failed to Login! Invalid Email/Password!");
-    setTimeout(() => { setLoginError("") }, 5000);
+    setTimeout(() => {
+      setLoginError("");
+    }, 5000);
   };
 
   const navigateTo = useNavigate();
@@ -91,6 +93,7 @@ const Login = () => {
 
         if (body.success) {
           setIsAuthenticated(true);
+          console.log(body.faculty);
         } else {
           credentialError();
           //alert("Failed to log in");
@@ -144,7 +147,6 @@ const Login = () => {
                   {errors.password}
                 </Form.Control.Feedback>
               </InputGroup>
-                
             </Form.Group>
 
             <br />
@@ -155,7 +157,9 @@ const Login = () => {
             >
               Login
             </Button>
-            <span style={{color: "#d63f41",}} className="mt-2">{loginError}</span>
+            <span style={{ color: "#d63f41" }} className="mt-2">
+              {loginError}
+            </span>
           </Form>
         </Container>
       </div>
