@@ -9,6 +9,7 @@ import {
   AddStudentCourseModal,
   EditStatusModal,
   AlternateAddStudentCourseModal,
+  DeleteCourseModal,
 } from "/src/components";
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
@@ -98,38 +99,6 @@ const StudentRecord = () => {
     return message;
   }
 
-  //deletes a row of student-data
-  function deleteRow(student_number, course_number, semester) {
-    const row = {
-      student_number: student_number,
-      course_number: course_number,
-      semester: semester[9],
-      academic_year:
-        semester.substring(17, 19) + "/" + semester.substring(22, 24),
-    };
-
-    console.log(row);
-
-    fetch(`/api/students/${studentNumber}/courses/${course_number}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-
-        if (body.success) {
-          console.log("Successfully deleted!");
-        } else {
-          console.log("Failed to delete!");
-        }
-      });
-    location.reload();
-  }
-
   //closes modals
   const handleCloseAll = () => {
     setSemester("");
@@ -146,6 +115,7 @@ const StudentRecord = () => {
     setShowAddCourse(false);
     setShowEditCourse(false);
     setShowAddCourse2(false);
+    setShowDeleteCourse(false);
   };
 
   //changing the verification
@@ -196,8 +166,25 @@ const StudentRecord = () => {
   const [showAddCourse2, setShowAddCourse2] = useState(false);
   const handleShowAddCourse2 = () => setShowAddCourse2(true);
 
+  //deleting rows
+  const [showDeleteCourse, setShowDeleteCourse] = useState(false);
+  const handleShowDeleteCourse = (course_number, semester) => {
+    setShowDeleteCourse(true);
+    setCourseEdit(course_number);
+    setSemester(semester);
+  };
+
   return (
     <DashboardLayout fixedContent>
+      <DeleteCourseModal
+        showModal={showDeleteCourse}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        student_name={student.last_name}
+        course_code={edit_course}
+        semester={edit_semester}
+      />
+
       <AlternateAddStudentCourseModal
         showModal={showAddCourse2}
         closeModal={handleCloseAll}
@@ -486,8 +473,7 @@ const StudentRecord = () => {
                                     variant="outline-none"
                                     size="sm"
                                     onClick={() =>
-                                      deleteRow(
-                                        student.student_number,
+                                      handleShowDeleteCourse(
                                         course_number,
                                         entry.semester
                                       )

@@ -10,3 +10,4 @@ export { default as EditShacModal } from "./EditShacModal";
 export { default as AlternateAddStudentCourseModal } from "./AlternateAddStudentCourseModal";
 export { default as MainTableControls } from "./MainTableControls";
 export { default as DeleteStudentModal } from "./DeleteStudentModal";
+export { default as DeleteCourseModal } from "./DeleteCourseModal";
