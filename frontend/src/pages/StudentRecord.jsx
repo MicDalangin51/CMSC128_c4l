@@ -596,7 +596,25 @@ const StudentRecord = () => {
             <Row className="my-5">
               <Card>
                 <Card.Body>
-                  <Row>
+                  <Button variant="outline-none" size="sm">
+                    <FaEdit />
+                  </Button>
+
+                  <Row className="my-3">
+                    <Col>
+                      <h6>Required Units</h6>
+                      <Card.Text className="text-black">
+                        {student.req_units}
+                      </Card.Text>
+                    </Col>
+                    <Col>
+                      <h6>Total Units</h6>
+                      <Card.Text className="text-black">
+                        {student.total_units}
+                      </Card.Text>
+                    </Col>
+                  </Row>
+                  <Row className="my-3">
                     <Col>
                       <h6>GWA</h6>
                       <Card.Text className="text-black">
@@ -604,9 +622,9 @@ const StudentRecord = () => {
                       </Card.Text>
                     </Col>
                     <Col>
-                      <h6>Total Units</h6>
+                      <h6>Total Cumulative</h6>
                       <Card.Text className="text-black">
-                        {student.total_units}
+                        {student.total_cumulative}
                       </Card.Text>
                     </Col>
                   </Row>
