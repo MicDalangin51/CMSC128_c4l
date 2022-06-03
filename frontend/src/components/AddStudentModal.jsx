@@ -140,11 +140,42 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
                     controlId="floatingInput"
                     label="Degree program"
                   >
-                    <Form.Control
-                      name="degree_program"
-                      placeholder=" "
-                      required
-                    />
+                    <Form.Select name="degree_program" required>
+                      <option value="BACA">
+                        Bachelor of Arts in Communication Arts
+                      </option>
+                      <option value="BAP">
+                        Bachelor of Arts in Philosophy
+                      </option>
+                      <option value="BAS">Bachelor of Arts in Sociology</option>
+                      <option value="BSAM">
+                        Bachelor of Science in Applied Mathematics
+                      </option>
+                      <option value="BSAP">
+                        Bachelor of Science in Applied Physics
+                      </option>
+                      <option value="BSB">
+                        Bachelor of Science in Biology
+                      </option>
+                      <option value="BSC">
+                        Bachelor of Science in Chemistry
+                      </option>
+                      <option value="BSCS">
+                        Bachelor of Science in Computer Science
+                      </option>
+                      <option value="BSM">
+                        Bachelor of Science in Mathematics
+                      </option>
+                      <option value="BSMST">
+                        Bachelor of Science in Mathematics and Science Teaching
+                      </option>
+                      <option value="BSS">
+                        Bachelor of Science in Statistics
+                      </option>
+                      <option value="BSAC">
+                        Bachelor of Science in Agricultural Chemistry
+                      </option>
+                    </Form.Select>
                   </FloatingLabel>
                 </Col>
                 <Col className="px-2">
