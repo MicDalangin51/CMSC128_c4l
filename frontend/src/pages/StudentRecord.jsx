@@ -96,7 +96,7 @@ const StudentRecord = () => {
     let message =
       hasError && previous_data == column
         ? "ERROR: Please change " + column + " to " + hasError
-        : "NO ERROR";
+        : column;
     return message;
   }
 
