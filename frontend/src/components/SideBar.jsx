@@ -52,10 +52,9 @@ const SideBar = () => {
       <Dropdown drop="up">
         <Dropdown.Toggle
           variant="white"
-          className="d-flex align-items-center shadow-none"
+          className="d-flex align-items-center shadow-none w-100 hover"
         >
-          {/* <Image src={""} width="32" height="32" className="me-2" /> */}
-          <span className="me-2">{username}</span>
+          <span className="me-2 me-auto">{username}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="shadow">
           <Dropdown.Item href="/logout">Logout</Dropdown.Item>
