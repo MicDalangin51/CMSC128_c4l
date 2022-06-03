@@ -205,7 +205,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
                   >
                     <Form.Control
                       name="total_cumulative"
-                      pattern="\d+"
+                      pattern="\d+(.\d+)?"
                       placeholder=" "
                       required
                     />

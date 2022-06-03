@@ -168,7 +168,7 @@ const EditStudentCourseModal = ({
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
                 <Form.Control
                   name="grade"
-                  pattern="^\d+$"
+                  pattern="[12](.\d+)?|[345]"
                   defaultValue={grade_param}
                   required
                 />
@@ -178,7 +178,7 @@ const EditStudentCourseModal = ({
               <FloatingLabel controlId="floatingInputGrid" label="Units">
                 <Form.Control
                   name="units"
-                  pattern="^\d+$"
+                  pattern="\d+"
                   defaultValue={units_param}
                   required
                 />
@@ -189,7 +189,7 @@ const EditStudentCourseModal = ({
                 <Form.Control
                   name="weight"
                   defaultValue={weight_param}
-                  pattern="^\d+$"
+                  pattern="\d+(.\d+)?"
                   required
                 />
               </FloatingLabel>
@@ -199,7 +199,7 @@ const EditStudentCourseModal = ({
                 <Form.Control
                   name="cumulative"
                   defaultValue={cumulative_param}
-                  pattern="^\d+$"
+                  pattern="\d+(.\d+)?"
                   required
                 />
               </FloatingLabel>
