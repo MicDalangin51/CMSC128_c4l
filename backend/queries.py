@@ -29,8 +29,8 @@ def get_all_students():
 
 # returns DICTIONARIES inside a LIST    ex. student_data = [{}, {}, {}, ..., {}]
 def get_student(student_id):
-    cursor.execute(f"SELECT first_verifier, second_verifier, other_verifier, status, first_name, last_name, degree_program, student_id, gwa, total_units FROM student WHERE student_id = ?", student_id)
-    first_verifier, second_verifier, other_verifier, status, first_name, last_name, course, student_id, gwa, total_units = cursor.fetchone()
+    cursor.execute(f"SELECT first_verifier, second_verifier, other_verifier, status, first_name, last_name, degree_program, student_id, gwa, total_units, req_units, computed_gwa, total_cumulative FROM student WHERE student_id = ?", student_id)
+    first_verifier, second_verifier, other_verifier, status, first_name, last_name, course, student_id, gwa, total_units, req_units, computed_gwa, total_cumulative = cursor.fetchone()
 
     summary = standardize_data(get_student_data(student_id))
     student_data = {
@@ -45,6 +45,10 @@ def get_student(student_id):
         "first_verifier": first_verifier,
         "second_verifier" :second_verifier,
         "other_verifier": other_verifier,
+        "req_units":req_units,
+        "computed_gwa": computed_gwa,
+        "total_cumulative": total_cumulative,
+
     }
     
     connection.commit()
