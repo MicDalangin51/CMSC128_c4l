@@ -36,7 +36,11 @@ const SideBar = () => {
         {navItems.map(({ icon: Icon, label, href }, index) => (
           <Nav.Item key={index}>
             <Nav.Link as={RouterNavLink} className="link-dark" to={href}>
-              <Stack direction="horizontal" gap="2" className="align-items-center">
+              <Stack
+                direction="horizontal"
+                gap="2"
+                className="align-items-center"
+              >
                 <Icon />
                 {label}
               </Stack>
@@ -46,8 +50,11 @@ const SideBar = () => {
       </Nav>
       <hr />
       <Dropdown drop="up">
-        <Dropdown.Toggle variant="white" className="d-flex align-items-center shadow-none">
-          <Image src={""} width="32" height="32" className="me-2" />
+        <Dropdown.Toggle
+          variant="white"
+          className="d-flex align-items-center shadow-none"
+        >
+          {/* <Image src={""} width="32" height="32" className="me-2" /> */}
           <span className="me-2">{username}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="shadow">

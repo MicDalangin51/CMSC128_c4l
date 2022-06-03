@@ -9,6 +9,8 @@ import {
   AddStudentCourseModal,
   EditStatusModal,
   AlternateAddStudentCourseModal,
+  DeleteCourseModal,
+  EditStudentSummaryModal,
 } from "/src/components";
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
@@ -98,38 +100,6 @@ const StudentRecord = () => {
     return message;
   }
 
-  //deletes a row of student-data
-  function deleteRow(student_number, course_number, semester) {
-    const row = {
-      student_number: student_number,
-      course_number: course_number,
-      semester: semester[9],
-      academic_year:
-        semester.substring(17, 19) + "/" + semester.substring(22, 24),
-    };
-
-    console.log(row);
-
-    fetch(`/api/students/${studentNumber}/courses/${course_number}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-
-        if (body.success) {
-          console.log("Successfully deleted!");
-        } else {
-          console.log("Failed to delete!");
-        }
-      });
-    location.reload();
-  }
-
   //closes modals
   const handleCloseAll = () => {
     setSemester("");
@@ -146,6 +116,8 @@ const StudentRecord = () => {
     setShowAddCourse(false);
     setShowEditCourse(false);
     setShowAddCourse2(false);
+    setShowDeleteCourse(false);
+    setShowEditStudentSummary(false);
   };
 
   //changing the verification
@@ -196,8 +168,39 @@ const StudentRecord = () => {
   const [showAddCourse2, setShowAddCourse2] = useState(false);
   const handleShowAddCourse2 = () => setShowAddCourse2(true);
 
+  //deleting rows
+  const [showDeleteCourse, setShowDeleteCourse] = useState(false);
+  const handleShowDeleteCourse = (course_number, semester) => {
+    setShowDeleteCourse(true);
+    setCourseEdit(course_number);
+    setSemester(semester);
+  };
+
+  //adding rows with semester and acad year
+  const [showEditStudentSummary, setShowEditStudentSummary] = useState(false);
+  const handleShowEditStudentSummary = () => setShowEditStudentSummary(true);
+
   return (
     <DashboardLayout fixedContent>
+      <EditStudentSummaryModal
+        showModal={showEditStudentSummary}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        requnits={student.req_units}
+        totalunits={student.total_units}
+        totalcumulative={student.total_cumulative}
+        finalgwa={student.GWA}
+      />
+
+      <DeleteCourseModal
+        showModal={showDeleteCourse}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        student_name={student.last_name}
+        course_code={edit_course}
+        semester={edit_semester}
+      />
+
       <AlternateAddStudentCourseModal
         showModal={showAddCourse2}
         closeModal={handleCloseAll}
@@ -275,7 +278,7 @@ const StudentRecord = () => {
           </Col>
           <Col className="flex-fill">
             <Row xs="auto" className="m-3">
-              <Col>
+              {/* <Col>
                 <Image
                   src={casBuilding}
                   width="150"
@@ -283,7 +286,7 @@ const StudentRecord = () => {
                   className="me-2"
                   roundedCircle
                 />
-              </Col>
+              </Col> */}
               <Col className="my-auto">
                 <h1>
                   {student.last_name}, {student.first_name}
@@ -486,8 +489,7 @@ const StudentRecord = () => {
                                     variant="outline-none"
                                     size="sm"
                                     onClick={() =>
-                                      deleteRow(
-                                        student.student_number,
+                                      handleShowDeleteCourse(
                                         course_number,
                                         entry.semester
                                       )
@@ -610,7 +612,29 @@ const StudentRecord = () => {
             <Row className="my-5">
               <Card>
                 <Card.Body>
-                  <Row>
+                  <Button
+                    variant="outline-none"
+                    size="sm"
+                    onClick={handleShowEditStudentSummary}
+                  >
+                    <FaEdit />
+                  </Button>
+
+                  <Row className="my-3">
+                    <Col>
+                      <h6>Required Units</h6>
+                      <Card.Text className="text-black">
+                        {student.req_units}
+                      </Card.Text>
+                    </Col>
+                    <Col>
+                      <h6>Total Units</h6>
+                      <Card.Text className="text-black">
+                        {student.total_units}
+                      </Card.Text>
+                    </Col>
+                  </Row>
+                  <Row className="my-3">
                     <Col>
                       <h6>GWA</h6>
                       <Card.Text className="text-black">
@@ -618,9 +642,9 @@ const StudentRecord = () => {
                       </Card.Text>
                     </Col>
                     <Col>
-                      <h6>Total Units</h6>
+                      <h6>Total Cumulative</h6>
                       <Card.Text className="text-black">
-                        {student.total_units}
+                        {student.total_cumulative}
                       </Card.Text>
                     </Col>
                   </Row>

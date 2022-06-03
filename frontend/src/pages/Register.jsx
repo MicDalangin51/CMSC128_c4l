@@ -10,8 +10,8 @@ const Register = () => {
       event.target;
 
     console.log(access_level.value);
-    if (password === confirmpass) {
-      const response = await fetch("/api/user", {
+    if (password.value === confirmpass.value) {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
-import {
-  Badge,
-  Button,
-  ButtonGroup,
-  Col,
-  Form,
-  InputGroup,
-  Row,
-  Stack,
-  Table,
-} from "react-bootstrap";
-import { FaAngleLeft, FaAngleRight, FaSearch, FaEdit } from "react-icons/fa";
+import { Badge, Button, Stack, Table } from "react-bootstrap";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
 import {
   DashboardLayout,
   AddStudentModal,
   MainTableControls,
+  DeleteStudentModal,
 } from "/src/components";
 
 const rowLimit = 50;
@@ -63,29 +53,16 @@ const StudentDirectory = () => {
     setTotalStudentCount(data.totalStudentCount);
   }, [search, tablePage, sortBy, orderBy]);
 
-  // //deletes a student
-  const deleteStudent = async (student_id) => {
-    console.log(student_id);
-    const response = await fetch(`/api/students`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "DELETE",
-      body: JSON.stringify({
-        student_number: student_id,
-      }),
-    });
-
-    switch (response.status) {
-      case 200:
-        console.log("Student deleted");
-        location.reload();
-        break;
-      default:
-        console.log("Student not deleted");
-        alert("Student not deleted");
-    }
+  //deleting student
+  const [deleteStudentNum, setDeleteStudentNum] = useState("");
+  const [deleteStudentName, setDeleteStudentName] = useState("");
+  const [deleteStudent, setShowdeleteStudent] = useState(false);
+  const handleShowdeleteStudent = (student_number, student_name) => {
+    setShowdeleteStudent(true);
+    setDeleteStudentNum(student_number);
+    setDeleteStudentName(student_name);
   };
+  const handleClosedeleteStudent = () => setShowdeleteStudent(false);
 
   return (
     <>
@@ -103,6 +80,14 @@ const StudentDirectory = () => {
             onAddObjectClick={openAddStudentModal}
             setSearch={setSearch}
           />
+
+          <DeleteStudentModal
+            showModal={deleteStudent}
+            closeModal={handleClosedeleteStudent}
+            student_num={deleteStudentNum}
+            student_name={deleteStudentName}
+          />
+
           <div className="flex-fill overflow-auto">
             <Table hover className="table-fixed-head">
               <thead className="sticky-top">
@@ -110,7 +95,7 @@ const StudentDirectory = () => {
                   <th>Name</th>
                   <th>Course</th>
                   <th>Status</th>
-                  <th></th>
+                  <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,10 +129,11 @@ const StudentDirectory = () => {
                           <Button
                             variant="outline-none"
                             size="sm"
-                            onClick={() => deleteStudent(student_number)}
+                            onClick={() =>
+                              handleShowdeleteStudent(student_number, name)
+                            }
                           >
                             <RiDeleteBin2Fill />
-                            Delete
                           </Button>
                         </td>
                       </tr>

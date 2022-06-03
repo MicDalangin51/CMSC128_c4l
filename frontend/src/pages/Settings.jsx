@@ -16,44 +16,6 @@ import { useEffect, useState } from "react";
 import { DashboardLayout, EditShacModal } from "/src/components";
 
 const Settings = () => {
-  // Temporary variables
-  // var currentStaff = {
-  //   name: "Garth Lapitan",
-  //   department: "ICS",
-  //   access: 1,
-  // };
-
-  let staffAccounts = [
-    {
-      name: "Garth Lapitan",
-      email: "g@up",
-      department: "ICS",
-      access_level: 1,
-      faculty_id: 0,
-    },
-    {
-      name: "Jemuel Juatco",
-      email: "g@up",
-      department: "ICS",
-      access_level: 0,
-      faculty_id: 1,
-    },
-    {
-      name: "Nathan Muncal",
-      email: "g@up",
-      department: "ICS",
-      access_level: 0,
-      faculty_id: 2,
-    },
-    {
-      name: "Ronn Jiongco",
-      email: "g@up",
-      department: "ICS",
-      access_level: 0,
-      faculty_id: 3,
-    },
-  ];
-
   const [currentStaff, setCurrentStaff] = useState([]);
 
   useEffect(async () => {
@@ -128,7 +90,7 @@ const Settings = () => {
         <Tab eventKey="profile" title="Profile">
           <Container fluid>
             <Row xs="auto" className="align-items-center p-4">
-              <Col>
+              {/* <Col>
                 <Image
                   src={
                     "https://media.tarkett-image.com/large/TH_24567081_24594081_24596081_24601081_24563081_24565081_24588081_001.jpg"
@@ -137,7 +99,7 @@ const Settings = () => {
                   height="120"
                   className="me-2 img-fluid rounded-circle"
                 />
-              </Col>
+              </Col> */}
               <Col className="px-5">
                 {/* <FaEdit className="mr-1" />
                                 <span> Edit </span> */}
@@ -184,7 +146,7 @@ const Settings = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {staffAccounts.map(
+                  {staff.map(
                     (
                       { name, faculty_id, email, department, access_level },
                       index
@@ -208,7 +170,8 @@ const Settings = () => {
                           <td>{access_level ? "Admin" : "Staff"}</td>
                           <td>
                             <Button
-                              variant="outline-primary"
+                              variant="outline-none"
+                              size="sm"
                               onClick={() =>
                                 handleShowSHACEdit(name, faculty_id)
                               }
@@ -218,7 +181,8 @@ const Settings = () => {
                           </td>
                           <td>
                             <Button
-                              variant="outline-primary"
+                              variant="outline-none"
+                              size="sm"
                               onClick={() => deleteSHACuser(faculty_id)}
                             >
                               <RiDeleteBin2Fill />

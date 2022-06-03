@@ -85,7 +85,7 @@ const AlternateAddStudentCourseModal = ({
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
                 <Form.Control
                   name="grade"
-                  pattern="^\d+$"
+                  pattern="[12](.\d+)?|[345]"
                   placeholder=" "
                   required
                 />
@@ -95,7 +95,7 @@ const AlternateAddStudentCourseModal = ({
               <FloatingLabel controlId="floatingInputGrid" label="Units">
                 <Form.Control
                   name="units"
-                  pattern="^\d+$"
+                  pattern="\d+"
                   placeholder=" "
                   required
                 />
@@ -106,7 +106,7 @@ const AlternateAddStudentCourseModal = ({
                 <Form.Control
                   name="weight"
                   placeholder=" "
-                  pattern="^\d+$"
+                  pattern="\d+(.\d+)?"
                   required
                 />
               </FloatingLabel>
@@ -116,7 +116,7 @@ const AlternateAddStudentCourseModal = ({
                 <Form.Control
                   name="cumulative"
                   placeholder=" "
-                  pattern="\d+"
+                  pattern="\d+(.\d+)?"
                   required
                 />
               </FloatingLabel>

@@ -10,8 +10,6 @@ import {
   Stack,
   Table,
 } from "react-bootstrap";
-import { FaAngleLeft, FaAngleRight, FaSearch } from "react-icons/fa";
-
 import { DashboardLayout, MainTableControls } from "/src/components";
 
 const rowLimit = 50;
@@ -47,7 +45,7 @@ const Changelog = () => {
     );
     const data = await response.json();
 
-    setChangeLogs(data.changeLogs);
+    setChangeLogs(data.changelogs);
     setTotalChangeLogCount(data.totalChangeLogCount);
   }, [search, tablePage, sortBy, orderBy]);
 

@@ -10,13 +10,14 @@ import {
 } from "react-bootstrap";
 import { useState } from "react";
 
-const EditStudentModal = ({
+const EditStudentSummaryModal = ({
   showModal,
   closeModal,
   student_num,
-  firstname,
-  lastname,
-  course,
+  requnits,
+  totalunits,
+  totalcumulative,
+  finalgwa,
 }) => {
   const handleClose = () => {
     closeModal();
@@ -29,7 +30,7 @@ const EditStudentModal = ({
   const submitFormHandler = async (event) => {
     event.preventDefault();
 
-    const { first_name, last_name, degree_program, justification } =
+    const { req_units, total_units, total_cumulative, GWA, justification } =
       event.target;
 
     const response = await fetch(`/api/students/${student_num}`, {
@@ -39,8 +40,8 @@ const EditStudentModal = ({
       },
       body: JSON.stringify({
         student_id: student_num,
-        new_data: first_name.value,
-        col_name: "first_name",
+        new_data: req_units.value,
+        col_name: "req_units",
         // justification: justification.value,
       }),
     });
@@ -52,8 +53,8 @@ const EditStudentModal = ({
       },
       body: JSON.stringify({
         student_id: student_num,
-        new_data: last_name.value,
-        col_name: "last_name",
+        new_data: total_units.value,
+        col_name: "total_units",
         // justification: justification.value,
       }),
     });
@@ -65,13 +66,31 @@ const EditStudentModal = ({
       method: "PATCH",
       body: JSON.stringify({
         student_id: student_num,
-        new_data: degree_program.value,
-        col_name: "degree_program",
+        new_data: total_cumulative.value,
+        col_name: "total_cumulative",
         // justification: justification.value,
       }),
     });
 
-    switch (response.status && response1.status && response2.status) {
+    const response3 = await fetch(`/api/students/${student_num}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify({
+        student_id: student_num,
+        new_data: GWA.value,
+        col_name: "GWA",
+        // justification: justification.value,
+      }),
+    });
+
+    switch (
+      response.status &&
+      response1.status &&
+      response2.status &&
+      response3.status
+    ) {
       case 200:
         closeModal();
         location.reload();
@@ -90,20 +109,22 @@ const EditStudentModal = ({
         <Form onSubmit={submitFormHandler}>
           <Row className="mb-3">
             <Col className="px-2">
-              <FloatingLabel controlId="floatingInput" label="First name">
+              <FloatingLabel controlId="floatingInput" label="Required units">
                 {/* placeholder is set to any non-empty string for FloatingLabel to work */}
                 <Form.Control
-                  name="first_name"
-                  defaultValue={firstname}
+                  name="req_units"
+                  pattern="\d+"
+                  defaultValue={requnits}
                   required
                 />
               </FloatingLabel>
             </Col>
             <Col className="px-2">
-              <FloatingLabel controlId="floatingInput" label="Last name">
+              <FloatingLabel controlId="floatingInput" label="Total units">
                 <Form.Control
-                  name="last_name"
-                  defaultValue={lastname}
+                  name="total_units"
+                  pattern="\d+"
+                  defaultValue={totalunits}
                   required
                 />
               </FloatingLabel>
@@ -111,10 +132,21 @@ const EditStudentModal = ({
           </Row>
           <Row className="mb-3">
             <Col className="px-2">
-              <FloatingLabel controlId="floatingInput" label="Degree program">
+              <FloatingLabel controlId="floatingInput" label="Total cumulative">
                 <Form.Control
-                  name="degree_program"
-                  defaultValue={course}
+                  name="total_cumulative"
+                  pattern="\d+(.\d+)?"
+                  defaultValue={totalcumulative}
+                  required
+                />
+              </FloatingLabel>
+            </Col>
+            <Col className="px-2">
+              <FloatingLabel controlId="floatingInput" label="GWA">
+                <Form.Control
+                  name="GWA"
+                  defaultValue={finalgwa}
+                  pattern="[12](.\d+)?|[345]"
                   required
                 />
               </FloatingLabel>
@@ -144,4 +176,4 @@ const EditStudentModal = ({
   );
 };
 
-export default EditStudentModal;
+export default EditStudentSummaryModal;
