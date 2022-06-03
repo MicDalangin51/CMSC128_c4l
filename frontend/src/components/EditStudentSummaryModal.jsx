@@ -30,7 +30,8 @@ const EditStudentSummaryModal = ({
   const submitFormHandler = async (event) => {
     event.preventDefault();
 
-    const { req_units, total_units, total_cumulative, GWA } = event.target;
+    const { req_units, total_units, total_cumulative, GWA, justification } =
+      event.target;
 
     const response = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
@@ -41,6 +42,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: req_units.value,
         col_name: "req_units",
+        // justification: justification.value,
       }),
     });
 
@@ -53,6 +55,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: total_units.value,
         col_name: "total_units",
+        // justification: justification.value,
       }),
     });
 
@@ -65,6 +68,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: total_cumulative.value,
         col_name: "total_cumulative",
+        // justification: justification.value,
       }),
     });
 
@@ -77,6 +81,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: GWA.value,
         col_name: "GWA",
+        // justification: justification.value,
       }),
     });
 
@@ -146,6 +151,15 @@ const EditStudentSummaryModal = ({
                 />
               </FloatingLabel>
             </Col>
+          </Row>
+          <Row className="mb-3">
+            <FloatingLabel controlId="floatingInput" label="Justification">
+              <Form.Control
+                name="justification"
+                placeholder=" "
+                //   required
+              />
+            </FloatingLabel>
           </Row>
           {fillUpFormAlertMessage !== "" && (
             <Alert variable="danger">{fillUpFormAlertMessage}</Alert>

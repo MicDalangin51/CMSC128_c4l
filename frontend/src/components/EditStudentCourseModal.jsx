@@ -36,7 +36,8 @@ const EditStudentCourseModal = ({
   const submitFormHandler = async (event) => {
     event.preventDefault();
 
-    const { course_number, grade, units, weight, cumulative } = event.target;
+    const { course_number, grade, units, weight, cumulative, justification } =
+      event.target;
 
     const response = await fetch(
       `/api/students/${student_num}/courses/${course_number_param}`,
@@ -52,6 +53,7 @@ const EditStudentCourseModal = ({
           prev_data: course_number_param,
           semester: sem,
           acad_year: academic_year,
+          // justification: justification.value,
         }),
       }
     );
@@ -70,6 +72,7 @@ const EditStudentCourseModal = ({
           prev_data: grade_param,
           semester: sem,
           acad_year: academic_year,
+          // justification: justification.value,
         }),
       }
     );
@@ -88,6 +91,7 @@ const EditStudentCourseModal = ({
           prev_data: units_param,
           semester: sem,
           acad_year: academic_year,
+          // justification: justification.value,
         }),
       }
     );
@@ -106,6 +110,7 @@ const EditStudentCourseModal = ({
           prev_data: weight_param,
           semester: sem,
           acad_year: academic_year,
+          // justification: justification.value,
         }),
       }
     );
@@ -124,6 +129,7 @@ const EditStudentCourseModal = ({
           prev_data: cumulative_param,
           semester: sem,
           acad_year: academic_year,
+          // justification: justification.value,
         }),
       }
     );
@@ -163,7 +169,7 @@ const EditStudentCourseModal = ({
               </FloatingLabel>
             </Col>
           </Row>
-          <Row className="g-2">
+          <Row className="g-2 mb-3">
             <Col md>
               <FloatingLabel controlId="floatingInputGrid" label="Grade">
                 <Form.Control
@@ -204,6 +210,15 @@ const EditStudentCourseModal = ({
                 />
               </FloatingLabel>
             </Col>
+          </Row>
+          <Row className="mb-3">
+            <FloatingLabel controlId="floatingInput" label="Justification">
+              <Form.Control
+                name="justification"
+                placeholder=" "
+                //   required
+              />
+            </FloatingLabel>
           </Row>
           {fillUpFormAlertMessage !== "" && (
             <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
