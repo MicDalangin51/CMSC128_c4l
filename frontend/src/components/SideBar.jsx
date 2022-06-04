@@ -5,8 +5,11 @@ import React, { useState, useEffect } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 
 const SideBar = () => {
-  const username = "Abbott Young";
-
+  // var userr = JSON.parse(user.name);
+  // const username =
+  // userr.name === null ? "No Database" : userr.name.replace(/["]+/g, "");
+  var user = localStorage.getItem("currentUser");
+  const username = user === null ? "No Database" : user;
   const navItems = [
     {
       icon: FaUsers,
