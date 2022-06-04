@@ -16,6 +16,8 @@ const Register = () => {
       faculty_id,
     } = event.target;
 
+    var access = access_level.value === "admin" ? 0 : 1;
+
     if (password.value === confirmpass.value) {
       const response = await fetch("/api/users", {
         method: "POST",
@@ -28,7 +30,7 @@ const Register = () => {
           email: email.value,
           password: password.value,
           department: department.value,
-          access_level: access_level.value,
+          access_level: access,
         }),
       });
 
