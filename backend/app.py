@@ -19,11 +19,7 @@ def index(path=""):
 
 @app.route('/api/students')
 def getStudents():
-    print("student directory page number:")
-
-    # lowerStudent = (page - 1) * 50 + 1 # 51
-    # upperStudent = page * 50 # 100
-    
+    print("student directory page number:")  
     students = get_all_students()
     student_count = get_num_of_students()
     
@@ -42,8 +38,8 @@ def get_credentials():
     username = creds['email']
     password = creds['password']
     try:
-        valid = check_credentials(username, password)
-        return {"success": valid }
+        valid, faculty = check_credentials(username, password)
+        return {"success": valid, "faculty":faculty}
     except:
         return {'success': False}
 
@@ -56,10 +52,6 @@ def delete_student_course(student_number, course_code):
     except:
         return {'success': False}
 
-
-  
-
-# gumagana
 @app.route('/api/students', methods = ['POST'])
 def add_student():
     details = request.get_json()
@@ -69,17 +61,7 @@ def add_student():
         return {'success': True}
     except:
         return {'success': False} 
-# 
-#     
-# @app.route('/api/students/<string:student_number>', methods = ['PATCH'])
-#   details = request.get_json()    
-#   try:
-#       insert_student(student_id, first_name, last_name, degree_program, gwa, total_units, req_units, total_cumulative)
-#       return {'success': True}
-#   except:
-#   details = request.get_json()
 
-# gumagana
 @app.route('/api/students/<string:student_number>', methods = ['PATCH'])
 def edit_students(student_number):
     details = request.get_json()
@@ -96,8 +78,6 @@ def del_student():
     print(details)
     delete_student(details['student_number'])
     return {'success': True }
-
-
 
 @app.route('/api/students/<string:student_number>/courses/<string:course_code>', methods = ['PATCH'])
 def edit_student_course(student_number, course_code):
@@ -130,8 +110,6 @@ def add_student_course(id):
     except:
         return {'success': False}
 
-    
-
 @app.route('/api/students:file', methods = ['POST'])
 async def read_file(): 
     import tkinter as tk
@@ -151,12 +129,10 @@ async def read_file():
     
     return {'success': True}
 
-
 @app.route('/api/change-logs', methods = ['GET'])
 def get_all_changelogs():
     changelogs = get_changelogs()
-    return {"changelogs": changelogs}
-
+    return {"changelogs": changelogs, "totalChangeLogCount": changelogs.length}
 
 @app.route('/api/users', methods = ['GET'])
 def get_users():
@@ -167,11 +143,9 @@ def get_users():
 def add_user():
     
     faculty = request.get_json()
-    successful = add_faculty(faculty['email'], faculty['password'], faculty['faculty_id'], faculty['name'])
+    successful = add_faculty(faculty['email'], faculty['password'], faculty['faculty_id'], faculty['name'], faculty['department'], faculty['access_level'])
     return {'success': True} if successful else {'success': False}
     
-
-
 @app.route('/api/users', methods = ['DELETE'])
 def delete_users():
     faculty = request.get_json()
@@ -185,6 +159,3 @@ def edit_user(faculty_id):
         edit_faculty_name(data['faculty_id'], data['student_id'], data['justification'], data['col_name'], data['prev_data'], data['new_data'])
     else:
         edit_faculty_password(data['faculty_id'], data['old_pw'], data['new_pw'])
-
-    
-

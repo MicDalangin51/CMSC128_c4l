@@ -203,10 +203,13 @@ def check_credentials(username, password):
     values = cursor.execute('SELECT email, password FROM faculty')
     for i in values:
         if(i[0] == username.strip() and i[1] == password.strip()):
-            for name, department in cursor.execute(f"SELECT name, department FROM faculty WHERE email = '{username}' AND password = '{password}'"):
+            for name, department, faculty_id, access_level in cursor.execute(f"SELECT name, department, faculty_id, access_level FROM faculty WHERE email = '{username}' AND password = '{password}'"):
                 faculty = {
+
                     "name": name,
-                    "department": department
+                    "department": department,
+                    "faculty_id": faculty_id,
+                    "access_level": access_level,
                 }
                 return True, faculty
         # print( i[0] + ' ---- '+username.strip())
@@ -294,9 +297,9 @@ def edit_data(student_id, table, course_code, semester, acad_year, col_name, new
     #     print("Invalid Data!")           
 
 # returns True if adding a faculty is successful. Otherwise it returns False         
-def add_faculty(email, password, faculty_id, name):
+def add_faculty(email, password, faculty_id, name, department, access_level):
     try:
-        cursor.execute(f"INSERT into faculty(email, password, faculty_id, name) values(?,?,?,?);", (email, password, faculty_id, name))
+        cursor.execute(f"INSERT into faculty(email, password, faculty_id, name, department, access_level) values(?,?,?,?,?,?);", (email, password, faculty_id, name, department, access_level))
         connection.commit()
         return True
     except:
