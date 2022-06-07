@@ -81,7 +81,7 @@ def create_faculty(connection):
         cursor.execute('''
                         CREATE TABLE faculty (
                             email varchar(30) not null, 
-                            password varchar(30) not null, 
+                            password varchar(100) not null, 
                             faculty_id varchar(15) primary key, 
                             access_level int,
                             department varchar(15),
