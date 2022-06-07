@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Container, Form, InputGroup, Alert } from "react-bootstrap";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-
 import "./Login.css";
 import logo from "../images/cas-logo.png";
 
@@ -72,9 +71,6 @@ const Login = () => {
       setErrors(formErrors);
     }
 
-    console.log("form submitted");
-    console.log(form);
-
     const credentials = {
       email: form.email,
       password: form.password,
@@ -89,11 +85,20 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((body) => {
-        console.log(body);
-
         if (body.success) {
           setIsAuthenticated(true);
-          console.log(body.faculty);
+          var faculty = body.faculty;
+          var name = faculty.name;
+          var dept = faculty.department;
+          var access = faculty.access_level;
+          localStorage.setItem("currentUser", name);
+          localStorage.setItem("currentDepartment", dept);
+          localStorage.setItem("currentAccess", access);
+          // var user = { name: JSON.stringify(name) };
+          // localStorage.setItem("currentUser", user);
+          // var dept = body.faculty.department;
+          // var department = { name: JSON.stringify(dept) };
+          // localStorage.setItem("currentDepartment", department);
         } else {
           credentialError();
           //alert("Failed to log in");

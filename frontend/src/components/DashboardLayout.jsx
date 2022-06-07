@@ -7,7 +7,13 @@ const DashboardLayout = ({ children, fixedContent = "" }) => {
     <Stack direction="horizontal">
       <SideBar />
       <div className="vr"></div>
-      <Stack className={`flex-fill p-4 ${fixedContent && "overflow-hidden vh-100"}`}>{children}</Stack>
+      <Stack
+        className={`flex-fill p-4 ${
+          fixedContent && "overflow-hidden vh-100"
+        } overflow-auto`}
+      >
+        {children}
+      </Stack>
     </Stack>
   );
 };

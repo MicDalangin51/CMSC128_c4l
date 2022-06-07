@@ -5,8 +5,11 @@ import React, { useState, useEffect } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 
 const SideBar = () => {
-  const username = "Abbott Young";
-
+  // var userr = JSON.parse(user.name);
+  // const username =
+  // userr.name === null ? "No Database" : userr.name.replace(/["]+/g, "");
+  var user = localStorage.getItem("currentUser");
+  const username = user === null ? "No Database" : user;
   const navItems = [
     {
       icon: FaUsers,
@@ -52,10 +55,9 @@ const SideBar = () => {
       <Dropdown drop="up">
         <Dropdown.Toggle
           variant="white"
-          className="d-flex align-items-center shadow-none"
+          className="d-flex align-items-center shadow-none w-100 hover"
         >
-          {/* <Image src={""} width="32" height="32" className="me-2" /> */}
-          <span className="me-2">{username}</span>
+          <span className="me-2 me-auto">{username}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="shadow">
           <Dropdown.Item href="/logout">Logout</Dropdown.Item>

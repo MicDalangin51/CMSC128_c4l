@@ -16,13 +16,24 @@ import { useEffect, useState } from "react";
 import { DashboardLayout, EditShacModal } from "/src/components";
 
 const Settings = () => {
-  const [currentStaff, setCurrentStaff] = useState([]);
+  // const [currentStaff, setCurrentStaff] = useState([]);
+  // var user = sessionStorage.getItem("currentUser");
+  // var userr = JSON.parse(user);
+  // const currentUser = userr.name.replace(/["]+/g, "");
 
-  useEffect(async () => {
-    const response = await fetch(`/api/users/${faculty_id}`);
-    const data = await response.json();
-    setCurrentStaff(data.currentStaff);
-  }, []);
+  // var dept = sessionStorage.getItem("currentDepartment");
+  // var deptt = JSON.parse(dept);
+  // const currentDept = deptt.name.replace(/["]+/g, "");
+
+  // useEffect(async () => {
+  //   const response = await fetch(`/api/users/${faculty_id}`);
+  //   const data = await response.json();
+  //   setCurrentStaff(data.currentStaff);
+  // }, []);
+
+  var currentUser = localStorage.getItem("currentUser");
+  var currentDept = localStorage.getItem("currentDepartment");
+  var currentAccess = localStorage.getItem("currentAccess");
 
   const [staff, setStaff] = useState([]);
 
@@ -113,14 +124,14 @@ const Settings = () => {
           </Container>
           <Stack className="px-5">
             <h6>Name</h6>
-            <span className="text-black">{currentStaff.name} </span>
+            <span className="text-black">{currentUser}</span>
             <br></br>
-            <h6>Email</h6>
-            <span className="text-black">{currentStaff.department} </span>
+            <h6>Department</h6>
+            <span className="text-black">{currentDept} </span>
             <br></br>
             <h6>Access Level</h6>
             <span className="text-black">
-              {currentStaff.access ? "Admin" : "Staff"}
+              {currentAccess === 0 ? "Admin" : "Staff"}
             </span>
           </Stack>
         </Tab>
