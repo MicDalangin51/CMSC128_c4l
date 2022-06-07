@@ -4,26 +4,40 @@ import { Settings } from "/src/pages";
 import { StudentRecord } from "/src/pages";
 import { Login } from "/src/pages";
 import { Register } from "/src/pages";
+import { ProtectedRoute } from "/src/components";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 const App = () => {
   return (
     <>
       <Router>
-        <div className="content">
-          <Routes>
-            <Route path="/login" element={<Login />}></Route>
-            <Route path="/logout" element={<Login />}></Route>
-            <Route path="/" element={<StudentDirectory />}></Route>
-            <Route path="/change-log" element={<Changelog />}></Route>
-            <Route path="/settings" element={<Settings />}></Route>
-            <Route
-              path="/student/:studentNumber"
-              element={<StudentRecord />}
-            ></Route>
-            <Route path="/add-account" element={<Register />}></Route>
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/logout"
+            element={<ProtectedRoute component={Login} />}
+          />
+          <Route
+            path="/"
+            element={<ProtectedRoute component={StudentDirectory} />}
+          />
+          <Route
+            path="/change-log"
+            element={<ProtectedRoute component={Changelog} />}
+          />
+          <Route
+            path="/settings"
+            element={<ProtectedRoute component={Settings} />}
+          />
+          <Route
+            path="/student/:studentNumber"
+            element={<ProtectedRoute component={StudentRecord} />}
+          />
+          <Route
+            path="/add-account"
+            element={<ProtectedRoute component={Register} />}
+          />
+        </Routes>
       </Router>
     </>
   );

@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Button, Container, Form, InputGroup, Alert } from "react-bootstrap";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import "./Login.css";
 import logo from "../images/cas-logo.png";
 
+const isAuthenticated = localStorage.getItem("accessToken");
+
 const Login = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
   const [passwordShown, setPasswordShown] = useState(false);
 
   const [form, setForm] = useState({});
@@ -55,12 +58,6 @@ const Login = () => {
     }, 5000);
   };
 
-  const navigateTo = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) navigateTo("/");
-  }, [isAuthenticated]);
-
   function login(e) {
     e.preventDefault();
 
@@ -84,7 +81,6 @@ const Login = () => {
       .then((response) => response.json())
       .then((body) => {
         if (body.success) {
-          setIsAuthenticated(true);
           var faculty = body.faculty;
           var accessToken = body.accessToken;
           var name = faculty.name;
@@ -94,13 +90,17 @@ const Login = () => {
           localStorage.setItem("currentDepartment", dept);
           localStorage.setItem("currentAccess", access);
           localStorage.setItem("accessToken", accessToken);
+
+          navigate("/", { replace: true });
         } else {
           credentialError();
         }
       });
   }
 
-  return (
+  return isAuthenticated ? (
+    <Navigate to="/" replace />
+  ) : (
     <>
       <div className="leftHalf"></div>
       <div className="rightHalf">
