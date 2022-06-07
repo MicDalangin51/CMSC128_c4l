@@ -126,11 +126,11 @@ def update_computedGWA(computed_gwa, student_id):
 # verify_gwa('6957-81564') # completely right
 
 # ------------------------------------   WITH ERRORS.   ------------------------------------------
-verify_gwa('3067-76025') # wrong GWA because of missing last row (Will Smith)
-print("---------------------------------------")
-verify_gwa('6149-17982') # wrong cumulative at ENG 5 AY 18/19 (Amber Heard)
-print("---------------------------------------")
-verify_gwa('5179-67043') # wrong weight at JAP 10  AY 16/17 (Maria Makiling)
+# verify_gwa('3067-76025') # wrong GWA because of missing last row (Will Smith)
+# print("---------------------------------------")
+# verify_gwa('6149-17982') # wrong cumulative at ENG 5 AY 18/19 (Amber Heard)
+# print("---------------------------------------")
+# verify_gwa('5179-67043') # wrong weight at JAP 10  AY 16/17 (Maria Makiling)
 
 
 # print(get_student_flags('3067-76025'))

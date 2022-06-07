@@ -1,6 +1,8 @@
 from database_connect import connection
 from datetime import datetime
-
+import bcrypt
+# from flask_jwt_extended import *
+WORK_FACTOR = 12 # default value
 cursor = connection.cursor()
 
 #dictionary['15/16']
@@ -12,8 +14,10 @@ def get_num_of_students():
     return student_count
 
 # returns DICTIONARIES within a LIST   ex. students = [{}, {}, {}, ..., {}]
-def get_all_students():
-    cursor.execute('SELECT first_name, last_name, student_id, degree_program, status FROM student')
+def get_all_students(category, order, offset, limit):
+
+    top = int(offset) + int(limit)
+    cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student ORDER BY {category} {order}")
     rows = cursor.fetchall()
     students = []
     for first_name, last_name, student_id, degree_program, status in rows:
@@ -23,16 +27,17 @@ def get_all_students():
             "student_number": student_id,
             "status": status or "pending"
         })
-
     connection.commit()
-    return students
+    # print(students)
+    return students[int(offset):]
 
 # returns DICTIONARIES inside a LIST    ex. student_data = [{}, {}, {}, ..., {}]
 def get_student(student_id):
     cursor.execute(f"SELECT first_verifier, second_verifier, other_verifier, status, first_name, last_name, degree_program, student_id, gwa, total_units, req_units, computed_gwa, total_cumulative FROM student WHERE student_id = ?", student_id)
     first_verifier, second_verifier, other_verifier, status, first_name, last_name, course, student_id, gwa, total_units, req_units, computed_gwa, total_cumulative = cursor.fetchone()
 
-    summary = standardize_data(get_student_data(student_id))
+    summary = standardize_data(get_student_data(student_id))    
+
     student_data = {
         "first_name": first_name,
         "last_name": last_name,
@@ -48,7 +53,6 @@ def get_student(student_id):
         "req_units":req_units,
         "computed_gwa": computed_gwa,
         "total_cumulative": total_cumulative,
-
     }
     
     connection.commit()
@@ -200,18 +204,24 @@ def add_studentData(student_id, code, grade, units, weight, cumulative, semester
 def check_credentials(username, password):
 
 
-    values = cursor.execute('SELECT email, password FROM faculty')
-    for i in values:
-        if(i[0] == username.strip() and i[1] == password.strip()):
-            for name, department, faculty_id, access_level in cursor.execute(f"SELECT name, department, faculty_id, access_level FROM faculty WHERE email = '{username}' AND password = '{password}'"):
-                faculty = {
+    # values = cursor.execute('SELECT email, password FROM faculty')  
+    for i in cursor.execute('SELECT email, password FROM faculty'):
 
-                    "name": name,
-                    "department": department,
-                    "faculty_id": faculty_id,
-                    "access_level": access_level,
-                }
-                return True, faculty
+        if(i[0] == username.strip()):
+            hash_pw = i[1]
+            print(username, password)
+            print(hash_pw, i[0])
+            print((bcrypt.checkpw(password.strip().encode(), i[1].encode())))
+            if (bcrypt.checkpw(password.strip().encode(), i[1].encode())):
+                for name, department, faculty_id, access_level in cursor.execute(f"SELECT name, department, faculty_id, access_level FROM faculty WHERE email = '{username}' AND password = '{hash_pw}'"):
+                    faculty = {
+
+                        "name": name,
+                        "department": department,
+                        "faculty_id": faculty_id,
+                        "access_level": access_level,
+                    }
+                    return True, faculty
         # print( i[0] + ' ---- '+username.strip())
         # print(i[1]  + ' ---- '+password.strip())
     return False
@@ -296,24 +306,25 @@ def edit_data(student_id, table, course_code, semester, acad_year, col_name, new
         return False
     #     print("Invalid Data!")           
 
-# returns True if adding a faculty is successful. Otherwise it returns False         
+# returns True if adding a faculty is successful. Otherwise it returns False           
 def add_faculty(email, password, faculty_id, name, department, access_level):
     try:
-        cursor.execute(f"INSERT into faculty(email, password, faculty_id, name, department, access_level) values(?,?,?,?,?,?);", (email, password, faculty_id, name, department, access_level))
+        WORK_FACTOR = 12 # default value
+
+        hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=WORK_FACTOR))
+        cursor.execute(f"INSERT into faculty(email, password, faculty_id, name, department, access_level) values(?,?,?,?,?,?);", (email, hashed_pw, faculty_id, name, department, access_level))
         connection.commit()
         return True
-    except:
+    except: 
         return False
 
 # returns True if inserting a changelog is successful. Otherwise it returns False    
 def record_changelogs(faculty_id, student_id, justification, col_name, prev_data, new_data):
 
-    try:
-        cursor.execute(f"INSERT INTO changelogs(faculty_id, student_id, date, time, justification, col_name, prev_data, new_data) values('{faculty_id}','{student_id}',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'{justification}','{col_name}','{prev_data}','{new_data}')")
-        connection.commit()
-        return True
-    except:
-        return False
+    cursor.execute(f"INSERT INTO changelogs(faculty_id, student_id, date, time, justification, col_name, prev_data, new_data) values('{faculty_id}','{student_id}',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'{justification}','{col_name}','{prev_data}','{new_data}')")
+    connection.commit()
+    return True
+        
 
 # returns dictionaries within a list
 def get_all_faculties():
@@ -370,9 +381,13 @@ def edit_student(student_id, col_name, new_data):
 # TO BE IMPLEMENTED ===========================
 
 # GET CHANGELOGS
-def get_changelogs():
+def get_changelogs(category, order, offset, limit):
     changelogs = []
-    for faculty_id, student_id, date, time, justification, col_name, prev_data, new_data in cursor.execute(f"SELECT faculty_id, student_id, date, time, justification, col_name, prev_data, new_data FROM changelogs"):
+
+    top = int(offset) + int(limit)
+                                                                                              
+    
+    for faculty_id, student_id, date, time, justification, col_name, prev_data, new_data in cursor.execute(f"SELECT TOP {top} faculty_id, student_id, date, time, justification, col_name, prev_data, new_data FROM changelogs ORDER BY {category} {order}"):
         changelog = {
             "faculty_id": faculty_id,
             "student_id": student_id,
@@ -386,7 +401,7 @@ def get_changelogs():
 
         changelogs.append(changelog)
 
-    return changelogs
+    return changelogs[int(offset):]
 
 # DELETE FACULTY MEMBER
 def delete_faculty_member(faculty_id):
@@ -397,9 +412,11 @@ def delete_faculty_member(faculty_id):
 
 # returns True if successful. False if failed
 def edit_faculty_password(faculty_id, old_pw, new_pw):
-    for password in cursor.execute(f"SELECT password FROM faculty WHERE faculty_id = '{faculty_id}'"):
-        if password == old_pw:
-            cursor.execute("UPDATE faculty SET password = '{new_pw}' WHERE faculty_id = '{faculty_id}'")
+    for password, email in cursor.execute(f"SELECT password, email FROM faculty WHERE faculty_id = '{faculty_id}'"):
+        print(check_credentials(email, old_pw))
+        if (check_credentials(email, old_pw)):
+            hashed = bcrypt.hashpw(new_pw.encode(), bcrypt.gensalt(rounds=WORK_FACTOR))
+            cursor.execute(f"UPDATE faculty SET password = '{hashed.decode()}' WHERE faculty_id = '{faculty_id}'")
             connection.commit()
             return True
     return False
@@ -507,3 +524,5 @@ def get_access_level(faculty_id):
 # delete_student_remarks('7025-43182', 'ENG 2(AH)', '2', '15/16')
 
 # print(get_student_data('7261-38974'))
+
+# get_changelog_sorted_faculty('4571-62517')
