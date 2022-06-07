@@ -86,12 +86,14 @@ const Login = () => {
         if (body.success) {
           setIsAuthenticated(true);
           var faculty = body.faculty;
+          var accessToken = body.accessToken;
           var name = faculty.name;
           var dept = faculty.department;
           var access = faculty.access_level;
           localStorage.setItem("currentUser", name);
           localStorage.setItem("currentDepartment", dept);
           localStorage.setItem("currentAccess", access);
+          localStorage.setItem("accessToken", accessToken);
         } else {
           credentialError();
         }

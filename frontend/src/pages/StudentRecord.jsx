@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import ReactToPrint from "react-to-print";
 
 import {
   DashboardLayout,
@@ -12,6 +13,7 @@ import {
   DeleteCourseModal,
   EditStudentSummaryModal,
 } from "/src/components";
+import { StudentPdf } from "/src/pages";
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
 import { BsCalendarCheckFill, BsCalendarXFill } from "react-icons/bs";
 import { RiDeleteBin2Fill } from "react-icons/ri";
@@ -196,6 +198,8 @@ const StudentRecord = () => {
   //adding rows with semester and acad year
   const [showEditStudentSummary, setShowEditStudentSummary] = useState(false);
   const handleShowEditStudentSummary = () => setShowEditStudentSummary(true);
+
+  const studentPdfRef = useRef();
 
   return (
     <DashboardLayout>
@@ -557,10 +561,19 @@ const StudentRecord = () => {
         </Col>
 
         <Col className="flex-fill m-5">
-          <Row className="my-3">
-            <Button variant="outline-primary" onClick={handleShowAddCourse2}>
+          <Row className="my-2">
+            <Button variant="primary" onClick={handleShowAddCourse2}>
               Add Course
             </Button>
+          </Row>
+          <Row>
+            <ReactToPrint
+              trigger={() => <Button variant="outline-primary">Print</Button>}
+              content={() => studentPdfRef.current}
+            />
+            <div className="d-none">
+              <StudentPdf ref={studentPdfRef} />
+            </div>
           </Row>
           <Row className="my-auto">
             <Col className="my-auto">First Verifier</Col>
