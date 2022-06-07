@@ -13,10 +13,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/logout"
-            element={<ProtectedRoute component={Login} />}
-          />
+
           <Route
             path="/"
             element={<ProtectedRoute component={StudentDirectory} />}

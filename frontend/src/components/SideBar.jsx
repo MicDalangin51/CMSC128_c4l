@@ -1,29 +1,43 @@
 import { Dropdown, Image, Nav, Stack } from "react-bootstrap";
 import { FaCog, FaHistory, FaUsers } from "react-icons/fa";
 import casLogo from "/src/images/cas-logo.png";
-import React, { useState, useEffect } from "react";
-import { NavLink as RouterNavLink } from "react-router-dom";
+import { NavLink as RouterNavLink, useNavigate } from "react-router-dom";
+
+const navItems = [
+  {
+    icon: FaUsers,
+    label: "Student Directory",
+    href: "/",
+  },
+  {
+    icon: FaHistory,
+    label: "Change Log",
+    href: "/change-log",
+  },
+  {
+    icon: FaCog,
+    label: "Settings",
+    href: "/settings",
+  },
+];
 
 const SideBar = () => {
-  var user = localStorage.getItem("currentUser");
-  const username = user === null ? "No Database" : user;
-  const navItems = [
-    {
-      icon: FaUsers,
-      label: "Student Directory",
-      href: "/",
-    },
-    {
-      icon: FaHistory,
-      label: "Change Log",
-      href: "/change-log",
-    },
-    {
-      icon: FaCog,
-      label: "Settings",
-      href: "/settings",
-    },
-  ];
+  const username = localStorage.getItem("currentUser");
+
+  const logOut = async () => {
+    const res = await fetch("/api/logout");
+
+    switch (res.status) {
+      case 200:
+        localStorage.removeItem("name");
+        localStorage.removeItem("accessToken");
+
+        const navigate = useNavigate();
+        navigate("/login");
+        break;
+      default:
+    }
+  };
 
   return (
     <Stack className="flex-grow-0 p-3 vh-100 sticky-top">
@@ -57,7 +71,7 @@ const SideBar = () => {
           <span className="me-2 me-auto">{username}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="shadow">
-          <Dropdown.Item href="/logout">Logout</Dropdown.Item>
+          <Dropdown.Item onClick={logOut}>Logout</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     </Stack>
