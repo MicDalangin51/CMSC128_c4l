@@ -45,6 +45,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -53,7 +54,7 @@ const EditStudentCourseModal = ({
           prev_data: course_number_param,
           semester: sem,
           acad_year: academic_year,
-          // justification: justification.value,
+          justification: justification.value,
         }),
       }
     );
@@ -64,6 +65,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -72,7 +74,7 @@ const EditStudentCourseModal = ({
           prev_data: grade_param,
           semester: sem,
           acad_year: academic_year,
-          // justification: justification.value,
+          justification: justification.value,
         }),
       }
     );
@@ -83,6 +85,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -91,7 +94,7 @@ const EditStudentCourseModal = ({
           prev_data: units_param,
           semester: sem,
           acad_year: academic_year,
-          // justification: justification.value,
+          justification: justification.value,
         }),
       }
     );
@@ -102,6 +105,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -110,7 +114,7 @@ const EditStudentCourseModal = ({
           prev_data: weight_param,
           semester: sem,
           acad_year: academic_year,
-          // justification: justification.value,
+          justification: justification.value,
         }),
       }
     );
@@ -121,6 +125,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -129,7 +134,7 @@ const EditStudentCourseModal = ({
           prev_data: cumulative_param,
           semester: sem,
           acad_year: academic_year,
-          // justification: justification.value,
+          justification: justification.value,
         }),
       }
     );
@@ -213,11 +218,7 @@ const EditStudentCourseModal = ({
           </Row>
           <Row className="mb-3">
             <FloatingLabel controlId="floatingInput" label="Justification">
-              <Form.Control
-                name="justification"
-                placeholder=" "
-                //   required
-              />
+              <Form.Control name="justification" placeholder=" " required />
             </FloatingLabel>
           </Row>
           {fillUpFormAlertMessage !== "" && (
@@ -230,7 +231,6 @@ const EditStudentCourseModal = ({
           </Stack>
         </Form>
       </Modal.Body>
-      {/* <Modal.Footer></Modal.Footer> */}
     </Modal>
   );
 };

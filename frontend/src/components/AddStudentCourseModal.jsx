@@ -38,6 +38,7 @@ const AddStudentCourseModal = ({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       body: JSON.stringify({
         student_number: student_num,
@@ -127,7 +128,6 @@ const AddStudentCourseModal = ({
           </Stack>
         </Form>
       </Modal.Body>
-      {/* <Modal.Footer></Modal.Footer> */}
     </Modal>
   );
 };

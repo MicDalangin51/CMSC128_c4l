@@ -36,13 +36,14 @@ const EditStudentSummaryModal = ({
     const response = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         student_id: student_num,
         new_data: req_units.value,
         col_name: "req_units",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -50,38 +51,41 @@ const EditStudentSummaryModal = ({
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       body: JSON.stringify({
         student_id: student_num,
         new_data: total_units.value,
         col_name: "total_units",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
     const response2 = await fetch(`/api/students/${student_num}`, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       method: "PATCH",
       body: JSON.stringify({
         student_id: student_num,
         new_data: total_cumulative.value,
         col_name: "total_cumulative",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
     const response3 = await fetch(`/api/students/${student_num}`, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       method: "PATCH",
       body: JSON.stringify({
         student_id: student_num,
         new_data: GWA.value,
         col_name: "GWA",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -154,11 +158,7 @@ const EditStudentSummaryModal = ({
           </Row>
           <Row className="mb-3">
             <FloatingLabel controlId="floatingInput" label="Justification">
-              <Form.Control
-                name="justification"
-                placeholder=" "
-                //   required
-              />
+              <Form.Control name="justification" placeholder=" " required />
             </FloatingLabel>
           </Row>
           {fillUpFormAlertMessage !== "" && (
@@ -171,7 +171,6 @@ const EditStudentSummaryModal = ({
           </Stack>
         </Form>
       </Modal.Body>
-      {/* <Modal.Footer></Modal.Footer> */}
     </Modal>
   );
 };

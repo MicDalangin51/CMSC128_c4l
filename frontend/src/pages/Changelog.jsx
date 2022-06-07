@@ -41,7 +41,12 @@ const Changelog = () => {
     console.log("/api/change-logs?" + new URLSearchParams(queries));
 
     const response = await fetch(
-      "/api/change-logs?" + new URLSearchParams(queries)
+      "/api/change-logs?" + new URLSearchParams(queries),
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     const data = await response.json();
 
