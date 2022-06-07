@@ -32,75 +32,111 @@ const EditStudentSummaryModal = ({
 
     const { req_units, total_units, total_cumulative, GWA, justification } =
       event.target;
+    var edited = false;
 
-    const response = await fetch(`/api/students/${student_num}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: req_units.value,
-        col_name: "req_units",
-        justification: justification.value,
-      }),
-    });
+    if (req_units.value != requnits) {
+      const response = await fetch(`/api/students/${student_num}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: req_units.value,
+          prev_data: requnits,
+          col_name: "req_units",
+          justification: justification.value,
+        }),
+      });
 
-    const response1 = await fetch(`/api/students/${student_num}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: total_units.value,
-        col_name: "total_units",
-        justification: justification.value,
-      }),
-    });
+      switch (response.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
 
-    const response2 = await fetch(`/api/students/${student_num}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      method: "PATCH",
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: total_cumulative.value,
-        col_name: "total_cumulative",
-        justification: justification.value,
-      }),
-    });
+    if (total_units.value != totalunits) {
+      const response1 = await fetch(`/api/students/${student_num}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: total_units.value,
+          prev_data: totalunits,
+          col_name: "total_units",
+          justification: justification.value,
+        }),
+      });
 
-    const response3 = await fetch(`/api/students/${student_num}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      method: "PATCH",
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: GWA.value,
-        col_name: "GWA",
-        justification: justification.value,
-      }),
-    });
+      switch (response1.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
 
-    switch (
-      response.status &&
-      response1.status &&
-      response2.status &&
-      response3.status
-    ) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student was unsuccessful");
+    if (total_cumulative.value != totalcumulative) {
+      const response2 = await fetch(`/api/students/${student_num}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "PATCH",
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: total_cumulative.value,
+          prev_data: totalcumulative,
+          col_name: "total_cumulative",
+          justification: justification.value,
+        }),
+      });
+
+      switch (response2.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
+
+    if (GWA.value != finalgwa) {
+      const response3 = await fetch(`/api/students/${student_num}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "PATCH",
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: GWA.value,
+          prev_data: finalgwa,
+          col_name: "GWA",
+          justification: justification.value,
+        }),
+      });
+
+      switch (response3.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
+
+    if (edited) {
+      closeModal();
+      location.reload();
     }
   };
 

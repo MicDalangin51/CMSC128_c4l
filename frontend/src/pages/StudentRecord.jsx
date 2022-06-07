@@ -45,7 +45,7 @@ const StudentRecord = () => {
   const [edit_semester, setSemester] = useState("");
 
   //gets the student's data
-  const [student, setStudent] = useState([]);
+  const [student, setStudent] = useState({});
   const [genError, setGenError] = useState([]);
   const [dataFlags, setDataFlags] = useState([]);
 
@@ -260,6 +260,7 @@ const StudentRecord = () => {
         showModal={showVerify1}
         closeModal={handleCloseAll}
         verifier="first_verifier"
+        previous_data={student.first_verifier}
         shac_member={currentUser}
         student_num={student.student_number}
       />
@@ -268,6 +269,7 @@ const StudentRecord = () => {
         showModal={showVerify2}
         closeModal={handleCloseAll}
         verifier="second_verifier"
+        previous_data={student.second_verifier}
         shac_member={currentUser}
         student_num={student.student_number}
       />
@@ -276,6 +278,7 @@ const StudentRecord = () => {
         showModal={showVerify3}
         closeModal={handleCloseAll}
         verifier="other_verifier"
+        previous_data={student.other_verifier}
         //return from login the credentials of the shac member
         shac_member={currentUser}
         student_num={student.student_number}
@@ -572,7 +575,7 @@ const StudentRecord = () => {
               content={() => studentPdfRef.current}
             />
             <div className="d-none">
-              <StudentPdf ref={studentPdfRef} />
+              <StudentPdf ref={studentPdfRef} student={student} />
             </div>
           </Row>
           <Row className="my-auto">

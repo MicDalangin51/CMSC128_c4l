@@ -32,55 +32,84 @@ const EditStudentModal = ({
     const { first_name, last_name, degree_program, justification } =
       event.target;
 
-    const response = await fetch(`/api/students/${student_num}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: first_name.value,
-        col_name: "first_name",
-        justification: justification.value,
-      }),
-    });
+    var edited = false;
+    if (first_name.value != firstname) {
+      const response = await fetch(`/api/students/${student_num}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: first_name.value,
+          col_name: "first_name",
+          prev_data: firstname,
+          justification: justification.value,
+        }),
+      });
 
-    const response1 = await fetch(`/api/students/${student_num}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: last_name.value,
-        col_name: "last_name",
-        justification: justification.value,
-      }),
-    });
+      switch (response.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
 
-    const response2 = await fetch(`/api/students/${student_num}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      method: "PATCH",
-      body: JSON.stringify({
-        student_id: student_num,
-        new_data: degree_program.value,
-        col_name: "degree_program",
-        justification: justification.value,
-      }),
-    });
+    if (last_name.value != lastname) {
+      const response1 = await fetch(`/api/students/${student_num}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: last_name.value,
+          prev_data: lastname,
+          col_name: "last_name",
+          justification: justification.value,
+        }),
+      });
 
-    switch (response.status && response1.status && response2.status) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student was unsuccessful");
+      switch (response1.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
+
+    if (degree_program.value != course) {
+      const response2 = await fetch(`/api/students/${student_num}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        method: "PATCH",
+        body: JSON.stringify({
+          student_id: student_num,
+          new_data: degree_program.value,
+          prev_data: course,
+          col_name: "degree_program",
+          justification: justification.value,
+        }),
+      });
+
+      switch (response2.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student was unsuccessful");
+      }
+    }
+    if (edited) {
+      closeModal();
+      location.reload();
     }
   };
 

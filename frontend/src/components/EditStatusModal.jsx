@@ -39,6 +39,7 @@ const EditStatusModal = ({
         student_id: student_num,
         new_data: status,
         col_name: "status",
+        prev_data: current_status,
         justification: justification.value,
       }),
     });
