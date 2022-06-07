@@ -45,7 +45,12 @@ const StudentDirectory = () => {
     };
 
     const response = await fetch(
-      "/api/students?" + new URLSearchParams(queries)
+      "/api/students?" + new URLSearchParams(queries),
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     const data = await response.json();
 

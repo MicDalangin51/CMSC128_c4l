@@ -36,6 +36,7 @@ const EditStudentModal = ({
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       body: JSON.stringify({
         student_id: student_num,
@@ -49,6 +50,7 @@ const EditStudentModal = ({
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       body: JSON.stringify({
         student_id: student_num,
@@ -61,6 +63,7 @@ const EditStudentModal = ({
     const response2 = await fetch(`/api/students/${student_num}`, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
       method: "PATCH",
       body: JSON.stringify({

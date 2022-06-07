@@ -45,6 +45,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -64,6 +65,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -83,6 +85,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -102,6 +105,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,
@@ -121,6 +125,7 @@ const EditStudentCourseModal = ({
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({
           student_number: student_num,

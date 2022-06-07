@@ -25,6 +25,7 @@ const DeleteCourseModal = ({
       `/api/students/${student_num}/courses/${course_code}`,
       {
         headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           "Content-Type": "application/json",
         },
         method: "DELETE",

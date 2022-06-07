@@ -27,12 +27,9 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
   const submitFileHandler = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("file", event.target.file.files[0]);
-
     const response = await fetch("/api/students:file", {
       method: "POST",
-      body: formData,
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     });
 
     switch (response.status) {
@@ -61,6 +58,7 @@ const AddStudentModal = ({ show, closeAddStudentModal }) => {
     const response = await fetch("/api/students", {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

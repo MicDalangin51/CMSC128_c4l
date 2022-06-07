@@ -22,6 +22,7 @@ const EditStatusModal = ({
     const response = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

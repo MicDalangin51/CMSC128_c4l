@@ -21,6 +21,7 @@ const DeleteStudentModal = ({
     event.preventDefault();
     const response = await fetch(`/api/students`, {
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       method: "DELETE",

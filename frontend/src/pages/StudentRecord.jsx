@@ -48,7 +48,11 @@ const StudentRecord = () => {
   const [dataFlags, setDataFlags] = useState([]);
 
   useEffect(async () => {
-    const response = await fetch(`/api/students/${studentNumber}`);
+    const response = await fetch(`/api/students/${studentNumber}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
     const data = await response.json();
     setStudent(data.student);
     setGenError(data.genError);

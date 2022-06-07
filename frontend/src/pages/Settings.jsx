@@ -38,7 +38,11 @@ const Settings = () => {
   const [staff, setStaff] = useState([]);
 
   useEffect(async () => {
-    const response = await fetch("/api/users");
+    const response = await fetch("/api/users", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
     const data = await response.json();
     setStaff(data.staff);
   }, []);
@@ -49,6 +53,7 @@ const Settings = () => {
     fetch(`/api/users/${faculty_id}`, {
       method: "DELETE",
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

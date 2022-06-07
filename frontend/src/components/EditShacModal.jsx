@@ -41,6 +41,7 @@ const EditShacModal = ({
     const response = await fetch(`/api/users/${facultyid}`, {
       method: "PATCH",
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -67,6 +68,7 @@ const EditShacModal = ({
     const response = await fetch(`/api/users/${facultyid}`, {
       method: "PATCH",
       headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
