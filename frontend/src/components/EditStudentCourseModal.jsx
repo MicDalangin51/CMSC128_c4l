@@ -39,119 +39,161 @@ const EditStudentCourseModal = ({
     const { course_number, grade, units, weight, cumulative, justification } =
       event.target;
 
-    const response = await fetch(
-      `/api/students/${student_num}/courses/${course_number_param}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          student_number: student_num,
-          col_name: "course_code",
-          new_data: course_number.value,
-          prev_data: course_number_param,
-          semester: sem,
-          acad_year: academic_year,
-          justification: justification.value,
-        }),
-      }
-    );
+    var edited = false;
+    if (course_number.value != course_number_param) {
+      const response = await fetch(
+        `/api/students/${student_num}/courses/${course_number_param}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({
+            student_number: student_num,
+            col_name: "course_code",
+            new_data: course_number.value,
+            prev_data: course_number_param,
+            semester: sem,
+            acad_year: academic_year,
+            justification: justification.value,
+          }),
+        }
+      );
 
-    const response1 = await fetch(
-      `/api/students/${student_num}/courses/${course_number_param}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          student_number: student_num,
-          col_name: "grade",
-          new_data: grade.value,
-          prev_data: grade_param,
-          semester: sem,
-          acad_year: academic_year,
-          justification: justification.value,
-        }),
+      switch (response.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student data was unsuccessful");
       }
-    );
+    }
 
-    const response2 = await fetch(
-      `/api/students/${student_num}/courses/${course_number_param}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          student_number: student_num,
-          col_name: "units",
-          new_data: units.value,
-          prev_data: units_param,
-          semester: sem,
-          acad_year: academic_year,
-          justification: justification.value,
-        }),
+    if (grade.value != grade_param) {
+      const response1 = await fetch(
+        `/api/students/${student_num}/courses/${course_number_param}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({
+            student_number: student_num,
+            col_name: "grade",
+            new_data: grade.value,
+            prev_data: grade_param,
+            semester: sem,
+            acad_year: academic_year,
+            justification: justification.value,
+          }),
+        }
+      );
+
+      switch (response1.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student data was unsuccessful");
       }
-    );
+    }
 
-    const response3 = await fetch(
-      `/api/students/${student_num}/courses/${course_number_param}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          student_number: student_num,
-          col_name: "weight",
-          new_data: weight.value,
-          prev_data: weight_param,
-          semester: sem,
-          acad_year: academic_year,
-          justification: justification.value,
-        }),
+    if (units.value != units_param) {
+      const response2 = await fetch(
+        `/api/students/${student_num}/courses/${course_number_param}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({
+            student_number: student_num,
+            col_name: "units",
+            new_data: units.value,
+            prev_data: units_param,
+            semester: sem,
+            acad_year: academic_year,
+            justification: justification.value,
+          }),
+        }
+      );
+
+      switch (response2.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student data was unsuccessful");
       }
-    );
+    }
 
-    const response4 = await fetch(
-      `/api/students/${student_num}/courses/${course_number_param}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          student_number: student_num,
-          col_name: "cumulative",
-          new_data: cumulative.value,
-          prev_data: cumulative_param,
-          semester: sem,
-          acad_year: academic_year,
-          justification: justification.value,
-        }),
+    if (weight.value != weight_param) {
+      console.log("w");
+      const response3 = await fetch(
+        `/api/students/${student_num}/courses/${course_number_param}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({
+            student_number: student_num,
+            col_name: "weight",
+            new_data: weight.value,
+            prev_data: weight_param,
+            semester: sem,
+            acad_year: academic_year,
+            justification: justification.value,
+          }),
+        }
+      );
+
+      switch (response3.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student data was unsuccessful");
       }
-    );
+    }
 
-    switch (
-      response.status &&
-      response1.status &&
-      response2.status &&
-      response3.status &&
-      response4.status
-    ) {
-      case 200:
-        closeModal();
-        location.reload();
-        break;
-      default:
-        setFillUpFormAlertMessage("Editing student data was unsuccessful");
+    if (cumulative.value != cumulative_param) {
+      const response4 = await fetch(
+        `/api/students/${student_num}/courses/${course_number_param}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({
+            student_number: student_num,
+            col_name: "cumulative",
+            new_data: cumulative.value,
+            prev_data: cumulative_param,
+            semester: sem,
+            acad_year: academic_year,
+            justification: justification.value,
+          }),
+        }
+      );
+
+      switch (response4.status) {
+        case 200:
+          edited = true;
+          break;
+        default:
+          setFillUpFormAlertMessage("Editing student data was unsuccessful");
+      }
+    }
+
+    if (edited) {
+      closeModal();
+      location.reload();
     }
   };
 

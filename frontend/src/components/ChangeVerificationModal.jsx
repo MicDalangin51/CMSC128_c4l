@@ -12,6 +12,7 @@ const ChangeVerificationModal = ({
   showModal,
   closeModal,
   verifier,
+  previous_data,
   shac_member,
   student_num,
 }) => {
@@ -35,6 +36,7 @@ const ChangeVerificationModal = ({
       body: JSON.stringify({
         student_id: student_num,
         new_data: shac_member,
+        prev_data: previous_data,
         col_name: verifier,
         justification: justification.value,
       }),

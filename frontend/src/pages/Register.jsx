@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Container, Form, FloatingLabel } from "react-bootstrap";
 import "./Register.css";
 
 const Register = () => {
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
+  const [staff, setStaff] = useState([]);
   var currentAccess = localStorage.getItem("currentAccess");
 
   const setField = (field, value) => {
@@ -20,9 +21,26 @@ const Register = () => {
       });
   };
 
+  useEffect(async () => {
+    const response = await fetch("/api/users", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    const data = await response.json();
+    setStaff(data.staff);
+  }, []);
+
+  const getUser = (input) => {
+    for (let i = 0; i < staff.length; i++) {
+      console.log(staff[i].email);
+      return staff[i].email === input ? true : false;
+    }
+  };
+
   const validateForm = () => {
     const { name, email, password, confirm_pass, faculty_id } = form;
-
+    const ifExists = getUser(email);
     const newErrors = {};
     const id_format = /\d{4}-\d{5}/g;
     const regex =
@@ -31,7 +49,7 @@ const Register = () => {
     if (!name || name === "") newErrors.name = "Please enter your name!";
     if (!faculty_id || faculty_id === "")
       newErrors.faculty_id = "Please enter ID!";
-    else if (id_fromat.test(faculty_id) === false) {
+    else if (id_format.test(faculty_id) === false) {
       newErrors.faculty_id =
         "Please enter your ID in this format: (XXXX-XXXXX)!";
     }
@@ -40,6 +58,8 @@ const Register = () => {
     else if (regex.test(email) === false) {
       newErrors.email =
         "Please enter your email address in this format: yourname@up.edu.ph";
+    } else if (ifExists) {
+      newErrors.email = "Email already exists!";
     }
 
     if (!password || password === "")
@@ -54,9 +74,9 @@ const Register = () => {
 
   const submitFormHandler = async (event) => {
     event.preventDefault();
-    var access = access_level.value === "admin" ? 0 : 1;
     const { department, access_level } = event.target;
     const formErrors = validateForm();
+    var access = access_level.value === "Admin" ? 0 : 1;
 
     if (Object.keys(formErrors).length === 0) {
       const response = await fetch("/api/users", {
@@ -76,7 +96,7 @@ const Register = () => {
       });
 
       switch (response.status) {
-        case 300:
+        case 200:
           location.reload();
           break;
         default:
@@ -113,7 +133,6 @@ const Register = () => {
                   <Form.Control
                     placeholder=" "
                     name="faculty_id"
-                    pattern="\d{4}-\d{5}"
                     value={form.faculty_id}
                     onChange={(e) => setField("faculty_id", e.target.value)}
                     isInvalid={!!errors.faculty_id}
