@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Badge, Button, Stack, Table } from "react-bootstrap";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
@@ -109,7 +110,7 @@ const StudentDirectory = () => {
                     return (
                       <tr key={index}>
                         <td>
-                          <a href={`/student/${student_number}`}>{name}</a>
+                          <Link to={`/student/${student_number}`}>{name}</Link>
                         </td>
                         <td>{course_name}</td>
                         <td>

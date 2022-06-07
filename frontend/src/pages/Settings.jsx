@@ -10,6 +10,7 @@ import {
   Table,
   Badge,
 } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 import { useEffect, useState } from "react";
@@ -109,12 +110,12 @@ const Settings = () => {
           <Stack>
             {currentAccess == 0 && (
               <Col className="gap-2">
-                <a href="/add-account">
+                <Link to="/add-account">
                   <Button variant="outline-secondary mx-3 mb-3">
                     <FaPlus className="m-1" />
                     <span className="m-1">Add account</span>
                   </Button>
-                </a>
+                </Link>
               </Col>
             )}
             <div className="flex-fill overflow-auto">

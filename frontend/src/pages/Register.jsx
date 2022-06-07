@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Container, Form, FloatingLabel } from "react-bootstrap";
+import { Link } from "react-router-dom";
+
 import "./Register.css";
 
 const Register = () => {
@@ -224,9 +226,9 @@ const Register = () => {
 
                 <Button type="submit">Save</Button>
 
-                <a href="/settings">
+                <Link to="/settings">
                   <Button className="mx-3">Cancel</Button>
-                </a>
+                </Link>
               </Form>
             </Container>
           </div>

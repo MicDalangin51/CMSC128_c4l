@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import ReactToPrint from "react-to-print";
 
 import {
@@ -293,11 +293,11 @@ const StudentRecord = () => {
 
       <Row xs="auto" className="m-3">
         <Col>
-          <a href="/">
+          <Link to="/">
             <Button className="btn btn-primary bg-transparent border-0">
               <FaArrowLeft color="maroon" />
             </Button>
-          </a>
+          </Link>
         </Col>
         <Col className="flex-fill">
           <Row xs="auto" className="m-3 mb-4">
