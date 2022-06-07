@@ -20,11 +20,34 @@ const StudentPdf = forwardRef(({ student }, ref) => {
         <h3>
           {student.last_name}, {student.first_name}
         </h3>
-        <h4>{student_number}</h4>
+        <h4>{student.student_number}</h4>
         <h5>{student.course}</h5>
 
+        <Card className="my-4" border="dark">
+          <Card.Body>
+            <Table responsive>
+              <thead>
+                <tr className="text-primary">
+                  <th>Required Units</th>
+                  <th>Total Units</th>
+                  <th>GWA</th>
+                  <th>Total Cumulative</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{student.req_units}</td>
+                  <td>{student.total_units}</td>
+                  <td>{student.GWA}</td>
+                  <td>{student.total_cumulative}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+
         {student.summary?.map(({ content, semester }, index) => (
-          <Card key={index}>
+          <Card className="my-4" key={index} border="dark">
             <Card.Header as="h5">{semester}</Card.Header>
             <Card.Body>
               <Table responsive>
