@@ -10,7 +10,11 @@ import {
   Stack,
   Table,
 } from "react-bootstrap";
-import { DashboardLayout, MainTableControls } from "/src/components";
+import {
+  DashboardLayout,
+  MainTableControls,
+  LoadingPanel,
+} from "/src/components";
 
 const rowLimit = 50;
 
@@ -20,6 +24,7 @@ const sortOptions = [
 ];
 
 const Changelog = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [changeLogs, setChangeLogs] = useState([]);
   const [totalChangeLogCount, setTotalChangeLogCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -50,8 +55,12 @@ const Changelog = () => {
     );
     const data = await response.json();
 
-    setChangeLogs(data.changelogs);
-    setTotalChangeLogCount(data.totalChangeLogCount);
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setChangeLogs(data.changelogs);
+        setTotalChangeLogCount(data.totalChangeLogCount);
+    }
   }, [search, tablePage, sortBy, orderBy]);
 
   return (
@@ -89,6 +98,8 @@ const Changelog = () => {
               })}
             </tbody>
           </Table>
+
+          {isLoading && <LoadingPanel />}
         </div>
       </Stack>
     </DashboardLayout>

@@ -8,6 +8,7 @@ import {
   AddStudentModal,
   MainTableControls,
   DeleteStudentModal,
+  LoadingPanel,
 } from "/src/components";
 
 const rowLimit = 50;
@@ -18,6 +19,7 @@ const sortOptions = [
 ];
 
 const StudentDirectory = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [totalStudentCount, setTotalStudentCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -55,8 +57,12 @@ const StudentDirectory = () => {
     );
     const data = await response.json();
 
-    setStudents(data.students);
-    setTotalStudentCount(data.totalStudentCount);
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setStudents(data.students);
+        setTotalStudentCount(data.totalStudentCount);
+    }
   }, [search, tablePage, sortBy, orderBy]);
 
   //deleting student
@@ -148,6 +154,8 @@ const StudentDirectory = () => {
                 )}
               </tbody>
             </Table>
+
+            {isLoading && <LoadingPanel />}
           </div>
         </Stack>
       </DashboardLayout>

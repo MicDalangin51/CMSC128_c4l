@@ -12,6 +12,7 @@ import {
   AlternateAddStudentCourseModal,
   DeleteCourseModal,
   EditStudentSummaryModal,
+  LoadingPanel,
 } from "/src/components";
 import { StudentPdf } from "/src/pages";
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
@@ -45,6 +46,7 @@ const StudentRecord = () => {
   const [edit_semester, setSemester] = useState("");
 
   //gets the student's data
+  const [isLoading, setIsLoading] = useState(true);
   const [student, setStudent] = useState({});
   const [genError, setGenError] = useState([]);
   const [dataFlags, setDataFlags] = useState([]);
@@ -56,9 +58,14 @@ const StudentRecord = () => {
       },
     });
     const data = await response.json();
-    setStudent(data.student);
-    setGenError(data.genError);
-    setDataFlags(data.dataFlags);
+
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setStudent(data.student);
+        setGenError(data.genError);
+        setDataFlags(data.dataFlags);
+    }
   }, []);
 
   function findRow(semester, academic_year, course_number) {
@@ -299,413 +306,423 @@ const StudentRecord = () => {
             </Button>
           </Link>
         </Col>
-        <Col className="flex-fill">
-          <Row xs="auto" className="m-3 mb-4">
-            <Col className="my-auto">
-              <h1>
-                {student.last_name}, {student.first_name}
-              </h1>
-              <div className="text-black">{student.student_number}</div>
-              <div className="text-black">{student.course}</div>
-            </Col>
-            <Col className="my-4">
-              <Button
-                variant="outline-none"
-                size="sm"
-                onClick={handleShowEditStudent}
-              >
-                <FaEdit />
-              </Button>
-            </Col>
-          </Row>
+        {isLoading ? (
+          <LoadingPanel />
+        ) : (
+          <>
+            <Col className="flex-fill">
+              <Row xs="auto" className="m-3 mb-4">
+                <Col className="my-auto">
+                  <h1>
+                    {student.last_name}, {student.first_name}
+                  </h1>
+                  <div className="text-black">{student.student_number}</div>
+                  <div className="text-black">{student.course}</div>
+                </Col>
+                <Col className="my-4">
+                  <Button
+                    variant="outline-none"
+                    size="sm"
+                    onClick={handleShowEditStudent}
+                  >
+                    <FaEdit />
+                  </Button>
+                </Col>
+              </Row>
 
-          <Row>
-            {
-              <Accordion defaultActiveKey={"0"} alwaysOpen>
-                {student.summary?.map((entry, index) => {
-                  var semester = entry.semester[9];
-                  var acad_year =
-                    entry.semester.substring(17, 19) +
-                    "/" +
-                    entry.semester.substring(22, 24);
+              <Row>
+                {
+                  <Accordion defaultActiveKey={"0"} alwaysOpen>
+                    {student.summary?.map((entry, index) => {
+                      var semester = entry.semester[9];
+                      var acad_year =
+                        entry.semester.substring(17, 19) +
+                        "/" +
+                        entry.semester.substring(22, 24);
 
-                  return (
-                    <Accordion.Item eventKey={"" + index + ""}>
-                      <Accordion.Header>
-                        {HasError(semester, acad_year) == true && (
-                          <BsCalendarXFill
-                            className="mx-3"
-                            style={{ color: "red" }}
-                          />
-                        )}
-                        {HasError(semester, acad_year) == false && (
-                          <BsCalendarCheckFill className="mx-3" />
-                        )}
-                        {entry.semester}
-                      </Accordion.Header>
-
-                      <Accordion.Body>
-                        <Table hover responsive>
-                          <thead>
-                            <tr className="text-secondary">
-                              <th>Course Code</th>
-                              <th>Grade</th>
-                              <th>Units</th>
-                              <th>Weight</th>
-                              <th>Cumulative</th>
-                              <th>
-                                <Button
-                                  onClick={() => {
-                                    handleShowAddCourse(entry.semester);
-                                  }}
-                                  variant="outline-none"
-                                  size="sm"
-                                >
-                                  <FaPlus />
-                                  Add Course
-                                </Button>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {entry.content.map(
-                              (
-                                {
-                                  course_number,
-                                  grade,
-                                  units,
-                                  weight,
-                                  cumulative,
-                                },
-                                index
-                              ) => {
-                                var semester = entry.semester[9];
-                                var acad_year =
-                                  entry.semester.substring(17, 19) +
-                                  "/" +
-                                  entry.semester.substring(22, 24);
-
-                                return (
-                                  <tr key={index}>
-                                    <OverlayTrigger
-                                      placement="left"
-                                      overlay={
-                                        <Tooltip>
-                                          {changeMessage(
-                                            course_number,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          )}
-                                        </Tooltip>
-                                      }
-                                    >
-                                      <td
-                                        style={{
-                                          backgroundColor: changeColor(
-                                            course_number,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          ),
-                                        }}
-                                      >
-                                        {course_number}
-                                      </td>
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                      placement="left"
-                                      overlay={
-                                        <Tooltip>
-                                          {changeMessage(
-                                            grade,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          )}
-                                        </Tooltip>
-                                      }
-                                    >
-                                      <td
-                                        style={{
-                                          backgroundColor: changeColor(
-                                            grade,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          ),
-                                        }}
-                                      >
-                                        {grade}
-                                      </td>
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                      placement="left"
-                                      overlay={
-                                        <Tooltip>
-                                          {changeMessage(
-                                            units,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          )}
-                                        </Tooltip>
-                                      }
-                                    >
-                                      <td
-                                        style={{
-                                          backgroundColor: changeColor(
-                                            units,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          ),
-                                        }}
-                                      >
-                                        {units}
-                                      </td>
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                      placement="left"
-                                      overlay={
-                                        <Tooltip>
-                                          {changeMessage(
-                                            weight,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          )}
-                                        </Tooltip>
-                                      }
-                                    >
-                                      <td
-                                        style={{
-                                          backgroundColor: changeColor(
-                                            weight,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          ),
-                                        }}
-                                      >
-                                        {weight}
-                                      </td>
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                      placement="left"
-                                      overlay={
-                                        <Tooltip>
-                                          {changeMessage(
-                                            cumulative,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          )}
-                                        </Tooltip>
-                                      }
-                                    >
-                                      <td
-                                        style={{
-                                          backgroundColor: changeColor(
-                                            cumulative,
-                                            semester,
-                                            acad_year,
-                                            course_number
-                                          ),
-                                        }}
-                                      >
-                                        {cumulative}
-                                      </td>
-                                    </OverlayTrigger>
-
-                                    <Button
-                                      variant="outline-none"
-                                      size="sm"
-                                      onClick={() =>
-                                        handleShowDeleteCourse(
-                                          course_number,
-                                          entry.semester
-                                        )
-                                      }
-                                    >
-                                      <RiDeleteBin2Fill />
-                                      Delete
-                                    </Button>
-                                    <Button
-                                      onClick={() =>
-                                        handleShowEdit(
-                                          course_number,
-                                          grade,
-                                          units,
-                                          weight,
-                                          cumulative,
-                                          entry.semester
-                                        )
-                                      }
-                                      variant="outline-none"
-                                      size="sm"
-                                    >
-                                      <FaEdit />
-                                      Edit
-                                    </Button>
-                                  </tr>
-                                );
-                              }
+                      return (
+                        <Accordion.Item key={index} eventKey={"" + index + ""}>
+                          <Accordion.Header>
+                            {HasError(semester, acad_year) == true && (
+                              <BsCalendarXFill
+                                className="mx-3"
+                                style={{ color: "red" }}
+                              />
                             )}
-                          </tbody>
-                        </Table>
-                      </Accordion.Body>
-                    </Accordion.Item>
-                  );
-                })}
-              </Accordion>
-            }
-          </Row>
-        </Col>
+                            {HasError(semester, acad_year) == false && (
+                              <BsCalendarCheckFill className="mx-3" />
+                            )}
+                            {entry.semester}
+                          </Accordion.Header>
 
-        <Col className="flex-fill m-5">
-          <Row className="my-2">
-            <Button variant="primary" onClick={handleShowAddCourse2}>
-              Add Course
-            </Button>
-          </Row>
-          <Row>
-            <ReactToPrint
-              trigger={() => <Button variant="outline-primary">Print</Button>}
-              content={() => studentPdfRef.current}
-            />
-            <div className="d-none">
-              <StudentPdf ref={studentPdfRef} student={student} />
-            </div>
-          </Row>
-          <Row className="my-auto">
-            <Col className="my-auto">First Verifier</Col>
-            <Col className="my-auto">
-              <Button variant="link" onClick={handleShowVerify1}>
-                {typeof student.first_verifier == "string" && (
-                  <Badge pill bg="success">
-                    {student.first_verifier}
-                  </Badge>
-                )}
-                {student.first_verifier == null && (
-                  <Badge pill bg="secondary">
-                    none
-                  </Badge>
-                )}
-              </Button>
-            </Col>
-          </Row>
+                          <Accordion.Body>
+                            <Table hover responsive>
+                              <thead>
+                                <tr className="text-secondary">
+                                  <th>Course Code</th>
+                                  <th>Grade</th>
+                                  <th>Units</th>
+                                  <th>Weight</th>
+                                  <th>Cumulative</th>
+                                  <th>
+                                    <Button
+                                      onClick={() => {
+                                        handleShowAddCourse(entry.semester);
+                                      }}
+                                      variant="outline-none"
+                                      size="sm"
+                                    >
+                                      <FaPlus />
+                                      Add Course
+                                    </Button>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {entry.content.map(
+                                  (
+                                    {
+                                      course_number,
+                                      grade,
+                                      units,
+                                      weight,
+                                      cumulative,
+                                    },
+                                    index
+                                  ) => {
+                                    var semester = entry.semester[9];
+                                    var acad_year =
+                                      entry.semester.substring(17, 19) +
+                                      "/" +
+                                      entry.semester.substring(22, 24);
 
-          <Row className="my-auto">
-            <Col className="my-auto">Second Verifier</Col>
-            <Col className="my-auto">
-              <Button variant="link" onClick={handleShowVerify2}>
-                {typeof student.second_verifier == "string" && (
-                  <Badge pill bg="success">
-                    {student.second_verifier}
-                  </Badge>
-                )}
-                {student.second_verifier == null && (
-                  <Badge pill bg="secondary">
-                    none
-                  </Badge>
-                )}
-              </Button>
-            </Col>
-          </Row>
+                                    return (
+                                      <tr key={index}>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                course_number,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                course_number,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {course_number}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                grade,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                grade,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {grade}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                units,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                units,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {units}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                weight,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                weight,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {weight}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                cumulative,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                cumulative,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {cumulative}
+                                          </td>
+                                        </OverlayTrigger>
 
-          <Row className="my-auto">
-            <Col className="my-auto">Other Verifier</Col>
-            <Col className="my-auto">
-              <Button variant="link" onClick={handleShowVerify3}>
-                {typeof student.other_verifier == "string" && (
-                  <Badge pill bg="success">
-                    {student.other_verifier}
-                  </Badge>
-                )}
-                {student.other_verifier == null && (
-                  <Badge pill bg="secondary">
-                    none
-                  </Badge>
-                )}
-              </Button>
+                                        <Button
+                                          variant="outline-none"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleShowDeleteCourse(
+                                              course_number,
+                                              entry.semester
+                                            )
+                                          }
+                                        >
+                                          <RiDeleteBin2Fill />
+                                          Delete
+                                        </Button>
+                                        <Button
+                                          onClick={() =>
+                                            handleShowEdit(
+                                              course_number,
+                                              grade,
+                                              units,
+                                              weight,
+                                              cumulative,
+                                              entry.semester
+                                            )
+                                          }
+                                          variant="outline-none"
+                                          size="sm"
+                                        >
+                                          <FaEdit />
+                                          Edit
+                                        </Button>
+                                      </tr>
+                                    );
+                                  }
+                                )}
+                              </tbody>
+                            </Table>
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      );
+                    })}
+                  </Accordion>
+                }
+              </Row>
             </Col>
-          </Row>
-          <Row className="my-auto">
-            <Col className="my-auto">Status</Col>
-            <Col className="my-auto">
-              <Button onClick={handleShowStatus} variant="link">
-                {student.status == "true" && (
-                  <Badge pill bg="success">
-                    verified
-                  </Badge>
-                )}
-                {student.status == "false" && (
-                  <Badge pill bg="secondary">
-                    unverified
-                  </Badge>
-                )}
-                {student.status == null && (
-                  <Badge pill bg="secondary">
-                    unverified
-                  </Badge>
-                )}
-              </Button>
-            </Col>
-          </Row>
-          <Row className="my-5">
-            <Card>
-              <Card.Body>
-                <Button
-                  variant="outline-none"
-                  size="sm"
-                  onClick={handleShowEditStudentSummary}
-                >
-                  <FaEdit />
+
+            <Col className="flex-fill m-5">
+              <Row className="my-2">
+                <Button variant="primary" onClick={handleShowAddCourse2}>
+                  Add Course
                 </Button>
+              </Row>
+              <Row>
+                <ReactToPrint
+                  trigger={() => (
+                    <Button variant="outline-primary">Print</Button>
+                  )}
+                  content={() => studentPdfRef.current}
+                />
+                <div className="d-none">
+                  <StudentPdf ref={studentPdfRef} student={student} />
+                </div>
+              </Row>
+              <Row className="my-auto">
+                <Col className="my-auto">First Verifier</Col>
+                <Col className="my-auto">
+                  <Button variant="link" onClick={handleShowVerify1}>
+                    {typeof student.first_verifier == "string" && (
+                      <Badge pill bg="success">
+                        {student.first_verifier}
+                      </Badge>
+                    )}
+                    {student.first_verifier == null && (
+                      <Badge pill bg="secondary">
+                        none
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
 
-                <Row className="my-3">
-                  <Col>
-                    <h6>Required Units</h6>
-                    <Card.Text className="text-black">
-                      {student.req_units}
+              <Row className="my-auto">
+                <Col className="my-auto">Second Verifier</Col>
+                <Col className="my-auto">
+                  <Button variant="link" onClick={handleShowVerify2}>
+                    {typeof student.second_verifier == "string" && (
+                      <Badge pill bg="success">
+                        {student.second_verifier}
+                      </Badge>
+                    )}
+                    {student.second_verifier == null && (
+                      <Badge pill bg="secondary">
+                        none
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+
+              <Row className="my-auto">
+                <Col className="my-auto">Other Verifier</Col>
+                <Col className="my-auto">
+                  <Button variant="link" onClick={handleShowVerify3}>
+                    {typeof student.other_verifier == "string" && (
+                      <Badge pill bg="success">
+                        {student.other_verifier}
+                      </Badge>
+                    )}
+                    {student.other_verifier == null && (
+                      <Badge pill bg="secondary">
+                        none
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+              <Row className="my-auto">
+                <Col className="my-auto">Status</Col>
+                <Col className="my-auto">
+                  <Button onClick={handleShowStatus} variant="link">
+                    {student.status == "true" && (
+                      <Badge pill bg="success">
+                        verified
+                      </Badge>
+                    )}
+                    {student.status == "false" && (
+                      <Badge pill bg="secondary">
+                        unverified
+                      </Badge>
+                    )}
+                    {student.status == null && (
+                      <Badge pill bg="secondary">
+                        unverified
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+              <Row className="my-5">
+                <Card>
+                  <Card.Body>
+                    <Button
+                      variant="outline-none"
+                      size="sm"
+                      onClick={handleShowEditStudentSummary}
+                    >
+                      <FaEdit />
+                    </Button>
+
+                    <Row className="my-3">
+                      <Col>
+                        <h6>Required Units</h6>
+                        <Card.Text className="text-black">
+                          {student.req_units}
+                        </Card.Text>
+                      </Col>
+                      <Col>
+                        <h6>Total Units</h6>
+                        <Card.Text className="text-black">
+                          {student.total_units}
+                        </Card.Text>
+                      </Col>
+                    </Row>
+                    <Row className="my-3">
+                      <Col>
+                        <h6>GWA</h6>
+                        <Card.Text className="text-black">
+                          {student.GWA}
+                        </Card.Text>
+                      </Col>
+                      <Col>
+                        <h6>Total Cumulative</h6>
+                        <Card.Text className="text-black">
+                          {student.total_cumulative}
+                        </Card.Text>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Row>
+              <Row>
+                <Card>
+                  <Card.Body>
+                    <Card.Text>
+                      <h6>General Errors</h6>
+                      {genError?.map(({ flags }, index) => (
+                        <ListGroup key={index}>{flags}</ListGroup>
+                      ))}
                     </Card.Text>
-                  </Col>
-                  <Col>
-                    <h6>Total Units</h6>
-                    <Card.Text className="text-black">
-                      {student.total_units}
-                    </Card.Text>
-                  </Col>
-                </Row>
-                <Row className="my-3">
-                  <Col>
-                    <h6>GWA</h6>
-                    <Card.Text className="text-black">{student.GWA}</Card.Text>
-                  </Col>
-                  <Col>
-                    <h6>Total Cumulative</h6>
-                    <Card.Text className="text-black">
-                      {student.total_cumulative}
-                    </Card.Text>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Row>
-          <Row>
-            <Card>
-              <Card.Body>
-                <Card.Text>
-                  <h6>General Errors</h6>
-                  {genError?.map(({ flags }, index) => (
-                    <ListGroup key={index}>{flags}</ListGroup>
-                  ))}
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Row>
-        </Col>
+                  </Card.Body>
+                </Card>
+              </Row>
+            </Col>
+          </>
+        )}
       </Row>
     </DashboardLayout>
   );

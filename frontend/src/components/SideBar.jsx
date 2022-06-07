@@ -22,6 +22,8 @@ const navItems = [
 ];
 
 const SideBar = () => {
+  const navigate = useNavigate();
+
   const username = localStorage.getItem("currentUser");
 
   const logOut = async () => {
@@ -36,7 +38,6 @@ const SideBar = () => {
         localStorage.removeItem("name");
         localStorage.removeItem("accessToken");
 
-        const navigate = useNavigate();
         navigate("/login");
         break;
       default:
