@@ -25,7 +25,11 @@ const SideBar = () => {
   const username = localStorage.getItem("currentUser");
 
   const logOut = async () => {
-    const res = await fetch("/api/logout");
+    const res = await fetch("/api/logout", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
 
     switch (res.status) {
       case 200:
