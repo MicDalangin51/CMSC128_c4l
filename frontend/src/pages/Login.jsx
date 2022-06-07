@@ -115,7 +115,6 @@ const Login = () => {
                 //type="email"
                 title="Enter email"
                 placeholder="Enter email"
-                value={form.email}
                 onChange={(e) => setField("email", e.target.value)}
                 isInvalid={!!errors.email}
               />
@@ -131,7 +130,6 @@ const Login = () => {
                   type={passwordShown ? "text" : "password"}
                   title="Enter password"
                   placeholder="Enter password"
-                  value={form.password}
                   onChange={(e) => setField("password", e.target.value)}
                   isInvalid={!!errors.password}
                 />
