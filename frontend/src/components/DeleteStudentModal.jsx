@@ -27,7 +27,7 @@ const DeleteStudentModal = ({
       method: "DELETE",
       body: JSON.stringify({
         student_number: student_num,
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -52,11 +52,7 @@ const DeleteStudentModal = ({
         <Form onSubmit={submitFormHandler}>
           <Form.Group controlId="formJustify" className="mb-3">
             <FloatingLabel controlId="floatingInput" label="Justification">
-              <Form.Control
-                name="justification"
-                placeholder=" "
-                //   required
-              />
+              <Form.Control name="justification" placeholder=" " required />
             </FloatingLabel>
           </Form.Group>
 

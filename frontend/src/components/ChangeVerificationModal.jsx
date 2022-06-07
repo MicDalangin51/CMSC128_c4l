@@ -1,4 +1,11 @@
-import { Modal, Button, Alert, Form } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Alert,
+  Form,
+  FloatingLabel,
+  Row,
+} from "react-bootstrap";
 import { useState } from "react";
 
 const ChangeVerificationModal = ({
@@ -18,6 +25,7 @@ const ChangeVerificationModal = ({
 
   const submitFormHandler = async (event) => {
     event.preventDefault();
+    const { justification } = event.target;
     const response = await fetch(`/api/students/${student_num}`, {
       method: "PATCH",
       headers: {
@@ -28,6 +36,7 @@ const ChangeVerificationModal = ({
         student_id: student_num,
         new_data: shac_member,
         col_name: verifier,
+        justification: justification.value,
       }),
     });
 
@@ -49,12 +58,15 @@ const ChangeVerificationModal = ({
         <p className="text-secondary">
           Press yes if there are no errors were detected.
         </p>
-        {fillUpFormAlertMessage !== "" && (
-          <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
         <Form onSubmit={submitFormHandler}>
+          <Row className="mb-3">
+            <FloatingLabel controlId="floatingInput" label="Justification">
+              <Form.Control name="justification" placeholder=" " required />
+            </FloatingLabel>
+          </Row>
+          {fillUpFormAlertMessage !== "" && (
+            <Alert variable="danger">{fillUpFormAlertMessage}</Alert>
+          )}
           <Button variant="secondary" type="submit" className="mx-3">
             Yes
           </Button>
@@ -62,7 +74,7 @@ const ChangeVerificationModal = ({
             No
           </Button>
         </Form>
-      </Modal.Footer>
+      </Modal.Body>
     </Modal>
   );
 };

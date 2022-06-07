@@ -43,7 +43,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: req_units.value,
         col_name: "req_units",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -57,7 +57,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: total_units.value,
         col_name: "total_units",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -71,7 +71,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: total_cumulative.value,
         col_name: "total_cumulative",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -85,7 +85,7 @@ const EditStudentSummaryModal = ({
         student_id: student_num,
         new_data: GWA.value,
         col_name: "GWA",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -158,11 +158,7 @@ const EditStudentSummaryModal = ({
           </Row>
           <Row className="mb-3">
             <FloatingLabel controlId="floatingInput" label="Justification">
-              <Form.Control
-                name="justification"
-                placeholder=" "
-                //   required
-              />
+              <Form.Control name="justification" placeholder=" " required />
             </FloatingLabel>
           </Row>
           {fillUpFormAlertMessage !== "" && (
@@ -175,7 +171,6 @@ const EditStudentSummaryModal = ({
           </Stack>
         </Form>
       </Modal.Body>
-      {/* <Modal.Footer></Modal.Footer> */}
     </Modal>
   );
 };

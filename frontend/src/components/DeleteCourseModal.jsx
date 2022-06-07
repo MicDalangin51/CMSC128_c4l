@@ -35,7 +35,7 @@ const DeleteCourseModal = ({
           semester: semester[9],
           academic_year:
             semester.substring(17, 19) + "/" + semester.substring(22, 24),
-          // justification: justification.value,
+          justification: justification.value,
         }),
       }
     );
@@ -62,11 +62,7 @@ const DeleteCourseModal = ({
         <Form onSubmit={submitFormHandler}>
           <Form.Group controlId="formJustify" className="mb-3">
             <FloatingLabel controlId="floatingInput" label="Justification">
-              <Form.Control
-                name="justification"
-                placeholder=" "
-                //   required
-              />
+              <Form.Control name="justification" placeholder=" " required />
             </FloatingLabel>
           </Form.Group>
 

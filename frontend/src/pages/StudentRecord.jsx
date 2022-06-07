@@ -29,10 +29,10 @@ import {
   Overlay,
   Tooltip,
 } from "react-bootstrap";
-import casBuilding from "/src/images/cas-building.png";
 
 const StudentRecord = () => {
   const { studentNumber } = useParams();
+  var currentUser = localStorage.getItem("currentUser");
 
   //for editing student-data row
   const [edit_course, setCourseEdit] = useState("");
@@ -256,7 +256,7 @@ const StudentRecord = () => {
         showModal={showVerify1}
         closeModal={handleCloseAll}
         verifier="first_verifier"
-        shac_member="shac member"
+        shac_member={currentUser}
         student_num={student.student_number}
       />
 
@@ -264,7 +264,7 @@ const StudentRecord = () => {
         showModal={showVerify2}
         closeModal={handleCloseAll}
         verifier="second_verifier"
-        shac_member="shac member"
+        shac_member={currentUser}
         student_num={student.student_number}
       />
 
@@ -273,7 +273,7 @@ const StudentRecord = () => {
         closeModal={handleCloseAll}
         verifier="other_verifier"
         //return from login the credentials of the shac member
-        shac_member="shac member"
+        shac_member={currentUser}
         student_num={student.student_number}
       />
 
@@ -293,7 +293,7 @@ const StudentRecord = () => {
           </a>
         </Col>
         <Col className="flex-fill">
-          <Row xs="auto" className="m-3">
+          <Row xs="auto" className="m-3 mb-4">
             <Col className="my-auto">
               <h1>
                 {student.last_name}, {student.first_name}
@@ -311,7 +311,6 @@ const StudentRecord = () => {
               </Button>
             </Col>
           </Row>
-          <Row></Row>
 
           <Row>
             {

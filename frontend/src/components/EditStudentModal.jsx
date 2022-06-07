@@ -42,7 +42,7 @@ const EditStudentModal = ({
         student_id: student_num,
         new_data: first_name.value,
         col_name: "first_name",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -56,7 +56,7 @@ const EditStudentModal = ({
         student_id: student_num,
         new_data: last_name.value,
         col_name: "last_name",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -70,7 +70,7 @@ const EditStudentModal = ({
         student_id: student_num,
         new_data: degree_program.value,
         col_name: "degree_program",
-        // justification: justification.value,
+        justification: justification.value,
       }),
     });
 
@@ -148,11 +148,7 @@ const EditStudentModal = ({
           </Row>
           <Row className="mb-3">
             <FloatingLabel controlId="floatingInput" label="Justification">
-              <Form.Control
-                name="justification"
-                placeholder=" "
-                //   required
-              />
+              <Form.Control name="justification" placeholder=" " required />
             </FloatingLabel>
           </Row>
           {fillUpFormAlertMessage !== "" && (
@@ -165,7 +161,6 @@ const EditStudentModal = ({
           </Stack>
         </Form>
       </Modal.Body>
-      {/* <Modal.Footer></Modal.Footer> */}
     </Modal>
   );
 };

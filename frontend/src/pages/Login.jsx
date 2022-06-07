@@ -6,8 +6,6 @@ import "./Login.css";
 import logo from "../images/cas-logo.png";
 
 const Login = () => {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordShown, setPasswordShown] = useState(false);
 
@@ -94,14 +92,8 @@ const Login = () => {
           localStorage.setItem("currentUser", name);
           localStorage.setItem("currentDepartment", dept);
           localStorage.setItem("currentAccess", access);
-          // var user = { name: JSON.stringify(name) };
-          // localStorage.setItem("currentUser", user);
-          // var dept = body.faculty.department;
-          // var department = { name: JSON.stringify(dept) };
-          // localStorage.setItem("currentDepartment", department);
         } else {
           credentialError();
-          //alert("Failed to log in");
         }
       });
   }
