@@ -14,3 +14,4 @@ export { default as DeleteCourseModal } from "./DeleteCourseModal";
 export { default as EditStudentSummaryModal } from "./EditStudentSummaryModal";
 export { default as ProtectedRoute } from "./ProtectedRoute";
 export { default as LoadingPanel } from "./LoadingPanel";
+export { default as ErrorImg } from "./ErrorImg";

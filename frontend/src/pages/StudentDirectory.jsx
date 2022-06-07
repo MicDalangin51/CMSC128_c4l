@@ -9,6 +9,7 @@ import {
   MainTableControls,
   DeleteStudentModal,
   LoadingPanel,
+  ErrorImg,
 } from "/src/components";
 
 const rowLimit = 50;
@@ -93,6 +94,10 @@ const StudentDirectory = () => {
             setSearch={setSearch}
           />
 
+          {totalStudentCount === 0 && (
+            <ErrorImg image="" message="No students found" />
+          )}
+
           <DeleteStudentModal
             showModal={deleteStudent}
             closeModal={handleClosedeleteStudent}
@@ -105,6 +110,7 @@ const StudentDirectory = () => {
               <thead className="sticky-top">
                 <tr>
                   <th>Name</th>
+                  <th>Student number</th>
                   <th>Course</th>
                   <th>Status</th>
                   <th>Delete</th>
@@ -118,6 +124,7 @@ const StudentDirectory = () => {
                         <td>
                           <Link to={`/student/${student_number}`}>{name}</Link>
                         </td>
+                        <td>{student_number}</td>
                         <td>{course_name}</td>
                         <td>
                           {status == "true" && (

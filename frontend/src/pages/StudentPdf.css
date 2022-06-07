@@ -1,0 +1,17 @@
+@page {
+  size: portrait;
+  /* display: block; */
+}
+
+@media print {
+  .page {
+    page-break-after: always;
+  }
+  .no-print {
+    display: none;
+  }
+}
+
+thead {
+  display: table-row-group;
+}

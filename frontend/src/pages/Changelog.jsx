@@ -14,6 +14,7 @@ import {
   DashboardLayout,
   MainTableControls,
   LoadingPanel,
+  ErrorImg,
 } from "/src/components";
 
 const rowLimit = 50;
@@ -77,25 +78,36 @@ const Changelog = () => {
           onSortOrderChange={(e) => setOrderBy(e.target.value)}
           setSearch={setSearch}
         />
+
+        {totalChangeLogCount === 0 && (
+          <ErrorImg image="" message="No changelogs found" />
+        )}
+
         <div className="flex-fill overflow-auto">
           <Table hover className="table-fixed-head">
             <thead className="sticky-top">
               <tr>
                 <th>Date</th>
                 <th>User</th>
+                <th>Data changed</th>
                 <th>Change</th>
+                <th>Justification</th>
               </tr>
             </thead>
             <tbody>
-              {changeLogs.map(({ date, user, change }, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{date}</td>
-                    <td>{user}</td>
-                    <td>{change}</td>
-                  </tr>
-                );
-              })}
+              {changeLogs.map(
+                ({ date, user, change, justification, col_name }, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{date}</td>
+                      <td>{user}</td>
+                      <td>{col_name}</td>
+                      <td>{change}</td>
+                      <td>{justification}</td>
+                    </tr>
+                  );
+                }
+              )}
             </tbody>
           </Table>
 

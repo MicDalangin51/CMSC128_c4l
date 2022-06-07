@@ -317,7 +317,46 @@ const StudentRecord = () => {
                     {student.last_name}, {student.first_name}
                   </h1>
                   <div className="text-black">{student.student_number}</div>
-                  <div className="text-black">{student.course}</div>
+                  <div className="text-black">
+                    {student.course == "BACA" && (
+                      <p>Bachelor of Arts in Communication Arts</p>
+                    )}
+                    {student.course == "BAP" && (
+                      <p>Bachelor of Arts in Philosophy</p>
+                    )}
+                    {student.course == "BAS" && (
+                      <p>Bachelor of Arts in Sociology</p>
+                    )}
+                    {student.course == "BSAM" && (
+                      <p>Bachelor of Science in Applied Mathematics</p>
+                    )}
+                    {student.course == "BSAP" && (
+                      <p>Bachelor of Science in Applied Physics</p>
+                    )}
+                    {student.course == "BSB" && (
+                      <p>Bachelor of Science in Biology</p>
+                    )}
+                    {student.course == "BSC" && (
+                      <p>Bachelor of Science in Chemistry</p>
+                    )}
+                    {student.course == "BSCS" && (
+                      <p>Bachelor of Science in Computer Science</p>
+                    )}
+                    {student.course == "BSM" && (
+                      <p>Bachelor of Science in Mathematics</p>
+                    )}
+                    {student.course == "BSMST" && (
+                      <p>
+                        Bachelor of Science in Mathematics and Science Teaching
+                      </p>
+                    )}
+                    {student.course == "BSS" && (
+                      <p>Bachelor of Science in Statistics</p>
+                    )}
+                    {student.course == "BSAC" && (
+                      <p>Bachelor of Science in Agricultural Chemistry</p>
+                    )}
+                  </div>
                 </Col>
                 <Col className="my-4">
                   <Button
