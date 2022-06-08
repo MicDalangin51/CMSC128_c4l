@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Badge, Button, Stack, Table } from "react-bootstrap";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 
@@ -7,6 +8,8 @@ import {
   AddStudentModal,
   MainTableControls,
   DeleteStudentModal,
+  LoadingPanel,
+  ErrorImg,
 } from "/src/components";
 
 const rowLimit = 50;
@@ -17,6 +20,7 @@ const sortOptions = [
 ];
 
 const StudentDirectory = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [totalStudentCount, setTotalStudentCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -54,8 +58,12 @@ const StudentDirectory = () => {
     );
     const data = await response.json();
 
-    setStudents(data.students);
-    setTotalStudentCount(data.totalStudentCount);
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setStudents(data.students);
+        setTotalStudentCount(data.totalStudentCount);
+    }
   }, [search, tablePage, sortBy, orderBy]);
 
   //deleting student
@@ -86,6 +94,10 @@ const StudentDirectory = () => {
             setSearch={setSearch}
           />
 
+          {totalStudentCount === 0 && (
+            <ErrorImg image="" message="No students found" />
+          )}
+
           <DeleteStudentModal
             showModal={deleteStudent}
             closeModal={handleClosedeleteStudent}
@@ -98,6 +110,7 @@ const StudentDirectory = () => {
               <thead className="sticky-top">
                 <tr>
                   <th>Name</th>
+                  <th>Student number</th>
                   <th>Course</th>
                   <th>Status</th>
                   <th>Delete</th>
@@ -109,8 +122,9 @@ const StudentDirectory = () => {
                     return (
                       <tr key={index}>
                         <td>
-                          <a href={`/student/${student_number}`}>{name}</a>
+                          <Link to={`/student/${student_number}`}>{name}</Link>
                         </td>
+                        <td>{student_number}</td>
                         <td>{course_name}</td>
                         <td>
                           {status == "true" && (
@@ -147,6 +161,8 @@ const StudentDirectory = () => {
                 )}
               </tbody>
             </Table>
+
+            {isLoading && <LoadingPanel />}
           </div>
         </Stack>
       </DashboardLayout>

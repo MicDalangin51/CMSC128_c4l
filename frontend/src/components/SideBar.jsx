@@ -22,17 +22,22 @@ const navItems = [
 ];
 
 const SideBar = () => {
+  const navigate = useNavigate();
+
   const username = localStorage.getItem("currentUser");
 
   const logOut = async () => {
-    const res = await fetch("/api/logout");
+    const res = await fetch("/api/logout", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
 
     switch (res.status) {
       case 200:
         localStorage.removeItem("name");
         localStorage.removeItem("accessToken");
 
-        const navigate = useNavigate();
         navigate("/login");
         break;
       default:

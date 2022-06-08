@@ -10,16 +10,18 @@ import {
   Table,
   Badge,
 } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 import { useEffect, useState } from "react";
-import { DashboardLayout, EditShacModal } from "/src/components";
+import { DashboardLayout, EditShacModal, LoadingPanel } from "/src/components";
 
 const Settings = () => {
   var currentUser = localStorage.getItem("currentUser");
   var currentDept = localStorage.getItem("currentDepartment");
   var currentAccess = localStorage.getItem("currentAccess");
 
+  const [isLoading, setIsLoading] = useState(true);
   const [staff, setStaff] = useState([]);
 
   useEffect(async () => {
@@ -29,7 +31,12 @@ const Settings = () => {
       },
     });
     const data = await response.json();
-    setStaff(data.staff);
+
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setStaff(data.staff);
+    }
   }, []);
 
   function deleteSHACuser(faculty_id) {
@@ -109,12 +116,12 @@ const Settings = () => {
           <Stack>
             {currentAccess == 0 && (
               <Col className="gap-2">
-                <a href="/add-account">
+                <Link to="/add-account">
                   <Button variant="outline-secondary mx-3 mb-3">
                     <FaPlus className="m-1" />
                     <span className="m-1">Add account</span>
                   </Button>
-                </a>
+                </Link>
               </Col>
             )}
             <div className="flex-fill overflow-auto">
@@ -169,6 +176,8 @@ const Settings = () => {
                   )}
                 </tbody>
               </Table>
+
+              {isLoading && <LoadingPanel />}
             </div>
           </Stack>
         </Tab>

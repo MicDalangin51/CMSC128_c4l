@@ -10,7 +10,12 @@ import {
   Stack,
   Table,
 } from "react-bootstrap";
-import { DashboardLayout, MainTableControls } from "/src/components";
+import {
+  DashboardLayout,
+  MainTableControls,
+  LoadingPanel,
+  ErrorImg,
+} from "/src/components";
 
 const rowLimit = 50;
 
@@ -20,6 +25,7 @@ const sortOptions = [
 ];
 
 const Changelog = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [changeLogs, setChangeLogs] = useState([]);
   const [totalChangeLogCount, setTotalChangeLogCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -50,8 +56,12 @@ const Changelog = () => {
     );
     const data = await response.json();
 
-    setChangeLogs(data.changelogs);
-    setTotalChangeLogCount(data.totalChangeLogCount);
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setChangeLogs(data.changelogs);
+        setTotalChangeLogCount(data.totalChangeLogCount);
+    }
   }, [search, tablePage, sortBy, orderBy]);
 
   return (
@@ -68,27 +78,40 @@ const Changelog = () => {
           onSortOrderChange={(e) => setOrderBy(e.target.value)}
           setSearch={setSearch}
         />
+
+        {totalChangeLogCount === 0 && (
+          <ErrorImg image="" message="No changelogs found" />
+        )}
+
         <div className="flex-fill overflow-auto">
           <Table hover className="table-fixed-head">
             <thead className="sticky-top">
               <tr>
                 <th>Date</th>
                 <th>User</th>
+                <th>Data changed</th>
                 <th>Change</th>
+                <th>Justification</th>
               </tr>
             </thead>
             <tbody>
-              {changeLogs.map(({ date, user, change }, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{date}</td>
-                    <td>{user}</td>
-                    <td>{change}</td>
-                  </tr>
-                );
-              })}
+              {changeLogs.map(
+                ({ date, user, change, justification, col_name }, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{date}</td>
+                      <td>{user}</td>
+                      <td>{col_name}</td>
+                      <td>{change}</td>
+                      <td>{justification}</td>
+                    </tr>
+                  );
+                }
+              )}
             </tbody>
           </Table>
+
+          {isLoading && <LoadingPanel />}
         </div>
       </Stack>
     </DashboardLayout>
