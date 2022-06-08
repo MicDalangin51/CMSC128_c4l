@@ -35,6 +35,7 @@ const EditShacModal = ({
   };
 
   const submitNameEditHandler = async (event) => {
+    console.log(facultyid);
     event.preventDefault();
     const { name } = event.target;
     //patch request for edit faculty

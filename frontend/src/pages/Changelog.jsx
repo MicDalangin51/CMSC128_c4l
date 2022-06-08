@@ -86,19 +86,19 @@ const Changelog = () => {
               <tr>
                 <th>Date</th>
                 <th>User</th>
-                <th>Data changed</th>
+                <th>Student</th>
                 <th>Change</th>
                 <th>Justification</th>
               </tr>
             </thead>
             <tbody>
               {changeLogs.map(
-                ({ date, user, change, justification, col_name }, index) => {
+                ({ date, user, change, justification, student_id }, index) => {
                   return (
                     <tr key={index}>
                       <td>{date}</td>
                       <td>{user}</td>
-                      <td>{col_name}</td>
+                      <td>{student_id}</td>
                       <td>{change}</td>
                       <td>{justification}</td>
                     </tr>
@@ -107,7 +107,7 @@ const Changelog = () => {
               )}
             </tbody>
           </Table>
-          {totalChangeLogCount === 0 && (
+          {!isLoading && totalChangeLogCount === 0 && (
             <ErrorImg image={noChange} message="No changelogs found" />
           )}
           {isLoading && <LoadingPanel />}

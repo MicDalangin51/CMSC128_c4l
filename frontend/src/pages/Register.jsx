@@ -30,14 +30,19 @@ const Register = () => {
       },
     });
     const data = await response.json();
-    setStaff(data.staff);
+
+    switch (response.status) {
+      case 200:
+        setStaff(data.staff);
+    }
   }, []);
 
   const getUser = (input) => {
-    for (let i = 0; i < staff.length; i++) {
-      console.log(staff[i].email);
-      return staff[i].email === input ? true : false;
-    }
+    
+    for (let i = 0; i < staff.length-1; i++) {
+       if(staff[i].email === input) return true;
+    } 
+    return false;
   };
 
   const validateForm = () => {
@@ -66,6 +71,11 @@ const Register = () => {
 
     if (!password || password === "")
       newErrors.password = "Please enter your password!";
+    else if (password.length < 8) {
+      newErrors.password = "Password must be atleast 8 characters";
+    } else if (!/[A-Z]/.test(password)) {
+      newErrors.password = "Password must have atleast 1 Uppercase";
+    }
     if (!confirm_pass || confirm_pass === "")
       newErrors.confirm_pass = "Please confirm your password!";
     else if (password !== confirm_pass) {
@@ -114,7 +124,7 @@ const Register = () => {
         <div fluid className="background">
           <div className="leftSide"></div>
           <div className="rightSide">
-            <h1 className="text-center">Add Account</h1>
+          <h3 className="text-center">Add Account</h3>
             <Container className="contain" fluid="xs">
               <Form onSubmit={submitFormHandler}>
                 <FloatingLabel label="Full Name" className="mb-3 text-black">
@@ -233,7 +243,7 @@ const Register = () => {
             </Container>
           </div>
         </div>
-      )}
+      )} 
     </>
   );
 };

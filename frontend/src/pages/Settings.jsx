@@ -145,7 +145,7 @@ const Settings = () => {
                         <tr key={index}>
                           <td>{name}</td>
                           <td>{department}</td>
-                          <td>{access_level ? "Admin" : "Staff"}</td>
+                          <td>{access_level === 0 ? "Admin" : "Staff"}</td>
                           {currentAccess == 0 && (
                             <td>
                               <Button
