@@ -14,11 +14,30 @@ def get_num_of_students():
     return student_count
 
 # returns DICTIONARIES within a LIST   ex. students = [{}, {}, {}, ..., {}]
-def get_all_students(category, order, offset, limit):
-
+def get_all_students(category, order, offset, limit, search):
+    print('--------------')
+    print(len(search))
     top = int(offset) + int(limit)
-    cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student ORDER BY {category} {order}")
-    rows = cursor.fetchall()
+    
+    if (len(search) == 0):
+        cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student ORDER BY {category} {order}")
+        rows = cursor.fetchall()
+    else:
+        cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE first_name = '{search}' ORDER BY {category} {order}")
+        rows = cursor.fetchall()
+        if (len(rows) == 0):
+            print("empty rows 1")
+            cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE student_id = '{search.lower()}' ORDER BY {category} {order}")
+            rows = cursor.fetchall()
+        
+            if (len(rows) == 0):
+                print("empty rows 2")
+                cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE last_name = '{search.lower()}' ORDER BY {category} {order}")
+                rows = cursor.fetchall()
+            else:
+                cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student ORDER BY {category} {order}")
+                rows = cursor.fetchall()
+    print(len(rows))
     students = []
     for first_name, last_name, student_id, degree_program, status in rows:
         students.append({
@@ -57,6 +76,11 @@ def get_student(student_id):
     
     connection.commit()
     return student_data
+
+def get_faculty(faculty_id):
+    cursor.execute(f"SELECT name FROM faculty WHERE faculty_id = '{faculty_id}'")
+    name = cursor.fetchone()[0]
+    return name
 
 # returns 3D DICTIONARIES within a LIST 
 def get_student_data(student_id):
@@ -224,7 +248,7 @@ def check_credentials(username, password):
                     return True, faculty
         # print( i[0] + ' ---- '+username.strip())
         # print(i[1]  + ' ---- '+password.strip())
-    return False
+    return False, {}
 
 # returns the List of GE Courses
 def get_GECourses():
@@ -388,16 +412,19 @@ def get_changelogs(category, order, offset, limit):
                                                                                               
     
     for faculty_id, student_id, date, time, justification, col_name, prev_data, new_data in cursor.execute(f"SELECT TOP {top} faculty_id, student_id, date, time, justification, col_name, prev_data, new_data FROM changelogs ORDER BY {category} {order}"):
-        changelog = {
-            "faculty_id": faculty_id,
-            "student_id": student_id,
+        changelog = {  
+            "user": faculty_id,
+            # "student_id": student_id,
             "date": date,
-            "time": time,
+            "change": prev_data +'->'+new_data,
+            # "time": time,
             "justification": justification,
-            "col_name": col_name,
-            "prev_data": prev_data,
-            "new_data": new_data
+            # "col_name": col_name,
+            # "prev_data": prev_data,
+            # "new_data": new_data
         }
+        # print(get_faculty(faculty_id))
+
 
         changelogs.append(changelog)
 
@@ -507,22 +534,30 @@ def get_access_level(faculty_id):
     except:
         print("SHAC Member does not exist")
 
-# record_changelogs('1111-11111', '1289-71389', 'Wrong grade in CMSC 123', 'grade', '2', '1')
-# edit_data('3284-18043', 'studentData', 'ENG 1(AH)', '3', '15/16', 'grade', '2')
+def count_changelogs():
+    cursor.execute("SELECT COUNT(*) FROM changelogs")
+    count = cursor.fetchone()[0]
 
-# check_ge_requirements('4579-76154')
-# add_faculty('shac_shac91@gmail.com', 'shac', '1111-11111', 'Shac Member 91')
-# add_faculty('shac@gmail.com', 'shacmem', '1111-22222', 'Shac Member 1')
-# print(get_all_faculties())
+    return count
 
-# cursor = connection.cursor()
-# cursor.execute('insert into studentFlags(student_id, flag) values(?,?);', ('7025-43182', 'Incomplete GE'))
-# cursor.execute('insert into studentFlags(student_id, flag) values(?,?);', ('7261-38974', 'Incomplete GE'))
-# cursor.execute('insert into remarks(student_id, course_code, semester, acad_year, col_name, prev_data, new_data) values(?,?,?,?,?,?,?);', ('7025-43182', 'ENG 2(AH)', '2', '15/16', 'grade', '1.5', '3'))
-# connection.commit()
-# delete_student_flag('7025-43182', 'Incomplete GE')
-# delete_student_remarks('7025-43182', 'ENG 2(AH)', '2', '15/16')
+def create_blocked_token(jti):
+    cursor.execute('insert into tokenBlocklist(jti) values(?);', jti)
+    connection.commit()
 
-# print(get_student_data('7261-38974'))
+def get_blocked_token(jti):
+    cursor.execute(f"SELECT id FROM tokenBlocklist where jti = ?", jti)
+    id = cursor.fetchone()
 
-# get_changelog_sorted_faculty('4571-62517')
+    return id
+
+
+def remove_error(student_id, error):
+    cursor.execute(f"DELETE FROM studentFlags WHERE student_id = '{student_id}' AND flag = '{error}' AND semester = '{semester}'")
+    connection.commit()
+
+def remove_studentData(table_name, student_id, col_name, new_data, semester, acad_year, course_code):
+    # if col_name not in ['student_id', 'course_code', 'semester', 'acad_year']:
+    cursor.execute(f"DELETE FROM {table_name} WHERE student_id = '{student_id}' AND semester = '{semester}' AND acad_year = '{acad_year}' AND course_code = '{course_code}' AND new_data = '{new_data}';")
+    # else:
+    #     print("To be implemented...")
+    connection.commit()

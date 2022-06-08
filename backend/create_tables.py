@@ -247,6 +247,28 @@ def create_ge_courses(connection):
     else:
         print('TABLE: geCourses already exists.')
 
+def create_tokenBlocklist(connection):
+    # establish a connection to the database
+    cursor = connection.cursor()
+
+    # check if the table does not exist in the database
+    if not cursor.tables(table='tokenBlocklist', tableType='TABLE').fetchone():
+        print("TABLE: tokenBlocklist does not exist \nCreating one...")
+
+        # if it does not exist, create a table
+        cursor.execute('''
+                        CREATE TABLE tokenBlocklist (
+                            id int IDENTITY(1,1) primary key, 
+                            jti varchar(36) not null
+                            
+                    );
+        ''')
+
+        # commit the query   
+        connection.commit() 
+    else:
+        print('TABLE: tokenBlocklist already exists.')
+
 # format
 # foreign key: faculty_id varchar(15) foreign key references faculty(faculty_id), 
 # composite primary key: CONSTRAINT PK_sample PRIMARY KEY (faculty_id, access_level)

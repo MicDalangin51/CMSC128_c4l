@@ -5,12 +5,14 @@ from flask_cors import CORS
 from queries import *
 from csv_reader import *
 from setup import *
+from gwa_verifier import *
 
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
     jwt_required,
     get_jwt_identity,
+    get_jwt
 )
 
 
@@ -31,32 +33,54 @@ def index(path=""):
 @app.route('/api/students')
 def getStudents():
     args = request.args
-    print(args.get("offset"))
     print(args)
-    students = get_all_students('last_name', 'ASC', args.get("offset"),args.get("limit"))         # last_name kapag by name, # degree_program kapag by course | ASC or DESC
+    category = args.get("sort_by")
+    if category == "degree":
+        sort_by = 'degree_program'
+    else:
+        sort_by = 'last_name'
+    students = get_all_students(sort_by, (args.get("order")).upper(), args.get("offset"), args.get("limit"), args.get("search"))         # last_name kapag by name, # degree_program kapag by course | ASC or DESC
     student_count = get_num_of_students()
     #paged = get_all_students_by5(args.get("offset"),args.get("limit"))
     return {"students": students, "totalStudentCount": student_count}
 
 @app.route('/api/students/<string:student_number>')
+@jwt_required()
 def getStudent(student_number):
     student = get_student(student_number)
     general_errors = get_student_flags(student_number)
     errors = get_student_data_flags(student_number)
     return {"student": student, "genError": general_errors, "dataFlags" :errors}
 
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    jti = jwt_payload["jti"]
+    blockedTokenId = get_blocked_token(jti)
+    print(blockedTokenId)
+
+    return blockedTokenId is not None
+
 @app.route('/api/login', methods = ['POST'])
 def get_credentials():
-    
     creds = request.get_json()
     username = creds['email']
     password = creds['password']
     valid, faculty = check_credentials(username, password)
-    access_token = create_access_token(identity=username)
-    print(access_token)
+    access_token = create_access_token(identity=faculty["faculty_id"])
+    print(type(access_token))
     print('test')
     return {"success": valid, "faculty":faculty, "accessToken":access_token}
-        # return {'success': False}
+
+@app.route("/api/logout")
+@jwt_required()
+def logout():
+    print("logout")
+    jti = get_jwt()["jti"]
+    print(jti)
+    create_blocked_token(jti)
+
+    return "", 200
+
 
 @app.route('/api/students/<string:student_number>/courses/<string:course_code>', methods = ['DELETE'])
 @jwt_required()
@@ -82,10 +106,11 @@ def add_student():
 @jwt_required()
 def edit_students(student_number):
     details = request.get_json()
+    print(details)
     edit_student(details['student_id'], details['col_name'], details['new_data'])
-    print(details["justification"])
     
-    record_changelogs("initial test",details['student_id'],'to test the gwa verifier', details['col_name'],"10","10")
+    # record_changelogs(faculty_id, student_id, justification, col_name, prev_data, new_data):
+    record_changelogs(get_jwt_identity(), details['student_id'], details['justification'], details['col_name'], details['prev_data'], details['new_data'])
     return {'success': True}
         # return {'success': False}
 
@@ -93,8 +118,7 @@ def edit_students(student_number):
 @jwt_required()
 def del_student():
     details = request.get_json()
-    print("delete student")
-    print(details)
+  
     delete_student(details['student_number'])
     return {'success': True }
 
@@ -102,22 +126,25 @@ def del_student():
 @jwt_required()
 def edit_student_course(student_number, course_code):
     details = request.get_json()
-    print(details["student_number"])
-    print(details["col_name"])
-    print(details["new_data"])
-    print(details["acad_year"])
-    print(details["semester"])
-    # print(details["justification"])
-    try:
+    # print(details["student_number"])
+    # print(details["col_name"])
+    # print(details["new_data"])
+    # print(details["acad_year"])
+    # print(details["semester"])
+    #print(details['prev_data'])
+    
+    # try:
         # FORMAT from frontend: {'student_number': '5698-61298', 'course_number': 'ENG 1(AH)', 'grade': '2', 'units': 3, 'weight': 6, 'cumulative': 6}
         # EXAMPLE FORMAT NG JSON para sa BACKEND: {'student_number': '1234-12345', 'col_name': 'grade', 'new_data': 3, 'prev_data': 2, 'semester': '2', 'acad_year': '15/16'}
         # basically, yung parameters na need ng edit_studentData ay (student_number, col_name, new_data, prev_data, semester, acad_year)
-        edit_studentData('studentData', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'], course_code)
-        print("recording changelogs...")
-        record_changelogs('helloworld', details['student_number'], 'justification', details['col_name'], details['prev_data'], details['new_data'])
-        return {'success': True}
-    except:
-        return {'success': False}
+    edit_studentData('studentData', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'], course_code)
+    record_changelogs(get_jwt_identity(), details['student_number'], details['justification'], details['col_name'], details['prev_data'], details['new_data'])
+    remove_studentData('remarks', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'], course_code)
+    verify_gwa(details['student_number']) 
+    print("recording changelogs...")
+    return {'success': True}
+    # except:
+    #     return {'success': False}
     
 
 # record_changelogs(faculty_id, student_id, justification, col_name, prev_data, new_data)
@@ -127,10 +154,12 @@ def edit_student_course(student_number, course_code):
 
 # PENDING
 @app.route('/api/students/<string:id>/courses', methods = ['POST'])
+@jwt_required()
 def add_student_course(id):
     course_details = request.get_json()
     try:
         add_studentData(course_details['student_number'], course_details['course_number'], course_details['grade'], course_details['units'], course_details['weight'], course_details['cumulative'], course_details['semester'] )
+        verify_gwa(course_details['student_number'])
         return {'success': True}
     except:
         return {'success': False}
@@ -145,7 +174,13 @@ def read_file():
     root = tk.Tk()
     
     root.attributes('-topmost',True, '-alpha',0)
+    
+    # root.attributes('-alpha',0)
+    
     filepath = askopenfilenames(parent=root, title='Choose a file/s')
+    # root.attributes('-topmost',False)
+    # root.focus_force()
+    # root.mainloop()
     root.withdraw()
     for file in filepath:
         backend_setup(read_csv_xlsx(file))
@@ -157,11 +192,17 @@ def read_file():
 
 @app.route('/api/change-logs', methods = ['GET'])
 def get_all_changelogs():
-    args = request.args
+    args = request.args                                                                   
     print("get changelogs")
     print(args)
-    changelogs = get_changelogs(args.get("sort_by"), 'ASC', args.get("offset"), args.get("limit"))
-    return {"changelogs": changelogs, "totalChangeLogCount": changelogs.length}
+    count = count_changelogs()
+    if args.get("sort_by") == "user":
+        sorted = 'faculty_id'
+    else:
+        sorted = 'date'
+
+    changelogs = get_changelogs(sorted, (args.get("order")).upper(), args.get("offset"), args.get("limit"))
+    return {"changelogs": changelogs, "totalChangeLogCount": count}
 
 @app.route('/api/users', methods = ['GET'])
 def get_users():
