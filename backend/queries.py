@@ -515,9 +515,14 @@ def clear_studentFlags(student_id):
 #     # except:
 #         # return False
 
+# DELETE STUDENT
 def delete_student(student_id):
     # try:
     clear_studentData(student_id)
+    cursor.execute(f"DELETE FROM studentFlags WHERE student_id = '{student_id}'")
+    connection.commit()
+    cursor.execute(f"DELETE FROM remarks WHERE student_id = '{student_id}'")
+    connection.commit()
     cursor.execute(f"DELETE FROM changelogs WHERE student_id = '{student_id}'")
     connection.commit()
     cursor.execute(f"DELETE FROM student WHERE student_id = '{student_id}'")
