@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Badge, Button, Stack, Table } from "react-bootstrap";
 import { RiDeleteBin2Fill } from "react-icons/ri";
+import noStudent from "/src/images/no-student.svg";
 
 import {
   DashboardLayout,
@@ -94,10 +95,6 @@ const StudentDirectory = () => {
             setSearch={setSearch}
           />
 
-          {totalStudentCount === 0 && (
-            <ErrorImg image="" message="No students found" />
-          )}
-
           <DeleteStudentModal
             showModal={deleteStudent}
             closeModal={handleClosedeleteStudent}
@@ -161,7 +158,9 @@ const StudentDirectory = () => {
                 )}
               </tbody>
             </Table>
-
+            {totalStudentCount === 0 && (
+              <ErrorImg image={noStudent} message="No students found" />
+            )}
             {isLoading && <LoadingPanel />}
           </div>
         </Stack>

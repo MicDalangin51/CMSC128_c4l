@@ -16,6 +16,7 @@ import {
   LoadingPanel,
   ErrorImg,
 } from "/src/components";
+import noChange from "/src/images/no-change.svg";
 
 const rowLimit = 50;
 
@@ -79,10 +80,6 @@ const Changelog = () => {
           setSearch={setSearch}
         />
 
-        {totalChangeLogCount === 0 && (
-          <ErrorImg image="" message="No changelogs found" />
-        )}
-
         <div className="flex-fill overflow-auto">
           <Table hover className="table-fixed-head">
             <thead className="sticky-top">
@@ -110,7 +107,9 @@ const Changelog = () => {
               )}
             </tbody>
           </Table>
-
+          {totalChangeLogCount === 0 && (
+            <ErrorImg image={noChange} message="No changelogs found" />
+          )}
           {isLoading && <LoadingPanel />}
         </div>
       </Stack>
