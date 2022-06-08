@@ -66,7 +66,9 @@ def get_credentials():
     username = creds['email']
     password = creds['password']
     valid, faculty = check_credentials(username, password)
-    access_token = create_access_token(identity=faculty["faculty_id"])
+    access_token = None
+    if faculty:
+        access_token = create_access_token(identity=faculty["faculty_id"])
     print(type(access_token))
     print('test')
     return {"success": valid, "faculty":faculty, "accessToken":access_token}
@@ -131,17 +133,19 @@ def edit_student_course(student_number, course_code):
     # print(details["new_data"])
     # print(details["acad_year"])
     # print(details["semester"])
-    #print(details['prev_data'])
+    # print(details['prev_data'])
     
     # try:
         # FORMAT from frontend: {'student_number': '5698-61298', 'course_number': 'ENG 1(AH)', 'grade': '2', 'units': 3, 'weight': 6, 'cumulative': 6}
         # EXAMPLE FORMAT NG JSON para sa BACKEND: {'student_number': '1234-12345', 'col_name': 'grade', 'new_data': 3, 'prev_data': 2, 'semester': '2', 'acad_year': '15/16'}
         # basically, yung parameters na need ng edit_studentData ay (student_number, col_name, new_data, prev_data, semester, acad_year)
     edit_studentData('studentData', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'], course_code)
+    
     record_changelogs(get_jwt_identity(), details['student_number'], details['justification'], details['col_name'], details['prev_data'], details['new_data'])
+    print("changelog recorded successfully")
     remove_studentData('remarks', details['student_number'], details['col_name'], details['new_data'], details['semester'], details['acad_year'], course_code)
     verify_gwa(details['student_number']) 
-    print("recording changelogs...")
+    # print("recording changelogs...")
     return {'success': True}
     # except:
     #     return {'success': False}
@@ -201,7 +205,7 @@ def get_all_changelogs():
     else:
         sorted = 'date'
 
-    changelogs = get_changelogs(sorted, (args.get("order")).upper(), args.get("offset"), args.get("limit"))
+    changelogs = get_changelogs(sorted, (args.get("order")).upper(), args.get("offset"), args.get("limit"), args.get("search"))
     return {"changelogs": changelogs, "totalChangeLogCount": count}
 
 @app.route('/api/users', methods = ['GET'])
@@ -216,8 +220,8 @@ def add_user():
     successful = add_faculty(faculty['email'], faculty['password'], faculty['faculty_id'], faculty['name'], faculty['department'], faculty['access_level'])
     return {'success': True} if successful else {'success': False}
     
-@app.route('/api/users', methods = ['DELETE'])
-def delete_users():
+@app.route('/api/users/<string:faculty_id>', methods = ['DELETE'])
+def delete_users(faculty_id):
     faculty = request.get_json()
     successful = delete_faculty_member(faculty['faculty_id'])
     return {'success': True} if successful else {'success': False}
@@ -226,7 +230,7 @@ def delete_users():
 def edit_user(faculty_id):
     data = request.get_json()
     if(len(data) == 2):
-        successful = edit_faculty_name(data['faculty_id'], data['student_id'], data['justification'], data['col_name'], data['prev_data'], data['new_data'])
+        successful = edit_faculty_name(data['faculty_id'], data['name'])
     else:
         successful = edit_faculty_password(data['faculty_id'], data['old_pw'], data['new_pw'])
     return {'success': True} if successful else {'success': False}

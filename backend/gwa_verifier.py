@@ -87,7 +87,6 @@ def insert_cumulativeError(student_id, course_code, semester, acad_year, prev_da
     print(f"cumulative error found at {student_id}, {course_code}, {semester}, {acad_year}. prev_data={prev_data} new_data = {new_data}")
 
     try:
-        # cursor = connection.cursor()
         cursor.execute(f"INSERT INTO remarks(student_id, course_code, semester, acad_year, col_name, prev_data, new_data) values('{student_id}', '{course_code}', '{semester}', '{acad_year}', 'cumulative', '{prev_data}', '{new_data}')")
 
         connection.commit()
@@ -105,3 +104,6 @@ def update_computedGWA(computed_gwa, student_id):
 
     connection.commit()
     return cursor
+
+#def determine_load()
+
