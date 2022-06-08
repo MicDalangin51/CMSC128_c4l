@@ -1,8 +1,23 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { useParams, Link } from "react-router-dom";
+import ReactToPrint from "react-to-print";
 
-import { DashboardLayout } from "/src/components";
-import { FaArrowLeft, FaPlus, FaMinus, FaEdit } from "react-icons/fa";
+import {
+  DashboardLayout,
+  ChangeVerificationModal,
+  EditStudentModal,
+  EditStudentCourseModal,
+  AddStudentCourseModal,
+  EditStatusModal,
+  AlternateAddStudentCourseModal,
+  DeleteCourseModal,
+  EditStudentSummaryModal,
+  LoadingPanel,
+} from "/src/components";
+import { StudentPdf } from "/src/pages";
+import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
+import { BsCalendarCheckFill, BsCalendarXFill } from "react-icons/bs";
+import { RiDeleteBin2Fill } from "react-icons/ri";
 import {
   Accordion,
   Table,
@@ -11,453 +26,743 @@ import {
   Col,
   Button,
   Card,
-  Container,
-  Modal,
-  Form,
-  FloatingLabel,
-  Dropdown,
+  Badge,
+  ListGroup,
+  OverlayTrigger,
+  Overlay,
+  Tooltip,
 } from "react-bootstrap";
-import casBuilding from "/src/images/cas-building.png";
 
 const StudentRecord = () => {
   const { studentNumber } = useParams();
+  var currentUser = localStorage.getItem("currentUser");
 
   //for editing student-data row
-  const [show, setShow] = useState(false);
   const [edit_course, setCourseEdit] = useState("");
   const [edit_grade, setGradeEdit] = useState("");
   const [edit_units, setUnitsEdit] = useState("");
   const [edit_weight, setWeightEdit] = useState("");
   const [edit_cumulative, setCumulativeEdit] = useState("");
+  const [edit_semester, setSemester] = useState("");
 
-  const handleShow = (course_number, grade, units, weight, cumulative) => {
-    setShow(true);
-    setCourseEdit(course_number);
-    setGradeEdit(grade);
-    setUnitsEdit(units);
-    setWeightEdit(weight);
-    setCumulativeEdit(cumulative);
-  };
+  //gets the student's data
+  const [isLoading, setIsLoading] = useState(true);
+  const [student, setStudent] = useState({});
+  const [genError, setGenError] = useState([]);
+  const [dataFlags, setDataFlags] = useState([]);
 
-  const handleClose = () => {
-    setShow(false);
-    const row = {
-      student_number: studentNumber,
-      course_number: edit_course,
-      grade: edit_grade,
-      units: edit_units,
-      weight: edit_weight,
-      cumulative: edit_cumulative,
-    };
-
-    fetch(`api/students/${studentNumber}/courses/${edit_course}`, {
-      method: "PATCH",
+  useEffect(async () => {
+    const response = await fetch(`/api/students/${studentNumber}`, {
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
+    });
+    const data = await response.json();
 
-        if (body.success) {
-          alert("Successfully edited!");
-        } else {
-          alert("Failed to edit!");
-        }
-      });
-  };
+    switch (response.status) {
+      case 200:
+        setIsLoading(false);
+        setStudent(data.student);
+        setGenError(data.genError);
+        setDataFlags(data.dataFlags);
+    }
+  }, []);
 
-  //for adding student-data row
-  const [showAdd, setShowAdd] = useState(false);
-  const handleShowAdd = () => {
-    setShowAdd(true);
+  function findRow(semester, academic_year, course_number) {
+    let something = dataFlags.find(
+      (flag) =>
+        flag.course_code == course_number &&
+        flag.acad_year == academic_year &&
+        flag.semester == semester
+    );
+
+    if (something == undefined) {
+      return undefined;
+    } else {
+      return something.prev_data;
+    }
+  }
+
+  function findSuggestion(semester, academic_year, course_number) {
+    let something = dataFlags.find(
+      (flag) =>
+        flag.course_code == course_number &&
+        flag.acad_year == academic_year &&
+        flag.semester == semester
+    );
+
+    if (something == undefined) {
+      return undefined;
+    } else {
+      return something.new_data;
+    }
+  }
+
+  function HasError(semester, academic_year) {
+    let something = dataFlags.find(
+      (flag) => flag.acad_year == academic_year && flag.semester == semester
+    );
+
+    if (something == undefined) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  function changeColor(column, semester, acad_year, course_number) {
+    const previous_data = findRow(semester, acad_year, course_number);
+    let color = previous_data == column ? "#ff5252" : "white";
+    return color;
+  }
+
+  function changeMessage(column, semester, acad_year, course_number) {
+    const hasError = findSuggestion(semester, acad_year, course_number);
+    const previous_data = findRow(semester, acad_year, course_number);
+    let message =
+      hasError && previous_data == column
+        ? "ERROR: Please change " + column + " to " + hasError
+        : column;
+    return message;
+  }
+
+  //closes modals
+  const handleCloseAll = () => {
+    setSemester("");
     setCourseEdit("");
     setGradeEdit("");
     setUnitsEdit("");
     setWeightEdit("");
     setCumulativeEdit("");
-  };
-  const handleCloseAdd = (semester) => {
-    setShowAdd(false);
-    const row = {
-      student_number: studentNumber,
-      course_number: edit_course,
-      grade: edit_grade,
-      units: edit_units,
-      weight: edit_weight,
-      cumulative: edit_cumulative,
-      semester: semester,
-    };
-
-    fetch(`api/students/${studentNumber}/courses/${edit_course}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-
-        if (body.success) {
-          alert("Successfully added!");
-        } else {
-          alert("Failed to add!");
-        }
-      });
+    setShowStatus(false);
+    setShowVerify1(false);
+    setShowVerify2(false);
+    setShowVerify3(false);
+    setShowEditStudent(false);
+    setShowAddCourse(false);
+    setShowEditCourse(false);
+    setShowAddCourse2(false);
+    setShowDeleteCourse(false);
+    setShowEditStudentSummary(false);
   };
 
-  //gets the student's data
-  const [student, setStudent] = useState([]);
+  //changing the verification
+  const [showVerify1, setShowVerify1] = useState(false);
+  const handleShowVerify1 = () => setShowVerify1(true);
 
-  useEffect(async () => {
-    console.log("test");
-    const response = await fetch(`/api/students/${studentNumber}`);
-    const data = await response.json();
-    setStudent(data.student);
-    console.log("student", student);
-  }, []);
+  const [showVerify2, setShowVerify2] = useState(false);
+  const handleShowVerify2 = () => setShowVerify2(true);
 
-  //deletes a row of student-data
-  function deleteRow(studentNumber, course_number, semester) {
-    const row = {
-      studentNumber: studentNumber,
-      course_number: course_number,
-      semester: semester,
-    };
+  const [showVerify3, setShowVerify3] = useState(false);
+  const handleShowVerify3 = () => setShowVerify3(true);
 
-    fetch(`api/students/${studentNumber}/courses/${course_number}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(row),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
+  //changing the verification
+  const [showEditStudent, setShowEditStudent] = useState(false);
+  const handleShowEditStudent = () => setShowEditStudent(true);
 
-        if (body.success) {
-          alert("Successfully deleted!");
-        } else {
-          alert("Failed to delete!");
-        }
-      });
-  }
+  //changing the course
+  const [showAddCourse, setShowAddCourse] = useState(false);
+  const handleShowAddCourse = (semester) => {
+    setSemester(semester);
+    setShowAddCourse(true);
+  };
+
+  //editing row
+  const [showEditCourse, setShowEditCourse] = useState(false);
+  const handleShowEdit = (
+    course_number,
+    grade,
+    units,
+    weight,
+    cumulative,
+    semester
+  ) => {
+    setShowEditCourse(true);
+    setCourseEdit(course_number);
+    setGradeEdit(grade);
+    setUnitsEdit(units);
+    setWeightEdit(weight);
+    setCumulativeEdit(cumulative);
+    setSemester(semester);
+  };
 
   //changing the status of the student to verified and unverified
   const [showStatus, setShowStatus] = useState(false);
-
   const handleShowStatus = () => setShowStatus(true);
-  const handleCloseStatus = () => setShowStatus(false);
 
-  function changeStatus() {
-    setShowStatus(false);
-    if (student.status == "verified") {
-      student.status = "unverified";
-    } else {
-      student.status = "verified";
-    }
+  //adding rows with semester and acad year
+  const [showAddCourse2, setShowAddCourse2] = useState(false);
+  const handleShowAddCourse2 = () => setShowAddCourse2(true);
 
-    fetch("api/change", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(student),
-    })
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
+  //deleting rows
+  const [showDeleteCourse, setShowDeleteCourse] = useState(false);
+  const handleShowDeleteCourse = (course_number, semester) => {
+    setShowDeleteCourse(true);
+    setCourseEdit(course_number);
+    setSemester(semester);
+  };
 
-        if (body.success) {
-          alert("Successfully changed!");
-        } else {
-          alert("Failed to change!");
-        }
-      });
-  }
+  //adding rows with semester and acad year
+  const [showEditStudentSummary, setShowEditStudentSummary] = useState(false);
+  const handleShowEditStudentSummary = () => setShowEditStudentSummary(true);
+
+  const studentPdfRef = useRef();
 
   return (
-    <DashboardLayout fixedContent>
-      <Modal size="lg" show={showAdd} centered>
-        <Modal.Body>
-          <Row className="pb-2">
-            <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control defaultValue={edit_course} />
-            </FloatingLabel>
-          </Row>
-          <Row className="g-2">
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control defaultValue={edit_grade} />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control defaultValue={edit_units} />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control defaultValue={edit_weight} />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
-                <Form.Control defaultValue={edit_cumulative} />
-              </FloatingLabel>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseAdd}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
+    <DashboardLayout>
+      <EditStudentSummaryModal
+        showModal={showEditStudentSummary}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        requnits={student.req_units}
+        totalunits={student.total_units}
+        totalcumulative={student.total_cumulative}
+        finalgwa={student.GWA}
+      />
 
-      <Modal size="lg" show={show} centered>
-        <Modal.Body>
-          <Row className="pb-2">
-            <FloatingLabel controlId="floatingInputGrid" label="Course">
-              <Form.Control defaultValue={edit_course} />
-            </FloatingLabel>
-          </Row>
-          <Row className="g-2">
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Grade">
-                <Form.Control defaultValue={edit_grade} />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Units">
-                <Form.Control defaultValue={edit_units} />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Weight">
-                <Form.Control defaultValue={edit_weight} />
-              </FloatingLabel>
-            </Col>
-            <Col md>
-              <FloatingLabel controlId="floatingInputGrid" label="Cumulative">
-                <Form.Control defaultValue={edit_cumulative} />
-              </FloatingLabel>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Save
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <DeleteCourseModal
+        showModal={showDeleteCourse}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        student_name={student.last_name}
+        course_code={edit_course}
+        semester={edit_semester}
+      />
 
-      <Modal size="lg" show={showStatus} centered>
-        <Modal.Body>Change verification?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={changeStatus}>
-            Yes
-          </Button>
-          <Button variant="secondary" onClick={handleCloseStatus}>
-            No
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <AlternateAddStudentCourseModal
+        showModal={showAddCourse2}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+      />
 
-      <div className="overflow-auto">
-        <Row xs="auto" className="m-3">
-          <Col>
-            <a href="/">
-              <Button className="btn btn-primary bg-transparent border-0">
-                <FaArrowLeft color="maroon" />
-              </Button>
-            </a>
-          </Col>
-          <Col className="flex-fill">
-            <Row xs="auto" className="m-3">
-              <Col>
-                <Image
-                  src={casBuilding}
-                  width="150"
-                  height="150"
-                  className="me-2"
-                  roundedCircle
-                />
-              </Col>
-              <Col className="my-auto">
-                <h1>{student.name}</h1>
-                <div className="text-black">{student.student_number}</div>
-                <div className="text-black">{student.course}</div>
-              </Col>
-              <Col className="my-auto">
-                <Button onClick={handleShowStatus}>
-                  {student.status == "verified" && (
-                    <Badge pill bg="success">
-                      {student.status}
-                    </Badge>
-                  )}
-                  {student.status == "unverified" && (
-                    <Badge pill bg="secondary">
-                      {student.status}
-                    </Badge>
-                  )}
-                  {student.status == "pending" && (
-                    <Badge pill bg="secondary">
-                      {student.status}
-                    </Badge>
-                  )}
-                </Button>
-              </Col>
-            </Row>
-            <Row></Row>
+      <AddStudentCourseModal
+        showModal={showAddCourse}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        semester={edit_semester}
+      />
 
-            <Row>
-              <Accordion defaultActiveKey="0" alwaysOpen>
-                {student.summary?.map((entry, index) => (
-                  <Accordion.Item eventKey={"" + index + ""}>
-                    <Accordion.Header>{entry.semester}</Accordion.Header>
-                    <Accordion.Body>
-                      <Table hover responsive>
-                        <thead>
-                          <tr className="text-secondary">
-                            <th>Course Number</th>
-                            <th>Grade</th>
-                            <th>Units</th>
-                            <th>Weight</th>
-                            <th>Cumulative</th>
-                            <th>
-                              <Button
-                                onClick={() => {
-                                  handleShowAdd(entry.semester);
-                                }}
-                                variant="outline-none"
-                                size="sm"
-                              >
-                                <FaPlus />
-                              </Button>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {entry.content.map(
-                            (
-                              {
-                                course_number,
-                                grade,
-                                units,
-                                weight,
-                                cumulative,
-                              },
-                              index
-                            ) => {
-                              return (
-                                <tr key={index}>
-                                  <td>{course_number}</td>
-                                  <td>{grade}</td>
-                                  <td>{units}</td>
-                                  <td>{weight}</td>
-                                  <td>{cumulative}</td>
+      <EditStudentCourseModal
+        showModal={showEditCourse}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        semester={edit_semester}
+        course_number_param={edit_course}
+        grade_param={edit_grade}
+        units_param={edit_units}
+        weight_param={edit_weight}
+        cumulative_param={edit_cumulative}
+      />
 
-                                  <Button
-                                    variant="outline-none"
-                                    size="sm"
-                                    onClick={() =>
-                                      deleteRow(
-                                        entry.studentNumber,
-                                        course_number,
-                                        entry.semester
-                                      )
-                                    }
-                                  >
-                                    <FaMinus />
-                                  </Button>
-                                  <Button
-                                    onClick={() =>
-                                      handleShow(
-                                        course_number,
-                                        grade,
-                                        units,
-                                        weight,
-                                        cumulative
-                                      )
-                                    }
-                                    variant="outline-none"
-                                    size="sm"
-                                  >
-                                    <FaEdit />
-                                  </Button>
+      <EditStudentModal
+        showModal={showEditStudent}
+        closeModal={handleCloseAll}
+        student_num={student.student_number}
+        firstname={student.first_name}
+        lastname={student.last_name}
+        course={student.course}
+      />
+
+      <ChangeVerificationModal
+        showModal={showVerify1}
+        closeModal={handleCloseAll}
+        verifier="first_verifier"
+        previous_data={student.first_verifier}
+        shac_member={currentUser}
+        student_num={student.student_number}
+      />
+
+      <ChangeVerificationModal
+        showModal={showVerify2}
+        closeModal={handleCloseAll}
+        verifier="second_verifier"
+        previous_data={student.second_verifier}
+        shac_member={currentUser}
+        student_num={student.student_number}
+      />
+
+      <ChangeVerificationModal
+        showModal={showVerify3}
+        closeModal={handleCloseAll}
+        verifier="other_verifier"
+        previous_data={student.other_verifier}
+        //return from login the credentials of the shac member
+        shac_member={currentUser}
+        student_num={student.student_number}
+      />
+
+      <EditStatusModal
+        showModal={showStatus}
+        closeModal={handleCloseAll}
+        current_status={student.status}
+        student_num={student.student_number}
+      />
+
+      <Row xs="auto" className="m-3">
+        <Col>
+          <Link to="/">
+            <Button className="btn btn-primary bg-transparent border-0">
+              <FaArrowLeft color="maroon" />
+            </Button>
+          </Link>
+        </Col>
+        {isLoading ? (
+          <LoadingPanel />
+        ) : (
+          <>
+            <Col className="flex-fill">
+              <Row xs="auto" className="m-3 mb-4">
+                <Col className="my-auto">
+                  <h1>
+                    {student.last_name}, {student.first_name}
+                  </h1>
+                  <div className="text-black">{student.student_number}</div>
+                  <div className="text-black">
+                    {student.course == "BACA" && (
+                      <p>Bachelor of Arts in Communication Arts</p>
+                    )}
+                    {student.course == "BAP" && (
+                      <p>Bachelor of Arts in Philosophy</p>
+                    )}
+                    {student.course == "BAS" && (
+                      <p>Bachelor of Arts in Sociology</p>
+                    )}
+                    {student.course == "BSAM" && (
+                      <p>Bachelor of Science in Applied Mathematics</p>
+                    )}
+                    {student.course == "BSAP" && (
+                      <p>Bachelor of Science in Applied Physics</p>
+                    )}
+                    {student.course == "BSB" && (
+                      <p>Bachelor of Science in Biology</p>
+                    )}
+                    {student.course == "BSC" && (
+                      <p>Bachelor of Science in Chemistry</p>
+                    )}
+                    {student.course == "BSCS" && (
+                      <p>Bachelor of Science in Computer Science</p>
+                    )}
+                    {student.course == "BSM" && (
+                      <p>Bachelor of Science in Mathematics</p>
+                    )}
+                    {student.course == "BSMST" && (
+                      <p>
+                        Bachelor of Science in Mathematics and Science Teaching
+                      </p>
+                    )}
+                    {student.course == "BSS" && (
+                      <p>Bachelor of Science in Statistics</p>
+                    )}
+                    {student.course == "BSAC" && (
+                      <p>Bachelor of Science in Agricultural Chemistry</p>
+                    )}
+                  </div>
+                </Col>
+                <Col className="my-4">
+                  <Button
+                    variant="outline-none"
+                    size="sm"
+                    onClick={handleShowEditStudent}
+                  >
+                    <FaEdit />
+                  </Button>
+                </Col>
+              </Row>
+
+              <Row>
+                {
+                  <Accordion defaultActiveKey={"0"} alwaysOpen>
+                    {student.summary?.map((entry, index) => {
+                      var semester = entry.semester[9];
+                      var acad_year =
+                        entry.semester.substring(17, 19) +
+                        "/" +
+                        entry.semester.substring(22, 24);
+
+                      return (
+                        <Accordion.Item key={index} eventKey={"" + index + ""}>
+                          <Accordion.Header>
+                            {HasError(semester, acad_year) == true && (
+                              <BsCalendarXFill
+                                className="mx-3"
+                                style={{ color: "red" }}
+                              />
+                            )}
+                            {HasError(semester, acad_year) == false && (
+                              <BsCalendarCheckFill className="mx-3" />
+                            )}
+                            {entry.semester}
+                          </Accordion.Header>
+
+                          <Accordion.Body>
+                            <Table hover responsive>
+                              <thead>
+                                <tr className="text-secondary">
+                                  <th>Course Code</th>
+                                  <th>Grade</th>
+                                  <th>Units</th>
+                                  <th>Weight</th>
+                                  <th>Cumulative</th>
+                                  <th>
+                                    <Button
+                                      onClick={() => {
+                                        handleShowAddCourse(entry.semester);
+                                      }}
+                                      variant="outline-none"
+                                      size="sm"
+                                    >
+                                      <FaPlus />
+                                      Add Course
+                                    </Button>
+                                  </th>
                                 </tr>
-                              );
-                            }
-                          )}
-                        </tbody>
-                      </Table>
-                    </Accordion.Body>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
-            </Row>
-          </Col>
+                              </thead>
+                              <tbody>
+                                {entry.content.map(
+                                  (
+                                    {
+                                      course_number,
+                                      grade,
+                                      units,
+                                      weight,
+                                      cumulative,
+                                    },
+                                    index
+                                  ) => {
+                                    var semester = entry.semester[9];
+                                    var acad_year =
+                                      entry.semester.substring(17, 19) +
+                                      "/" +
+                                      entry.semester.substring(22, 24);
 
-          <Col className="flex-fill m-5">
-            <Row className="my-5 py-3"></Row>
-            <Row className="my-5">
-              <Card>
-                <Card.Body>
-                  <Row>
-                    <Col>
-                      <h6>GWA</h6>
-                      <Card.Text className="text-black">
-                        {student.GWA}
-                      </Card.Text>
-                    </Col>
-                    <Col>
-                      <h6>Total Units</h6>
-                      <Card.Text className="text-black">
-                        {student.total_units}
-                      </Card.Text>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Row>
-            {/* <Row>
-            <Card>
-                <Card.Body>
-                  <Row>
-                    <Col>
-                      <h6>Required Units</h6>
-                      <Card.Text className="text-black">
-                        {entries.req_units}
-                      </Card.Text>
-                    </Col>
-                    <Col>
-                      <h6>Total Units</h6>
-                      <Card.Text className="text-black">
-                        {entries.total_units}
-                      </Card.Text>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Row> */}
-            <Row>
-              <Card>
-                <Card.Body>
-                  <Card.Text>
-                    <h6>General Errors</h6>
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Row>
-          </Col>
-        </Row>
-      </div>
+                                    return (
+                                      <tr key={index}>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                course_number,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                course_number,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {course_number}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                grade,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                grade,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {grade}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                units,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                units,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {units}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                weight,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                weight,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {weight}
+                                          </td>
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                          placement="left"
+                                          overlay={
+                                            <Tooltip>
+                                              {changeMessage(
+                                                cumulative,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              )}
+                                            </Tooltip>
+                                          }
+                                        >
+                                          <td
+                                            style={{
+                                              backgroundColor: changeColor(
+                                                cumulative,
+                                                semester,
+                                                acad_year,
+                                                course_number
+                                              ),
+                                            }}
+                                          >
+                                            {cumulative}
+                                          </td>
+                                        </OverlayTrigger>
+
+                                        <Button
+                                          variant="outline-none"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleShowDeleteCourse(
+                                              course_number,
+                                              entry.semester
+                                            )
+                                          }
+                                        >
+                                          <RiDeleteBin2Fill />
+                                          Delete
+                                        </Button>
+                                        <Button
+                                          onClick={() =>
+                                            handleShowEdit(
+                                              course_number,
+                                              grade,
+                                              units,
+                                              weight,
+                                              cumulative,
+                                              entry.semester
+                                            )
+                                          }
+                                          variant="outline-none"
+                                          size="sm"
+                                        >
+                                          <FaEdit />
+                                          Edit
+                                        </Button>
+                                      </tr>
+                                    );
+                                  }
+                                )}
+                              </tbody>
+                            </Table>
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      );
+                    })}
+                  </Accordion>
+                }
+              </Row>
+            </Col>
+
+            <Col className="flex-fill m-5">
+              <Row className="my-2">
+                <Button variant="primary" onClick={handleShowAddCourse2}>
+                  Add Course
+                </Button>
+              </Row>
+              <Row>
+                <ReactToPrint
+                  trigger={() => (
+                    <Button variant="outline-primary">Print</Button>
+                  )}
+                  content={() => studentPdfRef.current}
+                />
+                <div className="d-none">
+                  <StudentPdf ref={studentPdfRef} student={student} />
+                </div>
+              </Row>
+              <Row className="my-auto">
+                <Col className="my-auto">First Verifier</Col>
+                <Col className="my-auto">
+                  <Button variant="link" onClick={handleShowVerify1}>
+                    {typeof student.first_verifier == "string" && (
+                      <Badge pill bg="success">
+                        {student.first_verifier}
+                      </Badge>
+                    )}
+                    {student.first_verifier == null && (
+                      <Badge pill bg="secondary">
+                        none
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+
+              <Row className="my-auto">
+                <Col className="my-auto">Second Verifier</Col>
+                <Col className="my-auto">
+                  <Button variant="link" onClick={handleShowVerify2}>
+                    {typeof student.second_verifier == "string" && (
+                      <Badge pill bg="success">
+                        {student.second_verifier}
+                      </Badge>
+                    )}
+                    {student.second_verifier == null && (
+                      <Badge pill bg="secondary">
+                        none
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+
+              <Row className="my-auto">
+                <Col className="my-auto">Other Verifier</Col>
+                <Col className="my-auto">
+                  <Button variant="link" onClick={handleShowVerify3}>
+                    {typeof student.other_verifier == "string" && (
+                      <Badge pill bg="success">
+                        {student.other_verifier}
+                      </Badge>
+                    )}
+                    {student.other_verifier == null && (
+                      <Badge pill bg="secondary">
+                        none
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+              <Row className="my-auto">
+                <Col className="my-auto">Status</Col>
+                <Col className="my-auto">
+                  <Button onClick={handleShowStatus} variant="link">
+                    {student.status == "true" && (
+                      <Badge pill bg="success">
+                        verified
+                      </Badge>
+                    )}
+                    {student.status == "false" && (
+                      <Badge pill bg="secondary">
+                        unverified
+                      </Badge>
+                    )}
+                    {student.status == null && (
+                      <Badge pill bg="secondary">
+                        unverified
+                      </Badge>
+                    )}
+                  </Button>
+                </Col>
+              </Row>
+              <Row className="my-5">
+                <Card>
+                  <Card.Body>
+                    <Button
+                      variant="outline-none"
+                      size="sm"
+                      onClick={handleShowEditStudentSummary}
+                    >
+                      <FaEdit />
+                    </Button>
+
+                    <Row className="my-3">
+                      <Col>
+                        <h6>Required Units</h6>
+                        <Card.Text className="text-black">
+                          {student.req_units}
+                        </Card.Text>
+                      </Col>
+                      <Col>
+                        <h6>Total Units</h6>
+                        <Card.Text className="text-black">
+                          {student.total_units}
+                        </Card.Text>
+                      </Col>
+                    </Row>
+                    <Row className="my-3">
+                      <Col>
+                        <h6>GWA</h6>
+                        <Card.Text className="text-black">
+                          {student.GWA}
+                        </Card.Text>
+                      </Col>
+                      <Col>
+                        <h6>Total Cumulative</h6>
+                        <Card.Text className="text-black">
+                          {student.total_cumulative}
+                        </Card.Text>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Row>
+              <Row>
+                <Card>
+                  <Card.Body>
+                    <Card.Text>
+                      <h6>General Errors</h6>
+                      {genError?.map(({ flags }, index) => (
+                        <ListGroup key={index}>{flags}</ListGroup>
+                      ))}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Row>
+            </Col>
+          </>
+        )}
+      </Row>
     </DashboardLayout>
   );
 };

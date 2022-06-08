@@ -28,3 +28,7 @@
     @extend .border-top-0;
   }
 }
+
+.hover:hover {
+  background-color: $gray-200;
+}

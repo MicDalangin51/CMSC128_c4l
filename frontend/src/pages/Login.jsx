@@ -1,56 +1,62 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, Container, Form, InputGroup } from "react-bootstrap";
+import { Navigate, useNavigate } from "react-router-dom";
+import { Button, Container, Form, InputGroup, Alert } from "react-bootstrap";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-
 import "./Login.css";
 import logo from "../images/cas-logo.png";
 
+const isAuthenticated = localStorage.getItem("accessToken");
+
 const Login = () => {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
   const [passwordShown, setPasswordShown] = useState(false);
 
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
   const setField = (field, value) => {
     setForm({
       ...form,
-      [field]: value
-    })
+      [field]: value,
+    });
 
     if (!!errors[field])
       setErrors({
         ...errors,
-        [field]: null
-      })
+        [field]: null,
+      });
   };
 
   const validateForm = () => {
     const { email, password } = form;
     const newErrors = {};
-    const regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    const regex =
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
-    if (!email || email === '') newErrors.email = "Please enter your email address!"
+    if (!email || email === "")
+      newErrors.email = "Please enter your email address!";
     else if (regex.test(email) === false) {
-      newErrors.email = "Please enter your email address in this format: yourname@example.com"
-    };
+      newErrors.email =
+        "Please enter your email address in this format: yourname@up.edu.ph";
+    }
 
-    if (!password || password === '') newErrors.password = "Please enter your password!"
+    if (!password || password === "")
+      newErrors.password = "Please enter your password!";
 
     return newErrors;
-  }
+  };
 
   const togglePassword = () => {
     setPasswordShown(!passwordShown);
   };
 
-  const navigateTo = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) navigateTo("/");
-  }, [isAuthenticated]);
+  const credentialError = () => {
+    setLoginError("Failed to Login! Invalid Email/Password!");
+    setTimeout(() => {
+      setLoginError("");
+    }, 5000);
+  };
 
   function login(e) {
     e.preventDefault();
@@ -59,10 +65,6 @@ const Login = () => {
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     }
-
-    console.log("form submitted");
-    console.log(form);
-
 
     const credentials = {
       email: form.email,
@@ -78,18 +80,27 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((body) => {
-        console.log(body);
-
         if (body.success) {
-          setIsAuthenticated(true);
+          var faculty = body.faculty;
+          var accessToken = body.accessToken;
+          var name = faculty.name;
+          var dept = faculty.department;
+          var access = faculty.access_level;
+          localStorage.setItem("currentUser", name);
+          localStorage.setItem("currentDepartment", dept);
+          localStorage.setItem("currentAccess", access);
+          localStorage.setItem("accessToken", accessToken);
+
+          navigate("/", { replace: true });
         } else {
-          alert("Failed to log in");
+          credentialError();
         }
       });
-  
   }
 
-  return (
+  return isAuthenticated ? (
+    <Navigate to="/" replace />
+  ) : (
     <>
       <div className="leftHalf"></div>
       <div className="rightHalf">
@@ -104,11 +115,10 @@ const Login = () => {
                 //type="email"
                 title="Enter email"
                 placeholder="Enter email"
-                value={form.email}
-                onChange={(e) => setField('email', e.target.value)}
+                onChange={(e) => setField("email", e.target.value)}
                 isInvalid={!!errors.email}
               />
-              <Form.Control.Feedback type='invalid'>
+              <Form.Control.Feedback type="invalid">
                 {errors.email}
               </Form.Control.Feedback>
             </Form.Group>
@@ -120,10 +130,9 @@ const Login = () => {
                   type={passwordShown ? "text" : "password"}
                   title="Enter password"
                   placeholder="Enter password"
-                  value={form.password}
-                  onChange={(e) => setField('password', e.target.value)}
+                  onChange={(e) => setField("password", e.target.value)}
                   isInvalid={!!errors.password}
-                />  
+                />
                 <Button
                   onClick={togglePassword}
                   variant="outline-secondary"
@@ -131,7 +140,7 @@ const Login = () => {
                 >
                   {passwordShown ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
                 </Button>
-                <Form.Control.Feedback type='invalid' >
+                <Form.Control.Feedback type="invalid">
                   {errors.password}
                 </Form.Control.Feedback>
               </InputGroup>
@@ -145,6 +154,9 @@ const Login = () => {
             >
               Login
             </Button>
+            <span style={{ color: "#d63f41" }} className="mt-2">
+              {loginError}
+            </span>
           </Form>
         </Container>
       </div>
