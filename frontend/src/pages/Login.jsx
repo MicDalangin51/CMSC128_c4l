@@ -1,54 +1,167 @@
-import React from 'react';
-import './Login.css';
-import logo from '../images/cas-logo.png';
-import {Row, Col, Container, Form, Button} from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { Button, Container, Form, InputGroup, Alert } from "react-bootstrap";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import "./Login.css";
+import logo from "../images/cas-logo.png";
+
+const isAuthenticated = localStorage.getItem("accessToken");
 
 const Login = () => {
-    return <>
-    <Row className="mt-5">
-        <Col lg={1}></Col>
-        <Col lg={5} md={6} sm={12} className="p-5 m-auto">
-            <Container className="p-5 mt-5 shadow-sm rounded-lg bg-white text-dark bg-opacity-50">
-                <h4>Privacy Notice</h4>
-                <p>privacy notice details will be placed here<br/>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                Nulla quis est metus. Vestibulum a libero vitae est eleifend convallis vel ut justo. 
-                Pellentesque in augue molestie, sollicitudin elit accumsan, luctus purus. Donec ut fringilla nisl. 
-                Praesent vitae tincidunt justo. Cras ullamcorper, 
-                erat quis bibendum euismod, nisl velit tincidunt arcu, accumsan efficitur ipsum quam eu lectus. 
-                Sed id dignissim enim. Praesent dolor sapien, bibendum eget auctor vitae, placerat id elit. 
-                Etiam ultrices ultrices sapien, a iaculis dui sagittis nec. Phasellus mi est, accumsan vel euismod at, semper quis sapien. 
-                Nulla arcu nisi, rhoncus at commodo in, porttitor nec arcu. Donec nisl sapien, tempus at dapibus sed, hendrerit eget turpis. 
-                Ut lobortis semper elementum. Nulla facilisi.</p>
-            </Container>
-        </Col>
+  const navigate = useNavigate();
 
-        <Col>
-            <Container className="mt-5 p-5">
-            <img src={logo} width="150" height="150" className="logo"/>
-            <br/>
-            <h2>GWA Verifier</h2>
-            <br/>
-                <Form className="login-form">
-                    <Form.Group controlId="formEmail" className="w-50">
-                        <Form.Label className="input-label">Email</Form.Label>
-                        <Form.Control type="email" title="Enter email"/>
-                    </Form.Group>
-                    <br/>
-                    <Form.Group controlId="formPassword" className="w-50">
-                        <Form.Label className="input-label">Password</Form.Label>
-                        <Form.Control type="password" title="Enter password"/>
-                    </Form.Group>
+  const [passwordShown, setPasswordShown] = useState(false);
 
-                    <br/>
-                    <Button variant="outline-light w-50" type="submit" className="login-button">
-                        Login
-                    </Button>
-                </Form>
-            </Container>
-        </Col>
-    </Row>
-    </>;
+  const [form, setForm] = useState({});
+  const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
+  const setField = (field, value) => {
+    setForm({
+      ...form,
+      [field]: value,
+    });
+
+    if (!!errors[field])
+      setErrors({
+        ...errors,
+        [field]: null,
+      });
   };
+
+  const validateForm = () => {
+    const { email, password } = form;
+    const newErrors = {};
+    const regex =
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
+    if (!email || email === "")
+      newErrors.email = "Please enter your email address!";
+    else if (regex.test(email) === false) {
+      newErrors.email =
+        "Please enter your email address in this format: yourname@up.edu.ph";
+    }
+
+    if (!password || password === "")
+      newErrors.password = "Please enter your password!";
+
+    return newErrors;
+  };
+
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
+  };
+
+  const credentialError = () => {
+    setLoginError("Failed to Login! Invalid Email/Password!");
+    setTimeout(() => {
+      setLoginError("");
+    }, 5000);
+  };
+
+  function login(e) {
+    e.preventDefault();
+
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+    }
+
+    const credentials = {
+      email: form.email,
+      password: form.password,
+    };
+
+    fetch("api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    })
+      .then((response) => response.json())
+      .then((body) => {
+        if (body.success) {
+          var faculty = body.faculty;
+          var accessToken = body.accessToken;
+          var name = faculty.name;
+          var dept = faculty.department;
+          var access = faculty.access_level;
+          localStorage.setItem("currentUser", name);
+          localStorage.setItem("currentDepartment", dept);
+          localStorage.setItem("currentAccess", access);
+          localStorage.setItem("accessToken", accessToken);
+
+          navigate("/", { replace: true });
+        } else {
+          credentialError();
+        }
+      });
+  }
+
+  return isAuthenticated ? (
+    <Navigate to="/" replace />
+  ) : (
+    <>
+      <div className="leftHalf"></div>
+      <div className="rightHalf">
+        <Container className="mt-5 p-5">
+          <img src={logo} width="150" height="150" className="logo" />
+          <h2>GWA Verifier</h2>
+          <br />
+          <Form onSubmit={login} className="login-form">
+            <Form.Group controlId="formEmail" className="w-50">
+              <Form.Label className="input-label">Email</Form.Label>
+              <Form.Control
+                //type="email"
+                title="Enter email"
+                placeholder="Enter email"
+                onChange={(e) => setField("email", e.target.value)}
+                isInvalid={!!errors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <br />
+            <Form.Group controlId="formPassword" className="w-50">
+              <Form.Label className="input-label">Password</Form.Label>
+              <InputGroup className="mb-3">
+                <Form.Control
+                  type={passwordShown ? "text" : "password"}
+                  title="Enter password"
+                  placeholder="Enter password"
+                  onChange={(e) => setField("password", e.target.value)}
+                  isInvalid={!!errors.password}
+                />
+                <Button
+                  onClick={togglePassword}
+                  variant="outline-secondary"
+                  id="button-addon2"
+                >
+                  {passwordShown ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
+                </Button>
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+
+            <br />
+            <Button
+              variant="outline-light w-50"
+              type="submit"
+              className="login-button"
+            >
+              Login
+            </Button>
+            <span style={{ color: "#d63f41" }} className="mt-2">
+              {loginError}
+            </span>
+          </Form>
+        </Container>
+      </div>
+    </>
+  );
+};
 
 export default Login;

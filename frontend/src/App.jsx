@@ -1,11 +1,43 @@
-import React from "react";
-// import Login from "./pages/Login";
-import LoginPage from "./pages/LoginPage";
+import { StudentDirectory } from "/src/pages";
+import { Changelog } from "/src/pages";
+import { Settings } from "/src/pages";
+import { StudentRecord } from "/src/pages";
+import { Login } from "/src/pages";
+import { Register } from "/src/pages";
+import { ProtectedRoute } from "/src/components";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 const App = () => {
-  return <div>
-    <LoginPage/>
-    {/* <Login/> */}
-  </div>;
+  return (
+    <>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/"
+            element={<ProtectedRoute component={StudentDirectory} />}
+          />
+          <Route
+            path="/change-log"
+            element={<ProtectedRoute component={Changelog} />}
+          />
+          <Route
+            path="/settings"
+            element={<ProtectedRoute component={Settings} />}
+          />
+          <Route
+            path="/student/:studentNumber"
+            element={<ProtectedRoute component={StudentRecord} />}
+          />
+          <Route
+            path="/add-account"
+            element={<ProtectedRoute component={Register} />}
+          />
+        </Routes>
+      </Router>
+    </>
+  );
 };
 
 export default App;
