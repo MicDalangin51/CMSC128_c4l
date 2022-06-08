@@ -14,6 +14,7 @@ create_remarks(connection)
 create_changelogs(connection)
 create_ge_courses(connection)
 create_studentFlags(connection)
+create_tokenBlocklist(connection)
 
 
 
