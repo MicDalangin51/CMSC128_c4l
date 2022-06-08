@@ -27,12 +27,12 @@ def get_all_students(category, order, offset, limit, search):
         rows = cursor.fetchall()
         if (len(rows) == 0):
             print("empty rows 1")
-            cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE student_id = '{search.lower()}' ORDER BY {category} {order}")
+            cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE student_id = '{search}' ORDER BY {category} {order}")
             rows = cursor.fetchall()
         
             if (len(rows) == 0):
                 print("empty rows 2")
-                cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE last_name = '{search.lower()}' ORDER BY {category} {order}")
+                cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student WHERE last_name = '{search}' ORDER BY {category} {order}")
                 rows = cursor.fetchall()
             else:
                 cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM student ORDER BY {category} {order}")
@@ -405,33 +405,75 @@ def edit_student(student_id, col_name, new_data):
 # TO BE IMPLEMENTED ===========================
 
 # GET CHANGELOGS
-def get_changelogs(category, order, offset, limit):
+def get_changelogs(category, order, offset, limit, search):
     changelogs = []
 
     top = int(offset) + int(limit)
-                                                                                              
     
+    student_id_list = []
+    faculty_id_list = []
+    
+   
+        
+
     for faculty_id, student_id, date, time, justification, col_name, prev_data, new_data in cursor.execute(f"SELECT TOP {top} faculty_id, student_id, date, time, justification, col_name, prev_data, new_data FROM changelogs ORDER BY {category} {order}"):
+        # cursor.execute(f"SELECT first_name FROM student WHERE student_id = '{student_id}'")                                                                                 
+        # student_firstname= cursor.fetchone()
+        # first_name, last_name = get_student_name(student_id)
+        # print(student_id, first_name, last_name)
+
+        # if (len(search) == 0):
+        #         cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM changelogs ORDER BY {category} {order}")
+        #         rows = cursor.fetchall()
+        # else:
+        #     cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM changelogs WHERE name = '{search}' ORDER BY {category} {order}")
+        #     rows = cursor.fetchall()
+        #     if (len(rows) == 0):
+        #         print("empty rows 1")
+        #         cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM changelogs WHERE faculty_id = '{search}' ORDER BY {category} {order}")
+        #         rows = cursor.fetchall()
+            
+        #     else:
+        #         cursor.execute(f"SELECT TOP {str(top)} first_name, last_name, student_id, degree_program, status FROM changelogs ORDER BY {category} {order}")
+        #         rows = cursor.fetchall()
+
+        student_id_list.append(student_id)
+        faculty_id_list.append(faculty_id)
         changelog = {  
             "user": faculty_id,
-            # "student_id": student_id,
-            "date": date,
-            "change": prev_data +'->'+new_data,
+            "student_id": student_id ,
+            "date": date + " at " + time[0:5],
+            "change": f"({col_name}) {prev_data} -> {new_data}",   #"("+ col_name + ")"+ prev_data +"->"+new_data ,
             # "time": time,
             "justification": justification,
             # "col_name": col_name,
             # "prev_data": prev_data,
             # "new_data": new_data
         }
+    
+    
+        
+        # print(get_student(student_id))
         # print(get_faculty(faculty_id))
 
 
         changelogs.append(changelog)
+    
+    for i in range (len(student_id_list)):
+        first_name, last_name = get_student_name(student_id_list[i])
+        changelogs[i]["student_id"] = first_name + " " + last_name
+        changelogs[i]["user"] = get_faculty(faculty_id_list[i])
 
     return changelogs[int(offset):]
 
+def get_student_name(student_id):
+    for first_name, last_name in cursor.execute(f"SELECT first_name, last_name FROM student WHERE student_id = '{student_id}'"):
+        return first_name, last_name
+
 # DELETE FACULTY MEMBER
 def delete_faculty_member(faculty_id):
+    cursor.execute(f"DELETE FROM changelogs WHERE faculty_id = '{faculty_id}'")
+    connection.commit()
     cursor.execute(f"DELETE FROM faculty WHERE faculty_id = '{faculty_id}'")
     connection.commit()
 
@@ -449,7 +491,7 @@ def edit_faculty_password(faculty_id, old_pw, new_pw):
     return False
 
 def edit_faculty_name(faculty_id, new_name):
-    cursor.execute(f"UPDATE faculty SET name = '{new_name} WHERE faculty_id = '{faculty_id}''")
+    cursor.execute(f"UPDATE faculty SET name = '{new_name}' WHERE faculty_id = '{faculty_id}'")
     connection.commit()
 
 def clear_studentData(student_id):

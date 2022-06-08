@@ -13,7 +13,7 @@ import {
   ErrorImg,
 } from "/src/components";
 
-const rowLimit = 50;
+const rowLimit = 20;
 
 const sortOptions = [
   { label: "Name", value: "name" },
@@ -158,9 +158,10 @@ const StudentDirectory = () => {
                 )}
               </tbody>
             </Table>
-            {totalStudentCount === 0 && (
+            {!isLoading && totalStudentCount === 0 && (
               <ErrorImg image={noStudent} message="No students found" />
             )}
+
             {isLoading && <LoadingPanel />}
           </div>
         </Stack>
